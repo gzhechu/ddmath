@@ -10,6 +10,6 @@ Like this:
 
 ![docker diagram](./RotateRect.gif)
 
-for my daughter.
+Help my daughter understand her math homework.
 
-为上中学的女儿加油。
+给女儿加油，帮助她理解她的数学作业。
