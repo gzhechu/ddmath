@@ -245,6 +245,7 @@ class RollingCircle2(Scene):
                   run_time=10, rate_func=double_smooth)
         self.wait(6)
 
+
 class RollingCircle3(Scene):
     CONFIG = {
         "color": WHITE,
@@ -261,22 +262,25 @@ class RollingCircle3(Scene):
 
         circle1 = Circle(radius=self.r1, color=self.color,
                          fill_color=BLUE, fill_opacity=0.5)
-        circle2 = Circle(radius=self.r2, color=self.color)
-        arrow = Arrow(circle1.get_center(), UP*self.r1)
+        arrow1 = Arrow(circle1.get_center(), UP*self.r1)
         dot1 = Dot()
-
-        g1 = VGroup(circle1, arrow, dot1)
+        g1 = VGroup(circle1, arrow1, dot1)
         g1.shift(UP*(self.r2-self.r1))
-        self.play(FadeIn(circle2), FadeIn(g1))
-        self.wait(1)
+
+        circle2 = Circle(radius=self.r2, color=self.color)
 
         t1 = TexMobject("{\\LARGE r1:r2 = 1:3}")
         t1.shift(UP*self.r2*2+RIGHT*self.r2)
-        self.play(Write(t1))
 
+        self.play(FadeIn(circle2), FadeIn(g1), Write(t1))
+        self.wait(3)
+
+        arc = None
         def update1(group, alpha):
             # print(alpha)
             angle = math.radians(360 * alpha)
+            arc = Arc(radius=self.r2-self.r1,
+                      color=BLUE, start_angle=np.deg2rad(90), angle=angle)
             circle = Circle(radius=self.r1, color=self.color,
                             fill_color=BLUE, fill_opacity=0.5)
             circle.shift(UP*(self.r2-self.r1))
@@ -284,11 +288,11 @@ class RollingCircle3(Scene):
             circle.rotate(angle=angle, about_point=ORIGIN)
             dx = circle.get_center()
             arrow = Arrow(dx, dx + UP*self.r1)
-            dot1 = Dot(dx)
+            dot = Dot(dx)
             angle = math.radians(-360 * alpha * (self.r2-self.r1)/self.r1)
             arrow.rotate(angle=angle, about_point=dx)
 
-            new_group = VGroup(circle, arrow, dot1)
+            new_group = VGroup(circle, arrow, dot, arc)
             group.become(new_group)
             return group
 
@@ -299,25 +303,23 @@ class RollingCircle3(Scene):
         circle5 = Circle(radius=self.r2-self.r1, color=BLUE,
                          fill_color=BLUE, fill_opacity=0)
         circle5.rotate(angle=math.radians(90))
-        self.play(ShowCreation(circle5))
-        self.wait(3)
+
+        g2 = VGroup(circle1, arrow1, dot1)
 
         llen = (self.r2 - self.r1) * PI
-
         circle6 = Circle(radius=self.r1, color=self.color,
                          fill_color=BLUE, fill_opacity=0.5)
-        dot1 = Dot(circle6.get_center())
-        arrow = Arrow(circle6.get_center(), LEFT*self.r1)
-        g3 = VGroup(circle6, arrow, dot1)
+        dot2 = Dot(circle6.get_center())
+        arrow2 = Arrow(circle6.get_center(), LEFT*self.r1)
+        g3 = VGroup(circle6, arrow2, dot2)
         g3.shift(UP*llen)
 
         line1 = Line(DOWN*llen, UP*llen)
         line1.shift(LEFT*self.r1)
         trans1 = Transform(circle5, line1)
-        trans2 = Transform(g1, g3)
+        trans2 = Transform(g2, g3)
 
-        self.play(FadeOut(txtO), FadeOut(origin),
-                  FadeOut(circle2))
+        self.play(FadeOut(txtO), FadeOut(origin), FadeOut(circle2))
         self.wait(1)
         self.remove(g1)
         self.play(trans1, trans2)
@@ -336,48 +338,51 @@ class RollingCircle3(Scene):
             dot1 = Dot(dx)
             angle = math.radians(-360 * alpha * (self.r2-self.r1)/self.r1)
             agr = int((360 * alpha * (self.r2-self.r1)/self.r1) % 360)
-            agc = "{:.1f}".format((360 * alpha * (self.r2-self.r1)/self.r1) / 360)
-            # agr = 0
-            # agc = "0"
+            agc = "{:.1f}".format((360*alpha*(self.r2-self.r1)/self.r1)/360)
+            # agr=0
+            # agc="0"
             # print(agr)
-            ta = TexMobject("angle={:d}".format(agr))
-            tb = TexMobject("round={:s}".format(agc))
+            ta=TexMobject("angle={:d}".format(agr))
+            tb=TexMobject("round={:s}".format(agc))
             ta.shift(UP*self.r2*2+LEFT*self.r2)
-            tb.next_to(ta,DOWN)
+            tb.next_to(ta, DOWN)
 
-            arrow.rotate(angle=angle, about_point=dx)
+            arrow.rotate(angle = angle, about_point = dx)
 
-            new_group = VGroup(circle, arrow, dot1, ta, tb)
+            new_group=VGroup(circle, arrow, dot1, ta, tb)
             group.become(new_group)
             return group
 
         # self.remove(g2)
         self.play(UpdateFromAlphaFunc(g1, update2),
-                  run_time=10, rate_func=double_smooth)
+                  run_time = 10, rate_func = double_smooth)
         self.wait(6)
 
 
 class Test(Scene):
     def construct(self):
-        textHuge = TextMobject("{\\Huge Huge Text 012}")
-        texthuge = TextMobject("{\\huge huge Text 012.\\#!?} Text")
-        textLARGE = TextMobject("{\\LARGE LARGE Text 012.\\#!?} Text")
-        textLarge = TextMobject("{\\Large Large Text 012.\\#!?} Text")
-        textlarge = TextMobject("{\\large large Text 012.\\#!?} Text")
-        textNormal = TextMobject("{\\normalsize normal Text 012.\\#!?} Text")
-        textsmall = TextMobject("{\\small small Text 012.\\#!?} Texto normal")
-        textfootnotesize = TextMobject("{\\footnotesize footnotesize Text 012.\\#!?} Text")
-        textscriptsize = TextMobject("{\\scriptsize scriptsize Text 012.\\#!?} Text")
-        texttiny = TextMobject("{\\tiny tiny Texto 012.\\#!?} Text normal")
+        textHuge=TextMobject("{\\Huge Huge Text 012}")
+        texthuge=TextMobject("{\\huge huge Text 012.\\#!?} Text")
+        textLARGE=TextMobject("{\\LARGE LARGE Text 012.\\#!?} Text")
+        textLarge=TextMobject("{\\Large Large Text 012.\\#!?} Text")
+        textlarge=TextMobject("{\\large large Text 012.\\#!?} Text")
+        textNormal=TextMobject("{\\normalsize normal Text 012.\\#!?} Text")
+        textsmall=TextMobject("{\\small small Text 012.\\#!?} Texto normal")
+        textfootnotesize=TextMobject(
+            "{\\footnotesize footnotesize Text 012.\\#!?} Text")
+        textscriptsize=TextMobject(
+            "{\\scriptsize scriptsize Text 012.\\#!?} Text")
+        texttiny=TextMobject("{\\tiny tiny Texto 012.\\#!?} Text normal")
         textHuge.to_edge(UP)
-        texthuge.next_to(textHuge,DOWN,buff=0.1)
-        textLARGE.next_to(texthuge,DOWN,buff=0.1)
-        textLarge.next_to(textLARGE,DOWN,buff=0.1)
-        textlarge.next_to(textLarge,DOWN,buff=0.1)
-        textNormal.next_to(textlarge,DOWN,buff=0.1)
-        textsmall.next_to(textNormal,DOWN,buff=0.1)
-        textfootnotesize.next_to(textsmall,DOWN,buff=0.1)
-        textscriptsize.next_to(textfootnotesize,DOWN,buff=0.1)
-        texttiny.next_to(textscriptsize,DOWN,buff=0.1)
-        self.add(textHuge,texthuge,textLARGE,textLarge,textlarge,textNormal,textsmall,textfootnotesize,textscriptsize,texttiny)
+        texthuge.next_to(textHuge, DOWN, buff = 0.1)
+        textLARGE.next_to(texthuge, DOWN, buff = 0.1)
+        textLarge.next_to(textLARGE, DOWN, buff = 0.1)
+        textlarge.next_to(textLarge, DOWN, buff = 0.1)
+        textNormal.next_to(textlarge, DOWN, buff = 0.1)
+        textsmall.next_to(textNormal, DOWN, buff = 0.1)
+        textfootnotesize.next_to(textsmall, DOWN, buff = 0.1)
+        textscriptsize.next_to(textfootnotesize, DOWN, buff = 0.1)
+        texttiny.next_to(textscriptsize, DOWN, buff = 0.1)
+        self.add(textHuge, texthuge, textLARGE, textLarge, textlarge,
+                 textNormal, textsmall, textfootnotesize, textscriptsize, texttiny)
         self.wait(3)
