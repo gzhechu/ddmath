@@ -32,7 +32,10 @@ class RollingCircle1(Scene):
         g1.generate_target()
         g1.target.shift(UP*self.r1)
 
-        self.play(FadeIn(circler))
+        t1 = TexMobject("{\\Huge R : r = 2 : 1}")
+        t1.shift(UP*self.rr*2+RIGHT*self.rr)
+
+        self.play(FadeIn(circler), Write(t1))
         self.wait(1)
         self.play(FadeIn(g1))
         self.play(MoveToTarget(g1))
@@ -88,6 +91,9 @@ class RollingCircle1(Scene):
                   run_time=10, rate_func=double_smooth)
         self.wait(2)
 
+        t2 = TexMobject("{\\Huge R : r = 3 : 1}")
+        t2.shift(UP*self.rr*2+RIGHT*self.rr)
+
         circle2 = Circle(radius=self.r2, color=self.color,
                          fill_color=BLUE, fill_opacity=0.5)
         dx = circler.get_center()
@@ -96,7 +102,8 @@ class RollingCircle1(Scene):
         g2 = VGroup(circle2, dot, arrow2)
         g2.shift(UP*(self.rr-self.r2))
         trans1 = Transform(g1, g2)
-        self.play(trans1)
+        trans2 = Transform(t1, t2)
+        self.play(trans1, trans2)
         self.wait(3)
         self.remove(g1)
 
@@ -144,7 +151,7 @@ class RollingCircle2(Scene):
         g1 = VGroup(dot1, circle1, arrow1, arc1)
         g1.shift(UP*(self.r2-self.r1))
 
-        t1 = TexMobject("{\\Huge r1:r2 = 1:3}")
+        t1 = TexMobject("{\\Huge R : r = 3 : 1}")
         t1.shift(UP*self.r2*2+RIGHT*self.r2)
 
         self.play(FadeIn(circle_r), FadeIn(g1), FadeIn(origin), FadeIn(txtO))
@@ -197,11 +204,11 @@ class RollingCircle2(Scene):
         self.wait(1)
 
         def update2(group, alpha):
-            llen = (self.r2 - self.r1) * PI * 2
             angle = math.radians(-360 * alpha)
             circle = Circle(radius=self.r1, color=self.color,
                             fill_color=BLUE, fill_opacity=0.5)
-            circle.shift(UP*llen/2 + DOWN*llen*alpha)
+            circle.shift(UP*llen + DOWN*llen*alpha*2)
+            line = DashedLine(UP*llen, UP*llen + DOWN*llen*alpha*2, color=BLUE)
 
             dx = circle.get_center()
             arrow = Arrow(dx, dx + LEFT*self.r1)
@@ -219,7 +226,7 @@ class RollingCircle2(Scene):
 
             arrow.rotate(angle=angle, about_point=dx)
 
-            ng = VGroup(circle, arrow, dot1, ta, tb)
+            ng = VGroup(circle, arrow, dot1, ta, tb, line)
             group.become(ng)
             return group
 
