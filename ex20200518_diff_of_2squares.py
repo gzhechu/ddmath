@@ -2,7 +2,7 @@
 
 from manimlib.imports import *
 
-# manim ex20200518_square_deviation.py SquareDeviation -pm -r1280,720
+# manim ex20200518_diff_of_2squares.py Diff2Square -pm -r1280,720
 
 
 class Measurement(VGroup):
@@ -156,7 +156,7 @@ class Measurement(VGroup):
         return texto
 
 
-class SquareDeviation(Scene):
+class Diff2Square(Scene):
     CONFIG = {
         "a": 7,
         "b": 2,
@@ -235,17 +235,15 @@ class SquareDeviation(Scene):
         self.play(FadeIn(pX), FadeOut(sA), FadeOut(sB), trans1)
         self.wait(2)
 
-        sC = Square(side_length=self.a-self.b, color=BLUE, fill_opacity=0.3)
-        sC.move_to(DOWN*(self.b)/2+RIGHT*(self.b)/2)
-        ptR = sC.get_corner(UR)
+        ptR = ptAd + UP*(self.a-self.b)
         rAB1 = Rectangle(height=self.b, width=self.a-self.b,
                          color=BLUE,  fill_opacity=0.3)
         rAB1.move_to(UP*(self.a-self.b)/2+RIGHT*(self.b)/2)
-        rAB2 = Rectangle(height=(self.a-self.b), width=self.b,
+        rAB2 = Rectangle(height=self.a-self.b, width=self.a,
                          color=BLUE,  fill_opacity=0.3)
-        rAB2.move_to(LEFT*(self.a-self.b)/2+DOWN*(self.b)/2)
+        rAB2.move_to(DOWN*(self.b)/2)
 
-        self.play(FadeIn(rAB1), FadeIn(rAB2), FadeIn(sC))
+        self.play(FadeIn(rAB1), FadeIn(rAB2))
         self.remove(pX)
         self.wait(1)
         trans1 = Rotate(rAB1, about_point=ptR, angle=math.radians(-90))
@@ -257,7 +255,7 @@ class SquareDeviation(Scene):
         self.play(trans1)
         self.wait(1)
 
-        vg = VGroup(meA1, meAB1, sC, rAB1, rAB2)
+        vg = VGroup(meA1, meAB1, rAB1, rAB2)
         vg.generate_target()
         vg.target.shift(LEFT*(self.b)/2)
         self.play(MoveToTarget(vg))
