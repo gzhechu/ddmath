@@ -32,8 +32,8 @@ class RollingCircle1(Scene):
         g1.generate_target()
         g1.target.shift(UP*self.r1)
 
-        t1 = TexMobject("{\\Huge R : r = 2 : 1}")
-        t1.shift(UP*self.rr*2+RIGHT*self.rr)
+        t1 = TexMobject("R_1:R_2=2:1}").scale(1.5)
+        t1.shift(UP*self.rr*2+RIGHT*(self.rr-1))
 
         self.play(FadeIn(circler), Write(t1))
         self.wait(1)
@@ -67,6 +67,7 @@ class RollingCircle1(Scene):
         g1.target.shift(UP*(self.rr))
         g1.target.rotate(math.radians(180))
         trans1 = MoveToTarget(g1)
+        # trans2 = Rotate(g1, angle=math.radians(180))
         self.play(trans1)
         self.wait(3)
 
@@ -91,8 +92,8 @@ class RollingCircle1(Scene):
                   run_time=10, rate_func=double_smooth)
         self.wait(2)
 
-        t2 = TexMobject("{\\Huge R : r = 3 : 1}")
-        t2.shift(UP*self.rr*2+RIGHT*self.rr)
+        t2 = TexMobject("R_1:R_2=3:1}").scale(1.5)
+        t2.shift(UP*self.rr*2+RIGHT*(self.rr-1))
 
         circle2 = Circle(radius=self.r2, color=self.color,
                          fill_color=BLUE, fill_opacity=0.5)
@@ -151,8 +152,8 @@ class RollingCircle2(Scene):
         g1 = VGroup(dot1, circle1, arrow1, arc1)
         g1.shift(UP*(self.r2-self.r1))
 
-        t1 = TexMobject("{\\Huge R : r = 3 : 1}")
-        t1.shift(UP*self.r2*2+RIGHT*self.r2)
+        t1 = TexMobject("R_1:R_2=3:1}").scale(1.5)
+        t1.shift(UP*self.r2*2+RIGHT*(self.r2-1))
 
         self.play(FadeIn(circle_r), FadeIn(g1), FadeIn(origin), FadeIn(txtO))
         self.play(Write(t1))
@@ -216,11 +217,13 @@ class RollingCircle2(Scene):
             angle = math.radians(-360 * alpha * (self.r2-self.r1)/self.r1)
             agr = int((360 * alpha * (self.r2-self.r1)/self.r1) % 360)
             agc = "{:.1f}".format((360*alpha*(self.r2-self.r1)/self.r1)/360)
-            # agr = 0
-            # agc = "0"
+            agr = 0
+            agc = "0"
             # print(agr)
-            ta = TexMobject("angle={:d}".format(agr))
-            tb = TexMobject("round={:s}".format(agc))
+            ta = TextMobject("角度={:d}".format(
+                agr), alignment="\\raggedright").scale(1.5)
+            tb = TextMobject("圈数={:s}".format(
+                agc), alignment="\\raggedright").scale(1.5)
             ta.shift(UP*self.r2*2+LEFT*self.r2)
             tb.next_to(ta, DOWN)
 

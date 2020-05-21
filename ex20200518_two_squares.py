@@ -287,8 +287,8 @@ class Sum2Square(Scene):
         # self.play(FadeIn(origin), FadeIn(txtO))
         # self.wait(1)
 
-        t1 = TexMobject("a^2 + b^2").set_color(BLUE).scale(2)
-        t2 = TexMobject("a^2 + b^2 = (a+b)^2 - 2ab").set_color(BLUE).scale(2)
+        t1 = TexMobject("a^2+b^2").set_color(BLUE).scale(2)
+        t2 = TexMobject("a^2+b^2=(a+b)^2-2ab").set_color(BLUE).scale(2)
         t1.move_to(UP*(self.top+1))
         t2.next_to(t1, DOWN, buff=0.5)
 
@@ -372,7 +372,7 @@ class Sum2Square(Scene):
             return group
 
         self.play(UpdateFromAlphaFunc(g1, update1),
-                  run_time=3, rate_func=double_smooth)
+                  run_time=2, rate_func=smooth)
         self.wait(1)
         self.play(FadeOut(arc1))
         self.wait(1)

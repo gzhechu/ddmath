@@ -32,12 +32,10 @@ class Triangle(Scene):
         self.play(Write(txtA), Write(txtB), Write(txtC))
         self.wait(3)
 
-        eq1 = TexMobject("\measuredangle ABC = \measuredangle EAB")
-        eq2 = TexMobject("\measuredangle ACB = \measuredangle FAC")
-        eq3 = TexMobject(
-            "\measuredangle EAB + \measuredangle FAC + \measuredangle BAC = 180")
-        eq4 = TexMobject(
-            "\measuredangle ABC + \measuredangle ACB + \measuredangle BAC = 180")
+        eq1 = TexMobject("\\angle ABC=\\angle EAB").scale(1.2)
+        eq2 = TexMobject("\\angle ACB=\\angle FAC").scale(1.2)
+        eq3 = TexMobject("\\angle EAB+\\angle FAC+\\angle BAC=180").scale(1.2)
+        eq4 = TexMobject("\\angle ABC+\\angle ACB+\\angle BAC=180").scale(1.2)
         eq1.shift(UP*self.A*4)
         eq2.next_to(eq1, DOWN, buff=0.5)
         eq3.next_to(eq2, DOWN, buff=0.5)
