@@ -65,9 +65,9 @@ class Triangle(Scene):
 
         l = Line(self.A, self.B)
         a1 = l.get_angle()
-        arc1 = Arc(arc_center=self.A, radius=1, color=YELLOW,
+        arc1 = Arc(arc_center=self.A, radius=1, color=YELLOW, stroke_width=15,
                    start_angle=np.deg2rad(180), angle=np.deg2rad(180 + np.rad2deg(a1)))
-        arc2 = Arc(arc_center=self.B, radius=1, color=YELLOW,
+        arc2 = Arc(arc_center=self.B, radius=1, color=YELLOW, stroke_width=15,
                    start_angle=np.deg2rad(0), angle=np.deg2rad(180 + np.rad2deg(a1)))
 
         self.play(trans1)
@@ -87,22 +87,15 @@ class Triangle(Scene):
 
         l = Line(self.A, self.C)
         a2 = l.get_angle()
-        arc1 = Arc(arc_center=self.A, radius=1, color=RED,
+        arc1 = Arc(arc_center=self.A, radius=1, color=RED, stroke_width=15,
                    start_angle=np.deg2rad(0), angle=np.deg2rad(np.rad2deg(a2)))
-        arc2 = Arc(arc_center=self.C, radius=1, color=RED,
+        arc2 = Arc(arc_center=self.C, radius=1, color=RED, stroke_width=15,
                    start_angle=np.deg2rad(180), angle=np.deg2rad(np.rad2deg(a2)))
-
-        arc3 = Arc(arc_center=self.A, radius=0.9, color=RED,
-                   start_angle=np.deg2rad(0), angle=np.deg2rad(np.rad2deg(a2)))
-        arc4 = Arc(arc_center=self.C, radius=0.9, color=RED,
-                   start_angle=np.deg2rad(180), angle=np.deg2rad(np.rad2deg(a2)))
-
         self.play(trans2)
-        self.play(ShowCreation(arc1), ShowCreation(arc2),
-                  ShowCreation(arc3), ShowCreation(arc4), Write(eq2))
+        self.play(ShowCreation(arc1), ShowCreation(arc2), Write(eq2))
         self.wait(1)
 
-        arcx = Arc(arc_center=self.A, radius=1.1, color=BLUE,
+        arcx = Arc(arc_center=self.A, radius=1, color=BLUE,  stroke_width=15,
                    start_angle=np.deg2rad(180), angle=np.deg2rad(180))
         self.play(ShowCreation(arcx), Write(eq3))
         self.wait(2)
