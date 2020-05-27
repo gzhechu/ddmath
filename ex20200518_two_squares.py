@@ -169,8 +169,8 @@ class Diff2Square(Scene):
         # self.play(FadeIn(origin), FadeIn(txtO))
         # self.wait(1)
 
-        t1 = TexMobject("\\Huge a^2 - b^2")
-        t2 = TexMobject("\\Huge a^2 - b^2 = (a+b)*(a-b)")
+        t1 = TexMobject("a^2-b^2").scale(2)
+        t2 = TexMobject("a^2-b^2=(a+b)\\times(a-b)").scale(2)
         t1.move_to(UP*(self.a))
         t2.next_to(t1, DOWN, buff=0.5)
 
@@ -287,8 +287,8 @@ class Sum2Square(Scene):
         # self.play(FadeIn(origin), FadeIn(txtO))
         # self.wait(1)
 
-        t1 = TexMobject("a^2+b^2").set_color(BLUE).scale(2)
-        t2 = TexMobject("a^2+b^2=(a+b)^2-2ab").set_color(BLUE).scale(2)
+        t1 = TexMobject("a^2+b^2").scale(2)
+        t2 = TexMobject("a^2+b^2=(a+b)^2-2ab").scale(2)
         t1.move_to(UP*(self.top+1))
         t2.next_to(t1, DOWN, buff=0.5)
 
@@ -372,14 +372,12 @@ class Sum2Square(Scene):
             return group
 
         self.play(UpdateFromAlphaFunc(g1, update1),
-                  run_time=2, rate_func=smooth)
-        self.wait(1)
+                  run_time=1, rate_func=smooth)
         self.play(FadeOut(arc1))
-        self.wait(1)
 
         sC = Square(side_length=self.a+self.b)
         sC.move_to(DOWN*(self.b)/2)
-        self.play(ShowCreation(sC), FadeOut(l1))
+        self.play(ShowCreation(sC), FadeOut(l1), run_time=3)
         self.wait(1)
         [ptCc, ptCd] = [sC.get_corner(X)for X in [DL, DR]]
 

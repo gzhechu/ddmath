@@ -192,8 +192,9 @@ class RollingCircle1(Scene):
         self.wait(1)
         self.play(FadeIn(g1))
         self.wait(1)
-        rline = Line(ORIGIN, self.r2*UP)
-        self.play(ReplacementTransform(rline, t1))
+        rarrow = Line(ORIGIN, self.rr*UP)
+        self.play(ShowCreation(rarrow))
+        self.play(ReplacementTransform(rarrow, t1))
         self.wait(1)
         self.play(MoveToTarget(g1))
         self.wait(1)
@@ -226,7 +227,7 @@ class RollingCircle1(Scene):
         trans1 = MoveToTarget(g1)
         # trans2 = Rotate(g1, angle=math.radians(180))
         self.play(trans1)
-        self.wait(2)
+        self.wait(3)
 
         def update2(group, alpha):
             angle = math.radians(-360 * alpha)
@@ -247,7 +248,7 @@ class RollingCircle1(Scene):
 
         self.play(UpdateFromAlphaFunc(g1, update2),
                   run_time=10, rate_func=double_smooth)
-        self.wait(3)
+        self.wait(2)
 
         t2 = TexMobject("r_1:r_2=3:1}").scale(1.5)
         t2.shift(UP*self.rr*2+RIGHT*(self.rr-1))
@@ -283,7 +284,7 @@ class RollingCircle1(Scene):
             return group
 
         self.play(UpdateFromAlphaFunc(g1, update3),
-                  run_time=10, rate_func=double_smooth)
+                  run_time=9, rate_func=double_smooth)
         self.wait(5)
 
 
@@ -292,7 +293,7 @@ class RollingCircle2(Scene):
         "color": WHITE,
         "r1": 4.5/3,
         "r2": 4.5,
-        "txt": 6
+        "txt": 3
     }
 
     def construct(self):
@@ -315,6 +316,9 @@ class RollingCircle2(Scene):
 
         t2 = TexMobject("r_3=r_1-r_2").scale(1.5)
         t2.next_to(t1, DOWN, buff=0.5)
+
+        tx3 = TexMobject("r_3:r_2=2:1").scale(1.5)
+        tx3.next_to(t1, DOWN, buff=0.5)
 
         self.play(FadeIn(circle_r), FadeIn(g1), FadeIn(origin), FadeIn(txtO))
         self.play(Write(t1))
@@ -340,12 +344,15 @@ class RollingCircle2(Scene):
             return group
 
         self.play(UpdateFromAlphaFunc(g1, update1),
-                  run_time=10, rate_func=double_smooth)
+                  run_time=9, rate_func=double_smooth)
         self.wait(1)
         radline = Line(ORIGIN, UP*(self.r2-self.r1), color=BLUE)
         self.play(ShowCreation(radline))
         trans1 = ReplacementTransform(radline, t2)
         self.play(trans1)
+        self.wait(1)
+        trans2 = ReplacementTransform(t2, tx3)
+        self.play(trans2)
         self.wait(1)
 
         llen = (self.r2 - self.r1) * PI
@@ -370,8 +377,8 @@ class RollingCircle2(Scene):
         self.play(trans1, trans2)
         self.wait(3)
 
-        meTrack = Measurement(track_line, invert=True, dashed=True, color=BLUE,
-                              buff=1).add_tips().add_tex("2\\pi r_3", buff=-3, color=WHITE)
+        meTrack = Measurement(track_line, invert=True, dashed=True, color=RED,
+                              buff=1).add_tips().add_tex("2\\times\\pi\\times r_3", buff=-3, color=YELLOW)
         self.play(GrowFromCenter(meTrack))
 
         def update2(group, alpha):
@@ -379,89 +386,92 @@ class RollingCircle2(Scene):
             circle = Circle(radius=self.r1, color=self.color,
                             fill_color=BLUE, fill_opacity=0.5)
             circle.shift(UP*llen + DOWN*llen*alpha*2)
-            line = DashedLine(UP*llen, UP*llen + DOWN*llen*alpha*2, color=BLUE)
+            # line = DashedLine(UP*llen, UP*llen + DOWN*llen*alpha*2, color=BLUE)
 
             dx = circle.get_center()
             arrow = Arrow(dx, dx + LEFT*self.r1)
-            dot1 = Dot(dx)
+            dot = Dot(dx)
             angle = math.radians(-360 * alpha * (self.r2-self.r1)/self.r1)
-            # agr = int((360 * alpha * (self.r2-self.r1)/self.r1) % 360)
-            # agc = "{:.1f}".format((360*alpha*(self.r2-self.r1)/self.r1)/360)
+            agr = int((360 * alpha * (self.r2-self.r1)/self.r1) % 360)
+            agc = "{:.1f}".format((360*alpha*(self.r2-self.r1)/self.r1)/360)
             # agr = 0
             # agc = "0"
             # print(agr)
-            # ta = Text("angle={:d}".format(
-            #     agr), font="Hack", alignment="\\raggedright").scale(1.2)
-            # tb = Text("round={:s}".format(
-            #     agc), font="Hack", alignment="\\raggedright").scale(1.2)
-            # ta.shift(UP*self.r2*2+LEFT*self.r2)
-            # tb.next_to(ta, DOWN)
+            ta = TexMobject("angle={:d}".format(
+                agr), alignment="\\raggedright").scale(1.5)
+            tb = TexMobject("round={:s}".format(
+                agc), alignment="\\raggedright").scale(1.5)
+            ta.shift(UP*self.r2*2+LEFT*self.r2)
+            tb.next_to(ta, DOWN, buff=0.5)
 
             arrow.rotate(angle=angle, about_point=dx)
 
-            # ng = VGroup(circle, arrow, dot1, ta, tb, line)
-            ng = VGroup(circle, arrow, dot1, line)
+            ng = VGroup(circle, arrow, dot, ta, tb)
+            # ng = VGroup(circle, arrow, dot)
             group.become(ng)
             return group
 
+        ta = TexMobject("angle=0", alignment="\\raggedright").scale(1.5)
+        tb = TexMobject("round=0", alignment="\\raggedright").scale(1.5)
+
+        g1 = VGroup(circle1, arrow1, dot1, ta, tb)
         self.play(UpdateFromAlphaFunc(g1, update2),
-                  run_time=10, rate_func=double_smooth)
+                  run_time=6, rate_func=double_smooth)
         self.wait(3)
 
-        # llen = self.r1 * PI
-        # line2 = Line(LEFT*llen, RIGHT*llen)
-        # trans1 = ReplacementTransform(track_line, line2)
-        # circle2 = Circle(radius=self.r1/2, color=BLUE)
-        # circle2.shift(LEFT*llen + UP*self.r1/2)
-        # trans2 = ReplacementTransform(g1, circle2)
+        g1 = VGroup(circle1, arrow1, dot1)
 
-        # self.play(trans1, trans2)
-        # self.wait(3)
-
-        # line3 = DashedLine(LEFT*(llen), LEFT*(llen), color=BLUE)
-        # g1 = VGroup(circle2, line2, line3)
-
-        # def update3(group, alpha):
-        #     # print(alpha)
-        #     start_angle = (-720 * alpha - 90) % 360
-        #     angle = -((start_angle + 90) % 360)
-        #     # print(start_angle, angle)
-
-        #     len = llen * 2 * alpha
-        #     arc1 = Arc(radius=(self.r1)/2, arc_center=(UP*self.r1)/2 + LEFT*(RIGHT*llen-len),
-        #                color=BLUE, start_angle=math.radians(start_angle), angle=math.radians(angle))
-        #     line2 = Line(LEFT*(llen), LEFT*(llen-len), color=BLUE)
-        #     line3 = Line(RIGHT*(llen), LEFT*(llen-len), color=WHITE)
-
-        #     ng = VGroup(arc1, line2, line3)
-        #     group.become(ng)
-        #     return group
-
-        # self.play(UpdateFromAlphaFunc(g1, update3),
-        #           run_time=10, rate_func=double_smooth)
-
-        t2 = TexMobject("r_3=r_1-r_2").scale(1.5)
+        t2 = TexMobject("s=2\\times\\pi\\times r_3").scale(2)
         t2.move_to(UP*(self.txt))
-        t3 = TexMobject("r_3=3\\times r_2-r_2").scale(1.5)
-        t3.move_to(UP*(self.txt))
-        t4 = TexMobject("r_3=2\\times r_2").scale(1.5)
+        t3 = TexMobject("c=2\\times\\pi\\times r_2").scale(2)
+        t3.next_to(t2, DOWN*2)
+        t4 = TexMobject("round=\\frac{s}{c}").scale(2)
         t4.move_to(UP*(self.txt))
-        t4 = TexMobject("C_3=4\\times \\pi \\times r_2").scale(1.5)
-        t4.move_to(UP*(self.txt))
-        t5 = TexMobject("C_2=2\\times \\pi \\times r_2").scale(1.5)
+        t5 = TexMobject("round=\\frac{2\\times\\pi\\times r_3}{2\\times\\pi\\times r_2}").scale(2)
         t5.move_to(UP*(self.txt))
-        trans2 = ReplacementTransform(t2, t3)
-        trans3 = ReplacementTransform(t3, t4)
-        trans4 = ReplacementTransform(t4, t5)
+        t6 = TexMobject("round=\\frac{r_3}{r_2}").scale(2)
+        t6.move_to(UP*(self.txt))
+        t7 = TexMobject("round=2").scale(2)
+        t7.move_to(UP*(self.txt))
 
-        self.play(Write(t2))
+        self.play(ReplacementTransform(track_line, t2), FadeOut(meTrack))
         self.wait(1)
-        self.play(trans2)
+        self.play(ReplacementTransform(g1, t3))
         self.wait(1)
-        self.play(trans3)
+        self.play(FadeOut(t2), FadeOut(t3), Write(t4))
         self.wait(1)
-        self.play(trans4)
-        self.wait(1)
+
+        circle1 = Circle(radius=self.r1, color=self.color,
+                         fill_color=BLUE, fill_opacity=0.5)
+        arrow1 = Arrow(circle1.get_center(), UP*self.r1)
+        arrow2 = Arrow(circle1.get_center(), UP*(self.r2-self.r1))
+        arrow2.move_to(DOWN*(self.r1))
+        dot1 = Dot()
+        arc1 = Circle(radius=self.r2-self.r1, color=BLUE)
+        arc1.move_to(DOWN*(self.r2-self.r1))
+        g2 = VGroup(circle1, arrow1, dot1, arc1, arrow2)
+        g2.move_to(DOWN*3)
+
+        self.play(ReplacementTransform(t4, t5), FadeIn(g2))
+        self.wait(3)
+
+
+        arrow1.generate_target()
+        arrow1.target.move_to(DOWN*0.5+LEFT*(self.r2-2*self.r1)/2)
+        arrow1.target.rotate(-PI/2)
+
+        arrow2.generate_target()
+        arrow2.target.move_to(DOWN*0)
+        arrow2.target.rotate(-PI/2)
+
+        trans1 = MoveToTarget(arrow1)
+        trans2 = MoveToTarget(arrow2)
+
+        self.play(ReplacementTransform(t5, t6), FadeOut(circle1), FadeOut(dot1), FadeOut(arc1), trans1, trans2)
+        self.wait(2)
+
+        self.play(ReplacementTransform(t6, t7))
+
         self.wait(6)
 
 
