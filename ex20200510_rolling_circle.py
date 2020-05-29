@@ -1,162 +1,10 @@
 #!/usr/bin/env python3
 
 from manimlib.imports import *
-# from addons import Measurement
-# import addons
+from manimlib.for_3b1b_videos.pi_creature_animations import Blink
 
 # manim ddmath/ex20200510_rolling_circle.py RollingCircle1 -r1280,720 -pm
-# manim ddmath/ex20200510_rolling_circle.py RollingCircle1 -r1280,720 -pm
-
-
-class Measurement(VGroup):
-    CONFIG = {
-        "color": RED_B,
-        "buff": 0.3,
-        "laterales": 0.3,
-        "invert": False,
-        "dashed_segment_length": 0.09,
-        "dashed": False,
-        "con_flechas": True,
-        "ang_flechas": 30*DEGREES,
-        "tam_flechas": 0.2,
-        "stroke": 2.4
-    }
-
-    def __init__(self, objeto, **kwargs):
-        VGroup.__init__(self, **kwargs)
-        if self.dashed == True:
-            medicion = DashedLine(ORIGIN, objeto.get_length(
-            )*RIGHT, dashed_segment_length=self.dashed_segment_length).set_color(self.color)
-        else:
-            medicion = Line(ORIGIN, objeto.get_length()*RIGHT)
-
-        medicion.set_stroke(None, self.stroke)
-
-        pre_medicion = Line(ORIGIN, self.laterales *
-                            RIGHT).rotate(PI/2).set_stroke(None, self.stroke)
-        pos_medicion = pre_medicion.copy()
-
-        pre_medicion.move_to(medicion.get_start())
-        pos_medicion.move_to(medicion.get_end())
-
-        angulo = objeto.get_angle()
-        matriz_rotacion = rotation_matrix(PI/2, OUT)
-        vector_unitario = objeto.get_unit_vector()
-        direction = np.matmul(matriz_rotacion, vector_unitario)
-        self.direction = direction
-
-        self.add(medicion, pre_medicion, pos_medicion)
-        self.rotate(angulo)
-        self.move_to(objeto)
-
-        if self.invert == True:
-            self.shift(-direction*self.buff)
-        else:
-            self.shift(direction*self.buff)
-        self.set_color(self.color)
-        self.tip_point_index = -np.argmin(self.get_all_points()[-1, :])
-
-    def add_tips(self):
-        line_reference = Line(self[0][0].get_start(), self[0][-1].get_end())
-        vector_unitario = line_reference.get_unit_vector()
-
-        punto_final1 = self[0][-1].get_end()
-        punto_inicial1 = punto_final1-vector_unitario*self.tam_flechas
-
-        punto_inicial2 = self[0][0].get_start()
-        punto_final2 = punto_inicial2+vector_unitario*self.tam_flechas
-
-        lin1_1 = Line(punto_inicial1, punto_final1).set_color(
-            self[0].get_color()).set_stroke(None, self.stroke)
-        lin1_2 = lin1_1.copy()
-        lin2_1 = Line(punto_inicial2, punto_final2).set_color(
-            self[0].get_color()).set_stroke(None, self.stroke)
-        lin2_2 = lin2_1.copy()
-
-        lin1_1.rotate(self.ang_flechas, about_point=punto_final1,
-                      about_edge=punto_final1)
-        lin1_2.rotate(-self.ang_flechas, about_point=punto_final1,
-                      about_edge=punto_final1)
-
-        lin2_1.rotate(self.ang_flechas, about_point=punto_inicial2,
-                      about_edge=punto_inicial2)
-        lin2_2.rotate(-self.ang_flechas, about_point=punto_inicial2,
-                      about_edge=punto_inicial2)
-
-        return self.add(lin1_1, lin1_2, lin2_1, lin2_2)
-
-    def add_tex(self, texto, scale=1, buff=0.1, **moreargs):
-        line_reference = Line(self[0][0].get_start(), self[0][-1].get_end())
-        texto = TexMobject(texto, **moreargs)
-        width = texto.get_height()/2
-        texto.rotate(line_reference.get_angle()).scale(scale).move_to(self)
-        texto.shift(self.direction*(buff+1)*width)
-        return self.add(texto)
-
-    def add_text(self, text, scale=1, buff=0.1, **moreargs):
-        line_reference = Line(self[0][0].get_start(), self[0][-1].get_end())
-        texto = TextMobject(text, **moreargs)
-        width = texto.get_height()/2
-        texto.rotate(line_reference.get_angle()).scale(scale).move_to(self)
-        texto.shift(self.direction*(buff+1)*width)
-        return self.add(texto)
-
-    def add_size(self, texto, scale=1, buff=0.1, **moreargs):
-        line_reference = Line(self[0][0].get_start(), self[0][-1].get_end())
-        texto = TextMobject(texto, **moreargs)
-        width = texto.get_height()/2
-        texto.rotate(line_reference.get_angle())
-        texto.shift(self.direction*(buff+1)*width)
-        return self.add(texto)
-
-    def add_letter(self, texto, scale=1, buff=0.1, **moreargs):
-        line_reference = Line(self[0][0].get_start(), self[0][-1].get_end())
-        texto = TexMobject(texto, **moreargs).scale(scale).move_to(self)
-        width = texto.get_height()/2
-        texto.shift(self.direction*(buff+1)*width)
-        return self.add(texto)
-
-    def get_text(self, text, scale=1, buff=0.1, invert_dir=False, invert_texto=False, elim_rot=False, **moreargs):
-        line_reference = Line(self[0][0].get_start(), self[0][-1].get_end())
-        texto = TextMobject(text, **moreargs)
-        width = texto.get_height()/2
-        if invert_texto:
-            inv = PI
-        else:
-            inv = 0
-        if elim_rot:
-            texto.scale(scale).move_to(self)
-        else:
-            texto.rotate(line_reference.get_angle()
-                         ).scale(scale).move_to(self)
-            texto.rotate(inv)
-        if invert_dir:
-            inv = -1
-        else:
-            inv = 1
-        texto.shift(self.direction*(buff+1)*width*inv)
-        return texto
-
-    def get_tex(self, tex, scale=1, buff=0.1, invert_dir=False, invert_texto=False, elim_rot=False, **moreargs):
-        line_reference = Line(self[0][0].get_start(), self[0][-1].get_end())
-        texto = TexMobject(texto, **moreargs)
-        width = texto.get_height()/2
-        if invert_texto:
-            inv = PI
-        else:
-            inv = 0
-        if elim_rot:
-            texto.scale(scale).move_to(self)
-        else:
-            texto.rotate(line_reference.get_angle()
-                         ).scale(scale).move_to(self)
-            texto.rotate(inv)
-        if invert_dir:
-            inv = -1
-        else:
-            inv = 1
-        texto.shift(self.direction*(buff+1)*width)
-        return texto
+# manim ddmath/ex20200510_rolling_circle.py RollingCircle2 -r1280,720 -pl
 
 
 class RollingCircle1(Scene):
@@ -344,9 +192,9 @@ class RollingCircle2(Scene):
             return group
 
         self.play(UpdateFromAlphaFunc(g1, update1),
-                  run_time=9, rate_func=double_smooth)
+                  run_time=8, rate_func=double_smooth)
         self.wait(1)
-        radline = Line(ORIGIN, UP*(self.r2-self.r1), color=BLUE)
+        radline = Line(ORIGIN, UP*(self.r2-self.r1), color=WHITE)
         self.play(ShowCreation(radline))
         trans1 = ReplacementTransform(radline, t2)
         self.play(trans1)
@@ -376,10 +224,6 @@ class RollingCircle2(Scene):
                         about_point=circle1.get_center())
         self.play(trans1, trans2)
         self.wait(3)
-
-        meTrack = Measurement(track_line, invert=True, dashed=True, color=RED,
-                              buff=1).add_tips().add_tex("2\\times\\pi\\times r_3", buff=-3, color=YELLOW)
-        self.play(GrowFromCenter(meTrack))
 
         def update2(group, alpha):
             angle = math.radians(-360 * alpha)
@@ -413,66 +257,69 @@ class RollingCircle2(Scene):
 
         ta = TexMobject("angle=0", alignment="\\raggedright").scale(1.5)
         tb = TexMobject("round=0", alignment="\\raggedright").scale(1.5)
-
         g1 = VGroup(circle1, arrow1, dot1, ta, tb)
         self.play(UpdateFromAlphaFunc(g1, update2),
-                  run_time=6, rate_func=double_smooth)
-        self.wait(3)
+                  run_time=5, rate_func=double_smooth)
+        self.wait(2)
 
         g1 = VGroup(circle1, arrow1, dot1)
 
+        equl = TexMobject("=").scale(2)
+        equl.move_to(UP*(self.txt))
+        rnd = TexMobject("round").scale(2)
+        rnd.next_to(equl, LEFT)
         t2 = TexMobject("s=2\\times\\pi\\times r_3").scale(2)
-        t2.move_to(UP*(self.txt))
+        t2.move_to(UP*(self.txt+1))
         t3 = TexMobject("c=2\\times\\pi\\times r_2").scale(2)
-        t3.next_to(t2, DOWN*2)
-        t4 = TexMobject("round=\\frac{s}{c}").scale(2)
-        t4.move_to(UP*(self.txt))
-        t5 = TexMobject("round=\\frac{2\\times\\pi\\times r_3}{2\\times\\pi\\times r_2}").scale(2)
-        t5.move_to(UP*(self.txt))
-        t6 = TexMobject("round=\\frac{r_3}{r_2}").scale(2)
-        t6.move_to(UP*(self.txt))
-        t7 = TexMobject("round=2").scale(2)
-        t7.move_to(UP*(self.txt))
+        t3.move_to(UP*(self.txt-1))
+        t4r = TexMobject("\\frac{s}{c}").scale(2)
+        t4r.next_to(equl, RIGHT)
+        t4 = VGroup(rnd, equl, t4r)
 
-        self.play(ReplacementTransform(track_line, t2), FadeOut(meTrack))
+        t5r = TexMobject(
+            "\\frac{2\\times\\pi\\times r_3}{2\\times\\pi\\times r_2}").scale(2)
+        t5r.next_to(equl, RIGHT)
+        t6r = TexMobject("\\frac{r_3}{r_2}").scale(2)
+        t6r.next_to(equl, RIGHT)
+        t7r = TexMobject("2").scale(2)
+        t7r.next_to(equl, RIGHT)
+
+        self.play(ReplacementTransform(track_line, t2))
         self.wait(1)
         self.play(ReplacementTransform(g1, t3))
-        self.wait(1)
-        self.play(FadeOut(t2), FadeOut(t3), Write(t4))
-        self.wait(1)
+        self.wait(2)
+        g2 = VGroup(t2, t3)
 
         circle1 = Circle(radius=self.r1, color=self.color,
                          fill_color=BLUE, fill_opacity=0.5)
         arrow1 = Arrow(circle1.get_center(), UP*self.r1)
-        arrow2 = Arrow(circle1.get_center(), UP*(self.r2-self.r1))
-        arrow2.move_to(DOWN*(self.r1))
         dot1 = Dot()
         arc1 = Circle(radius=self.r2-self.r1, color=BLUE)
         arc1.move_to(DOWN*(self.r2-self.r1))
-        g2 = VGroup(circle1, arrow1, dot1, arc1, arrow2)
-        g2.move_to(DOWN*3)
+        g3 = VGroup(circle1, arrow1, dot1, arc1)
+        g3.move_to(DOWN*3)
 
-        self.play(ReplacementTransform(t4, t5), FadeIn(g2))
+        self.play(ReplacementTransform(g2, t4), FadeIn(g3))
+        self.wait(2)
+        self.play(ReplacementTransform(t4r, t5r))
         self.wait(3)
 
+        arrow2 = Arrow(ORIGIN, UP*(self.r2-self.r1))
+        arrow2.move_to(arc1.get_center()+UP*(self.r2-self.r1)/2)
 
-        arrow1.generate_target()
-        arrow1.target.move_to(DOWN*0.5+LEFT*(self.r2-2*self.r1)/2)
-        arrow1.target.rotate(-PI/2)
+        trans1 = Indicate(arrow1, run_time=1, scale_factor=3)
+        trans2 = Indicate(arrow2, run_time=1, scale_factor=2)
+        trans3 = ShowPassingFlashAround(tx3, run_time=5)
 
-        arrow2.generate_target()
-        arrow2.target.move_to(DOWN*0)
-        arrow2.target.rotate(-PI/2)
+        self.play(ReplacementTransform(t5r, t6r))
+        self.wait(1)
+        self.play(trans2)
+        self.play(trans1)
+        self.wait(1)
 
-        trans1 = MoveToTarget(arrow1)
-        trans2 = MoveToTarget(arrow2)
+        self.play(ReplacementTransform(t6r, t7r), trans3)
 
-        self.play(ReplacementTransform(t5, t6), FadeOut(circle1), FadeOut(dot1), FadeOut(arc1), trans1, trans2)
         self.wait(2)
-
-        self.play(ReplacementTransform(t6, t7))
-
-        self.wait(6)
 
 
 class Test(Scene):
