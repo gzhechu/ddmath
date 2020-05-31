@@ -2,8 +2,7 @@
 
 from manimlib.imports import *
 
-# manim ddmath/ex20200515_triangle.py Triangle -pm
-# manim ddmath/ex20200515_triangle.py Triangle -pm -r1280,720
+# manim ddmath/ex20200515_triangle.py Triangle -r1280,720 -pm
 
 
 class Triangle(Scene):
@@ -30,7 +29,7 @@ class Triangle(Scene):
         txtB.next_to(self.B, DL, buff=0.3)
         txtC.next_to(self.C, DR, buff=0.3)
         self.play(Write(txtA), Write(txtB), Write(txtC))
-        self.wait(3)
+        self.wait(2)
 
         self.parallelLine()
         self.flipAngle()
@@ -38,15 +37,15 @@ class Triangle(Scene):
     def parallelLine(self):
 
         [alpha, beta, gamma] = [TexMobject(X)
-                                for X in ["\\alpha", "\\beta", "\\gamma"]]
+                                for X in ["a", "b", "c"]]
         [alpha1, beta1, gamma1] = [TexMobject(X)
-                                   for X in ["\\alpha_1", "\\beta_1", "\\gamma_1"]]
-        eq1 = TexMobject("\\angle\\beta=\\angle\\beta_1").scale(2)
-        eq2 = TexMobject("\\angle\\gamma=\\angle\\gamma_1").scale(2)
+                                   for X in ["a_1", "b_1", "c_1"]]
+        eq1 = TexMobject("\\angle b=\\angle b_1").scale(2)
+        eq2 = TexMobject("\\angle c=\\angle c_1").scale(2)
         eq3 = TexMobject(
-            "\\angle\\alpha+\\angle\\beta_1+\\angle\\gamma_1=180^\\circ").scale(2)
+            "\\angle a+\\angle b_1+\\angle c_1=180^\\circ").scale(2)
         eq4 = TexMobject(
-            "\\angle\\alpha+\\angle\\beta+\\angle\\gamma=180^\\circ").scale(2)
+            "\\angle a+\\angle b+\\angle c=180^\\circ").scale(2)
         eq1.move_to(UP*self.txt)
         eq2.move_to(UP*self.txt)
         eq3.move_to(UP*self.txt)
@@ -56,29 +55,35 @@ class Triangle(Scene):
         ptF = self.A*UP + self.C*RIGHT
         parallelLine = DashedLine(ptE, ptF)
         self.play(ShowCreation(parallelLine))
-        self.wait(2)
+        self.wait(1)
 
         l = Line(self.A, self.B)
         a1 = l.get_angle()
         l = Line(self.A, self.C)
         a2 = l.get_angle()
 
-        angA1 = Sector(arc_center=self.A, radius=0.8, color=YELLOW, fill_opacity=0.5,
+        self.angA = Sector(arc_center=self.A, outer_radius=1.2, color=BLUE, fill_opacity=0.8,
+                           start_angle=a1, angle=(a2-a1))
+        alpha.next_to(self.angA, DOWN, buff=0.1)
+        self.play(ShowCreation(self.angA), FadeIn(alpha))
+        self.wait(1)
+
+        angA1 = Sector(arc_center=self.A, outer_radius=1.2, color=YELLOW, fill_opacity=0.8,
                        start_angle=PI, angle=PI + a1)
-        self.angB = Sector(arc_center=self.B, radius=0.8, color=YELLOW, fill_opacity=0.5,
+        self.angB = Sector(arc_center=self.B, outer_radius=1.2, color=YELLOW, fill_opacity=0.8,
                            start_angle=0, angle=PI + a1)
 
         beta.next_to(self.angB, RIGHT, buff=0.1)
         beta1.next_to(angA1, LEFT, buff=0.1)
         self.play(ShowCreation(self.angB), FadeIn(beta))
-        self.wait(2)
+        self.wait(1)
         self.play(TransformFromCopy(self.angB, angA1),
                   FadeIn(beta1), Write(eq1))
         self.wait(2)
 
-        angA2 = Sector(arc_center=self.A, radius=0.8, color=RED, fill_opacity=0.5,
+        angA2 = Sector(arc_center=self.A, outer_radius=1.2, color=RED, fill_opacity=0.8,
                        start_angle=0, angle=a2)
-        self.angC = Sector(arc_center=self.C, radius=0.8, color=RED, fill_opacity=0.5,
+        self.angC = Sector(arc_center=self.C, outer_radius=1.2, color=RED, fill_opacity=0.8,
                            start_angle=PI, angle=a2)
 
         gamma.next_to(self.angC, LEFT, buff=0.1)
@@ -89,35 +94,38 @@ class Triangle(Scene):
             gamma1), ReplacementTransform(eq1, eq2))
         self.wait(2)
 
-        self.angA = Sector(arc_center=self.A, radius=0.8, color=BLUE, fill_opacity=0.5,
-                           start_angle=a1, angle=(a2-a1))
-        alpha.next_to(self.angA, DOWN, buff=0.1)
-        self.play(ShowCreation(self.angA), FadeIn(alpha), FadeOut(beta),
-                  FadeOut(gamma), FadeOut(self.angB), FadeOut(self.angC),
-                  ReplacementTransform(eq2, eq3))
-        self.wait(2)
+        self.play(FadeOut(beta),
+                  FadeOut(gamma), FadeOut(self.angB), FadeOut(self.angC))
+        self.wait(1)
+
+        self.remove(eq2)
+        gl = VGroup(beta1, gamma1, alpha.copy())
+        self.remove(alpha)
+        self.play(ReplacementTransform(gl, eq3))
+        self.wait(3)
 
         trans = ReplacementTransform(eq3, eq4)
-        self.play(trans, FadeIn(beta), FadeIn(gamma), FadeOut(beta1), FadeOut(
-            gamma1), ReplacementTransform(angA1, self.angB), ReplacementTransform(angA2, self.angC),)
+        self.play(trans, FadeIn(alpha), FadeIn(beta), FadeIn(gamma), ReplacementTransform(
+            angA1, self.angB), ReplacementTransform(angA2, self.angC),)
         self.wait(3)
         self.play(FadeOut(parallelLine), FadeOut(eq4))
-        self.wait(5)
+        self.wait(2)
 
     def flipAngle(self):
         [alpha1, beta1, gamma1] = [TexMobject(X)
-                                   for X in ["\\alpha_1", "\\beta_1", "\\gamma_1"]]
-        eq1 = TexMobject("\\angle\\alpha=\\angle\\alpha_1").scale(2)
-        eq2 = TexMobject("\\angle\\beta=\\angle\\beta_1").scale(2)
-        # eq3 = TexMobject("\\angle\\gamma=\\angle\\gamma_1").scale(2)
-        eq3 = TexMobject(
-            "\\angle\\alpha_1+\\angle\\beta_1+\\angle\\gamma_1=180^\\circ").scale(2)
+                                   for X in [" a_1", " b_1", " c_1"]]
+        eq1 = TexMobject("\\angle a=\\angle a_1").scale(2)
+        eq2 = TexMobject("\\angle b=\\angle b_1").scale(2)
+        eq3 = TexMobject("\\angle c=\\angle c_1").scale(2)
         eq4 = TexMobject(
-            "\\angle\\alpha+\\angle\\beta+\\angle\\gamma=180^\\circ").scale(2)
+            "\\angle a_1+\\angle b_1+\\angle c_1=180^\\circ").scale(2)
+        eq5 = TexMobject(
+            "\\angle a+\\angle b+\\angle c=180^\\circ").scale(2)
         eq1.move_to(UP*self.txt)
         eq2.move_to(UP*self.txt)
         eq3.move_to(UP*self.txt)
         eq4.move_to(UP*self.txt)
+        eq5.move_to(UP*self.txt)
 
         ptA = self.A*RIGHT + self.B*UP
         # self.add(Dot(ptA))
@@ -129,7 +137,7 @@ class Triangle(Scene):
         ptC1 = self.C*UP + ptF*RIGHT
 
         t1 = Polygon(self.A, ptE, ptF, color=BLUE,
-                     stroke_opacity=0, fill_opacity=0.2)
+                     stroke_opacity=0, fill_opacity=0.3)
         self.play(ShowCreation(t1, run_time=2))
         g1 = VGroup(t1, self.angA)
         rotate1 = Rotate(g1, angle=PI, axis=RIGHT, about_point=ptE, run_time=2)
@@ -140,7 +148,7 @@ class Triangle(Scene):
         self.wait(1)
 
         t2 = Polygon(self.B, ptB1, ptE, color=YELLOW,
-                     stroke_opacity=0, fill_opacity=0.2)
+                     stroke_opacity=0, fill_opacity=0.3)
         self.play(ShowCreation(t2, run_time=2))
         g2 = VGroup(t2, self.angB)
         rotate2 = Rotate(g2, angle=PI, axis=UP, about_point=ptE, run_time=2)
@@ -151,7 +159,7 @@ class Triangle(Scene):
         self.wait(1)
 
         t3 = Polygon(self.C, ptC1, ptF, color=RED,
-                     stroke_opacity=0, fill_opacity=0.2)
+                     stroke_opacity=0, fill_opacity=0.3)
         self.play(ShowCreation(t3, run_time=2))
         g3 = VGroup(t3, self.angC)
         rotate3 = Rotate(g3, angle=PI, axis=UP, about_point=ptF, run_time=2)
@@ -161,10 +169,14 @@ class Triangle(Scene):
         self.add(gamma1)
         self.wait(1)
 
-        self.remove(alpha1, beta1, gamma1)
+        self.remove(eq3)
+        gl = VGroup(alpha1, beta1, gamma1)
+        self.play(ReplacementTransform(gl, eq4))
+        self.wait(3)
+
         rotate1 = Rotate(g1, angle=PI, axis=RIGHT, about_point=ptE, run_time=2)
         rotate2 = Rotate(g2, angle=PI, axis=UP, about_point=ptE, run_time=2)
         rotate3 = Rotate(g3, angle=PI, axis=UP, about_point=ptF, run_time=2)
-        self.play(rotate1, rotate2, rotate3, ReplacementTransform(eq3, eq4))
+        self.play(rotate1, rotate2, rotate3, ReplacementTransform(eq4, eq5))
         self.remove(t1, t2, t3)
         self.wait(5)
