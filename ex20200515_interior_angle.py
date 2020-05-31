@@ -2,7 +2,7 @@
 
 from manimlib.imports import *
 
-# manim ddmath/ex20200515_triangle.py Triangle -r1280,720 -pm
+# manim ddmath/ex20200515_interior_angle.py Triangle -r1280,720 -pm
 
 
 class Triangle(Scene):
@@ -39,11 +39,11 @@ class Triangle(Scene):
         [alpha, beta, gamma] = [TexMobject(X)
                                 for X in ["a", "b", "c"]]
         [alpha1, beta1, gamma1] = [TexMobject(X)
-                                   for X in ["a_1", "b_1", "c_1"]]
-        eq1 = TexMobject("\\angle b=\\angle b_1").scale(2)
-        eq2 = TexMobject("\\angle c=\\angle c_1").scale(2)
+                                   for X in ["a'", "b'", "c'"]]
+        eq1 = TexMobject("\\angle b=\\angle b'").scale(2)
+        eq2 = TexMobject("\\angle c=\\angle c'").scale(2)
         eq3 = TexMobject(
-            "\\angle a+\\angle b_1+\\angle c_1=180^\\circ").scale(2)
+            "\\angle a+\\angle b'+\\angle c'=180^\\circ").scale(2)
         eq4 = TexMobject(
             "\\angle a+\\angle b+\\angle c=180^\\circ").scale(2)
         eq1.move_to(UP*self.txt)
@@ -113,12 +113,12 @@ class Triangle(Scene):
 
     def flipAngle(self):
         [alpha1, beta1, gamma1] = [TexMobject(X)
-                                   for X in [" a_1", " b_1", " c_1"]]
-        eq1 = TexMobject("\\angle a=\\angle a_1").scale(2)
-        eq2 = TexMobject("\\angle b=\\angle b_1").scale(2)
-        eq3 = TexMobject("\\angle c=\\angle c_1").scale(2)
+                                   for X in [" a'", " b'", " c'"]]
+        eq1 = TexMobject("\\angle a=\\angle a'").scale(2)
+        eq2 = TexMobject("\\angle b=\\angle b'").scale(2)
+        eq3 = TexMobject("\\angle c=\\angle c'").scale(2)
         eq4 = TexMobject(
-            "\\angle a_1+\\angle b_1+\\angle c_1=180^\\circ").scale(2)
+            "\\angle a'+\\angle b'+\\angle c'=180^\\circ").scale(2)
         eq5 = TexMobject(
             "\\angle a+\\angle b+\\angle c=180^\\circ").scale(2)
         eq1.move_to(UP*self.txt)
