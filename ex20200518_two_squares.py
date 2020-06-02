@@ -2,8 +2,9 @@
 
 from manimlib.imports import *
 
-# manim ex20200518_two_squares.py Diff2Square -pm -r1280,720
-# manim ex20200518_two_squares.py Sum2Square -pm -r1280,720
+# manim ddmath/ex20200518_two_squares.py Diff2Square -pm -r1280,720
+# manim ddmath/ex20200518_two_squares.py Sum2Square -pm -r1280,720
+# manim ddmath/ex20200518_two_squares.py PerfectSquare -r1280,720 -pm
 
 
 class Measurement(VGroup):
@@ -402,6 +403,130 @@ class Sum2Square(Scene):
         mg = VGroup(meA3, meA4, meB3, meB4)
         self.play(Write(t2), *[GrowFromCenter(obj) for obj in [*mg]])
         self.wait(1)
+
+        self.wait(5)
+
+
+class PerfectSquare(Scene):
+    CONFIG = {
+        "a": 5,
+        "b": 2,
+        "top": 6,
+    }
+
+    def construct(self):
+        # origin = Dot()
+        # self.play(FadeIn(origin), FadeIn(txtO))
+        # self.wait(1)
+
+        t1 = TexMobject("a^2+b^2").scale(2)
+        t2 = TexMobject("+2\\times ab").scale(2)
+        t3 = TexMobject("=(a+b)^2").scale(2)
+        t1.move_to(UP*(self.top))
+
+        # self.add(t1, t2)
+
+        [txtA, txtB] = [TexMobject(X) for X in ["a", "b"]]
+
+        lA = Line(LEFT * self.a / 2, RIGHT * self.a / 2, color=BLUE)
+        lA.move_to(UP*self.top)
+        txtA.next_to(lA, LEFT, buff=0.5)
+        lB = Line(LEFT * self.b/2, RIGHT * self.b/2, color=YELLOW)
+        lB.move_to(UP*(self.top-1)+LEFT*(self.a-self.b)/2)
+        txtB.next_to(lB, LEFT, buff=0.5)
+        self.play(ShowCreation(lB), ShowCreation(txtB),
+                  ShowCreation(lA), ShowCreation(txtA))
+        self.wait(1)
+
+        lgA = VGroup(lA, txtA)
+        lgB = VGroup(lB, txtB)
+
+        [txtAs, txtBs] = [TexMobject(X) for X in ["a^2", "b^2"]]
+        sA = Square(side_length=self.a, color=BLUE, fill_opacity=0.3)
+        gA = VGroup(sA, txtAs)
+
+        sB = Square(side_length=self.b, color=YELLOW,  fill_opacity=0.3)
+        gB = VGroup(sB, txtBs)
+        gB.move_to(UP*(self.top))
+        self.play(ReplacementTransform(lgA, gA))
+        self.wait(1)
+        self.play(ReplacementTransform(lgB, gB))
+        self.wait(1)
+
+        # move square b
+        gB.generate_target()
+        gB.target.move_to(DOWN*(self.a+self.b)/2+RIGHT*(self.a+self.b)/2)
+        move1 = MoveToTarget(gB)
+        self.play(move1)
+        vg = VGroup(gA, gB)
+        vg.generate_target()
+        vg.target.shift(LEFT*(self.b)/2)
+        self.play(MoveToTarget(vg))
+        self.wait(1)
+
+        sC = Square(side_length=self.a+self.b)
+        sC.move_to(DOWN*(self.b)/2)
+        self.play(ShowCreation(sC), run_time=3)
+        self.wait(1)
+
+        [ptAa, ptAb, ptAc, ptAd] = [sA.get_corner(X)for X in [UL, UR, DL, DR]]
+        [ptBa, ptBb, ptBc, ptBd] = [sB.get_corner(X)for X in [UL, UR, DL, DR]]
+        [ptCa, ptCb, ptCc, ptCd] = [sC.get_corner(X)for X in [UL, UR, DL, DR]]
+
+        meA1 = Measurement(Line(ptAa, ptAb), invert=True, dashed=True,
+                           buff=-0.5).add_tips().add_tex("a", buff=3, color=WHITE)
+        meA2 = Measurement(Line(ptAa, ptAc), invert=True, dashed=True,
+                           buff=0.5).add_tips().add_tex("a", buff=-4, color=WHITE)
+        meA3 = Measurement(Line(ptBd, ptCb), invert=True, dashed=True,
+                           buff=0.5).add_tips().add_tex("a", buff=-4, color=WHITE)
+        meA4 = Measurement(Line(ptCc, ptBc), invert=True, dashed=True,
+                           buff=0.5).add_tips().add_tex("a", buff=-4, color=WHITE)
+        meB1 = Measurement(Line(ptAb, ptCb), invert=True, dashed=True,
+                           buff=-0.5).add_tips().add_tex("b", buff=2, color=WHITE)
+        meB2 = Measurement(Line(ptAc, ptCc), invert=True, dashed=True,
+                           buff=0.5).add_tips().add_tex("b", buff=-3, color=WHITE)
+        meB3 = Measurement(Line(ptBd, ptBb), invert=True, dashed=True,
+                           buff=0.5).add_tips().add_tex("b", buff=-3, color=WHITE)
+        meB4 = Measurement(Line(ptBc, ptBd), invert=True, dashed=True,
+                           buff=0.5).add_tips().add_tex("b", buff=-3, color=WHITE)
+        mg = VGroup(meA1, meA2, meA3, meA4, meB1, meB2, meB3, meB4)
+        self.play(*[GrowFromCenter(obj)for obj in [*mg]])
+        self.wait(3)
+
+        rAB1 = Rectangle(height=self.b, width=self.a,
+                         color=WHITE,  fill_opacity=0.3)
+        rAB1.move_to(DOWN*(self.a+self.b)/2+LEFT*(self.b)/2)
+        rAB2 = Rectangle(height=self.a, width=self.b,
+                         color=WHITE,  fill_opacity=0.3)
+        rAB2.move_to(RIGHT*(self.a)/2)
+
+        sg0 = VGroup(txtAs, txtBs)
+        sg1 = VGroup(sA.copy(), sB.copy())
+        trans1 = ReplacementTransform(sg1, t1)
+        self.play(FadeOut(sg0), trans1)
+        self.wait(2)
+
+        t2.next_to(t1, RIGHT, buff=0.2)
+        sg2 = VGroup(rAB1, rAB2)
+        trans2 = ReplacementTransform(sg2, t2)
+        self.play(trans2)
+
+        sg1 = VGroup(t1, t2)
+        sg1.generate_target()
+        sg1.target.shift(LEFT*sg1.get_center())
+        move1 = MoveToTarget(sg1)
+        self.play(move1)
+        self.wait(2)
+
+        t3.next_to(t2, RIGHT, buff=0.2)
+        trans3 = ReplacementTransform(sC.copy(), t3)
+        self.play(trans3)
+
+        sg2 = VGroup(t1, t2, t3)
+        sg2.generate_target()
+        sg2.target.shift(LEFT*sg2.get_center())
+        move2 = MoveToTarget(sg2)
+        self.play(move2)
 
         self.wait(5)
 
