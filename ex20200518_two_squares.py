@@ -171,9 +171,8 @@ class Diff2Square(Scene):
         # self.wait(1)
 
         t1 = TexMobject("a^2-b^2").scale(2)
-        t2 = TexMobject("a^2-b^2=(a+b)\\times(a-b)").scale(2)
+        t2 = TexMobject("=(a+b)\\times(a-b)").scale(2)
         t1.move_to(UP*(self.a))
-        t2.next_to(t1, DOWN, buff=0.5)
 
         # self.add(t1, t2)
 
@@ -257,7 +256,7 @@ class Diff2Square(Scene):
         self.play(trans1)
         self.wait(1)
 
-        vg = VGroup(meA1, meAB1, rAB1, rAB2)
+        vg = VGroup(meA1, meAB1, rAB1, rAB2, t1)
         vg.generate_target()
         vg.target.shift(LEFT*(self.b)/2)
         self.play(MoveToTarget(vg))
@@ -270,8 +269,17 @@ class Diff2Square(Scene):
         meB2 = Measurement(Line(ptABc, ptABd), invert=True, dashed=True,
                            buff=0.5).add_tips().add_tex("b", buff=-3, color=WHITE)
         mg = VGroup(meAB2, meB2)
-        self.play(Write(t2), *[GrowFromCenter(obj) for obj in [*mg]])
-        self.wait(1)
+
+        vg = VGroup(rAB1, rAB2)
+        t2.next_to(t1, RIGHT, buff=0.2)
+        trans2 = ReplacementTransform(vg.copy(), t2)
+        self.play(trans2, *[GrowFromCenter(obj) for obj in [*mg]])
+
+        sg2 = VGroup(t1, t2)
+        sg2.generate_target()
+        sg2.target.shift(LEFT*sg2.get_center())
+        move2 = MoveToTarget(sg2)
+        self.play(move2)
 
         self.wait(5)
 

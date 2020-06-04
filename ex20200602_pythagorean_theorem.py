@@ -168,10 +168,25 @@ class ProofOne(Scene):
         # self.play(FadeIn(origin), FadeIn(txtO))
         # self.wait(1)
 
-        # t1 = TexMobject("a^2+b^2").scale(2)
-        # t2 = TexMobject("+2\\times ab").scale(2)
-        # t3 = TexMobject("=(a+b)^2").scale(2)
-        # t1.move_to(UP*(self.top))
+        title = TextMobject("Pythagoras Theorem").scale(2)
+        title.move_to(UP*self.top)
+        t1 = TexMobject("a^2+b^2").scale(2)
+        t2 = TexMobject("c^2").scale(2)
+        t3 = TexMobject("=c^2").scale(2)
+        t5 = TexMobject("(a-b)^2").scale(1.2)
+        equl = TexMobject("=").scale(2)
+        t6 = TexMobject("(a-b)^2").scale(2)
+        t7 = TexMobject("+\\frac{1}{2}ab\\times 4").scale(2)
+        t8 = TexMobject("+2ab").scale(2)
+        t9 = TexMobject("a^2+b^2-2ab").scale(2)
+        t10 = TexMobject("a^2+b^2").scale(2)
+        t1.move_to(UP*(self.top))
+        t2.move_to(DOWN*self.b/2)
+        t5.move_to(DOWN*self.b/2)
+        t6.move_to(UP*self.top)
+        t8.move_to(UP*self.top)
+        t9.move_to(UP*self.top)
+        t10.move_to(UP*self.top)
 
         # self.add(t1, t2)
 
@@ -190,16 +205,14 @@ class ProofOne(Scene):
         lgA = VGroup(lA, txtA)
         lgB = VGroup(lB, txtB)
 
-        [txtAs, txtBs] = [TexMobject(X) for X in ["a^2", "b^2"]]
+        [txtAs, txtBs] = [TexMobject(X).scale(1.5) for X in ["a^2", "b^2"]]
         sA = Square(side_length=self.a, color=BLUE, fill_opacity=0.3)
         gA = VGroup(sA, txtAs)
 
         sB = Square(side_length=self.b, color=YELLOW,  fill_opacity=0.3)
         gB = VGroup(sB, txtBs)
         gB.move_to(UP*(self.top))
-        self.play(ReplacementTransform(lgA, gA))
-        self.wait(1)
-        self.play(ReplacementTransform(lgB, gB))
+        self.play(ReplacementTransform(lgA, gA), ReplacementTransform(lgB, gB))
         self.wait(1)
 
         # move square b
@@ -215,13 +228,21 @@ class ProofOne(Scene):
 
         sC = Square(side_length=self.a+self.b)
         sC.move_to(DOWN*(self.b)/2)
-        self.play(ShowCreation(sC), run_time=3)
-        self.wait(1)
 
         [ptAa, ptAb, ptAc, ptAd] = [sA.get_corner(X)for X in [UL, UR, DL, DR]]
         [ptBa, ptBb, ptBc, ptBd] = [sB.get_corner(X)for X in [UL, UR, DL, DR]]
         [ptCa, ptCb, ptCc, ptCd] = [sC.get_corner(X)for X in [UL, UR, DL, DR]]
         ptRx = ptCb + DOWN * self.b
+
+        ptX1 = ptAa + RIGHT * self.b
+        ptX2 = ptCb + DOWN * self.b
+        ptX3 = ptAa + DOWN * self.b
+        ptX4 = ptCc + RIGHT * self.b
+        polyX1 = Polygon(ptX1, ptX2, ptBc, ptAc, color=BLUE,
+                         stroke_opacity=0, fill_opacity=0.3)
+
+        polyX2 = Polygon(ptX3, ptX4, ptBb, ptAb, color=BLUE,
+                         stroke_opacity=0, fill_opacity=0.3)
 
         meA1 = Measurement(Line(ptAa, ptAb), invert=True, dashed=True,
                            buff=-0.5).add_tips().add_tex("a", buff=3, color=WHITE)
@@ -240,8 +261,9 @@ class ProofOne(Scene):
         meB4 = Measurement(Line(ptBc, ptBd), invert=True, dashed=True,
                            buff=0.5).add_tips().add_tex("b", buff=-3, color=WHITE)
         mg = VGroup(meA1, meA2, meA3, meA4, meB1, meB2, meB3, meB4)
-        self.play(*[GrowFromCenter(obj)for obj in [*mg]])
-        self.wait(3)
+        self.play(*[GrowFromCenter(obj)
+                    for obj in [*mg]], ShowCreation(sC), run_time=2)
+        self.wait(1)
 
         rAB1 = Rectangle(height=self.b, width=self.a,
                          color=WHITE,  fill_opacity=0.3)
@@ -250,14 +272,20 @@ class ProofOne(Scene):
                          color=WHITE,  fill_opacity=0.3)
         rAB2.move_to(RIGHT*(self.a)/2)
 
-        tR1 = Polygon(ptAc, ptAd, ptBc, color=BLUE, fill_opacity=0.3)
-        tR2 = Polygon(ptAc, ptCc, ptBc, color=BLUE, fill_opacity=0.3)
-        tR3 = Polygon(ptBa, ptAb, ptCb, color=BLUE, fill_opacity=0.3)
-        tR4 = Polygon(ptBa, ptBb, ptCb, color=BLUE, fill_opacity=0.3)
+        sg1 = VGroup(gA, gB, )
+        trans1 = ReplacementTransform(sg1, t1)
+
+        self.play(trans1, FadeIn(rAB1), FadeIn(rAB2))
+        self.wait(1)
+
+        tR1 = Polygon(ptAc, ptAd, ptBc, color=WHITE, fill_opacity=0.3)
+        tR2 = Polygon(ptAc, ptCc, ptBc, color=WHITE, fill_opacity=0.3)
+        tR3 = Polygon(ptBa, ptAb, ptCb, color=WHITE, fill_opacity=0.3)
+        tR4 = Polygon(ptBa, ptBb, ptCb, color=WHITE, fill_opacity=0.3)
 
         g1 = VGroup(tR1, tR2)
         g2 = VGroup(tR3, tR4)
-        self.play(FadeIn(g1), FadeIn(g2), FadeOut(sA), FadeOut(sB))
+        self.play(FadeIn(g1), FadeIn(g2), FadeOut(rAB1), FadeOut(rAB2))
         self.wait(1)
 
         ani1 = Rotate(tR1, angle=PI/2, about_point=ptAc)
@@ -266,20 +294,131 @@ class ProofOne(Scene):
         ani2 = MoveToTarget(g2)
         ani3 = Rotate(tR3, angle=-PI/2, about_point=ptRx)
         self.play(ani1, ani2)
-        self.play(ani3)
-        self.wait(2)
+        self.play(ani3, ShowCreation(t2))
 
-        # ani1 = Rotate(tR1, angle=-PI/2, about_point=ptAc)
-        # g2.generate_target()
-        # g2.target.shift(UP*(self.b))
-        # ani2 = MoveToTarget(g2)
-        # ani3 = Rotate(tR3, angle=PI/2, about_point=ptRx)
-        # self.play(ani1, ani3)
-        # self.play(ani2)
-        # self.wait(1)
-        # g2.generate_target()
-        # g2.target.shift(UP*(self.b))
-        # self.play(MoveToTarget(g2))
+        ani1 = Indicate(polyX1, scale_factor=1.2)
+        self.play(ani1)
+        self.wait(1)
+
+        t3.next_to(t1, RIGHT, buff=0.2)
+        trans2 = ReplacementTransform(t2.copy(), t3)
+        self.play(trans2, FadeOut(t2), FadeOut(polyX1))
+
+        sg1 = VGroup(t1, t3)
+        sg1.generate_target()
+        sg1.target.shift(LEFT*sg1.get_center())
+        move1 = MoveToTarget(sg1)
+        self.play(move1)
+        self.wait(1)
+
+        # restore to 2 square.
+        ani1 = Rotate(tR1, angle=-PI/2, about_point=ptAc)
+        ani2 = Rotate(tR3, angle=PI/2, about_point=ptRx)
+        self.play(ani1, ani2)
+
+        g2.generate_target()
+        g2.target.shift(UP*(self.b))
+        ani3 = MoveToTarget(g2)
+        [txtAs, txtBs] = [TexMobject(X).scale(1.5) for X in ["a^2", "b^2"]]
+        txtAs.move_to(LEFT*(self.b)/2)
+        txtBs.move_to(DOWN*(self.a+self.b)/2+RIGHT*(self.a)/2)
+        trans3 = ReplacementTransform(sg1, title)
+        self.play(ani3, ShowCreation(txtAs), ShowCreation(txtBs), trans3)
+        self.wait(3)
+        self.play(FadeOut(g1), FadeOut(g2), FadeIn(rAB1), FadeIn(rAB2))
+        self.play(FadeOut(title))
+
+        # 赵爽的方法
+        tR1 = Polygon(ptAc, ptAd, ptCc, color=WHITE, fill_opacity=0.3)
+        tR2 = Polygon(ptCc, ptBc, ptAd, color=WHITE, fill_opacity=0.3)
+        tR3 = Polygon(ptAb, ptBb, ptCb, color=WHITE, fill_opacity=0.3)
+        tR4 = Polygon(ptAb, ptBb, ptAd, color=WHITE, fill_opacity=0.3)
+        g1 = VGroup(tR1, tR2)
+        g2 = VGroup(tR3, tR4)
+        g4 = VGroup(tR1, tR2, tR3, tR4)
+        self.play(FadeIn(g1), FadeIn(g2), FadeOut(rAB1), FadeOut(rAB2))
+        self.wait(1)
+
+        # move the meaurement
+        meA2.generate_target()
+        meA2.target.shift(DOWN*(self.b))
+        meB2.generate_target()
+        meB2.target.shift(UP*(self.a))
+        meA4.generate_target()
+        meA4.target.shift(RIGHT*(self.b))
+        meB4.generate_target()
+        meB4.target.shift(LEFT*(self.a))
+        meG = VGroup(meA2, meB2, meA4, meB4)
+
+        tR1.generate_target()
+        tR1.target.shift(RIGHT*(self.b))
+        tR2.generate_target()
+        tR2.target.shift(UP*(self.a))
+        tR3.generate_target()
+        tR3.target.shift(LEFT*(self.a)+DOWN*(self.b))
+        tRs = VGroup(tR1, tR2, tR3)
+        self.play(*[MoveToTarget(obj)
+                    for obj in [*tRs]], *[MoveToTarget(obj)
+                                          for obj in [*meG]],
+                  FadeOut(txtAs), FadeOut(txtBs))
+
+        ani1 = Indicate(polyX2, scale_factor=1.2)
+        self.play(ani1)
+        self.wait(1)
+        self.play(FadeOut(polyX2), FadeIn(t5))
+        self.wait(1)
+
+        self.play(ReplacementTransform(t5, t6))
+        self.wait(1)
+
+        t7.next_to(t6, RIGHT)
+        self.play(ReplacementTransform(g4.copy(), t7))
+
+        sg1 = VGroup(t6, t7)
+        sg1.generate_target()
+        sg1.target.shift(LEFT*sg1.get_center())
+        move1 = MoveToTarget(sg1)
+        self.play(move1)
+        self.wait(1)
+
+        equl.next_to(sg1, RIGHT)
+        t2.next_to(equl, RIGHT)
+        equl = VGroup(equl, t2)
+        self.play(FadeIn(polyX2))
+        trans4 = ReplacementTransform(polyX2, t2)
+        self.play(trans4)
+
+        sg1 = VGroup(equl, t6, t7)
+        sg1.generate_target()
+        sg1.target.shift(LEFT*sg1.get_center())
+        move1 = MoveToTarget(sg1)
+        self.play(move1)
+        self.wait(1)
+
+        ani1 = Indicate(t7, scale_factor=1.2)
+        self.play(ani1)
+        t8.next_to(equl, LEFT)
+        self.play(ReplacementTransform(t7, t8))
+        self.wait(1)
+
+        ani2 = Indicate(t6, scale_factor=1.2)
+        self.play(ani2)
+        t9.next_to(t8, LEFT)
+        self.play(ReplacementTransform(t6, t9))
+        self.wait(1)
+
+        sg1 = VGroup(t8, t9)
+        t10.next_to(equl, LEFT)
+        self.play(ReplacementTransform(sg1, t10))
+
+        sg1 = VGroup(equl, t10)
+        sg1.generate_target()
+        sg1.target.shift(LEFT*sg1.get_center())
+        move1 = MoveToTarget(sg1)
+        self.play(move1)
+
+        ani1 = Indicate(sg1, scale_factor=1.2)
+        self.play(ani1)
         self.wait(5)
 
 
