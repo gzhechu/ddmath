@@ -3,6 +3,7 @@
 from manimlib.imports import *
 
 # manim ddmath/ex20200602_pythagorean_theorem.py ProofOne -r1280,720 -pm
+# manim ddmath/ex20200602_pythagorean_theorem.py ProofTwo -r1280,720 -pm
 
 
 class Measurement(VGroup):
@@ -262,7 +263,7 @@ class ProofOne(Scene):
                            buff=0.5).add_tips().add_tex("b", buff=-3, color=WHITE)
         mg = VGroup(meA1, meA2, meA3, meA4, meB1, meB2, meB3, meB4)
         self.play(*[GrowFromCenter(obj)
-                    for obj in [*mg]], ShowCreation(sC), run_time=2)
+                    for obj in [*mg]], ShowCreation(sC), run_time=1)
         self.wait(1)
 
         rAB1 = Rectangle(height=self.b, width=self.a,
@@ -361,7 +362,7 @@ class ProofOne(Scene):
                     for obj in [*tRs]], *[MoveToTarget(obj)
                                           for obj in [*meG]],
                   FadeOut(txtAs), FadeOut(txtBs))
-
+        self.wait(3)
         ani1 = Indicate(polyX2, scale_factor=1.2)
         self.play(ani1)
         self.wait(1)
@@ -417,8 +418,190 @@ class ProofOne(Scene):
         move1 = MoveToTarget(sg1)
         self.play(move1)
 
-        ani1 = Indicate(sg1, scale_factor=1.2)
-        self.play(ani1)
+        # ani1 = Indicate(sg1, scale_factor=1.2)
+        # self.play(ani1)
+        self.wait(5)
+
+
+class ProofTwo(Scene):
+    CONFIG = {
+        "a": 1.2*3,
+        "b": 1.2*4,
+        "c": 1.2*5,
+        "top": 8,
+    }
+
+    def construct(self):
+        # origin = Dot()
+        # self.play(FadeIn(origin))
+        # self.wait(1)
+
+        [txtA, txtB, txtC] = [TexMobject(X) for X in ["A", "B", "C"]]
+        [txtAs, txtBs, txtCs] = [TexMobject(
+            X).scale(1.5) for X in ["a^2", "b^2", "c^2"]]
+        t1 = TexMobject("a^2+b^2").scale(2.5)
+        t2 = TexMobject("=c^2").scale(2.5)
+        t1.move_to(UP*(self.top))
+
+        ptA = self.a * RIGHT
+        ptB = self.b * UP
+        ptC = ORIGIN
+        l1 = Line(ptA, ptB)
+        ang1 = l1.get_angle()
+        # self.add(l1)
+
+        sqA = Square(side_length=self.a, color=YELLOW, fill_opacity=0.2)
+        sqA.move_to(LEFT*(self.c-self.a)/2+UP*((self.c-self.a)/2+self.a))
+        sqA.rotate(angle=PI-ang1, about_point=sqA.get_corner(DL))
+        sqB = Square(side_length=self.b, color=RED, fill_opacity=0.2)
+        sqB.move_to(RIGHT*(self.c-self.b)/2+UP*((self.c-self.b)/2+self.b))
+        sqB.rotate(angle=PI/2-ang1, about_point=sqB.get_corner(DR))
+        sqC = Square(side_length=self.c, color=BLUE, fill_opacity=0.2)
+        sqG = VGroup(sqA, sqB, sqC, txtAs, txtBs, txtCs)
+        sqG.shift(DOWN*2.5)
+
+        txtAs.move_to(sqA.get_center())
+        txtBs.move_to(sqB.get_center())
+
+        ptA = sqC.get_corner(UL)
+        ptB = sqC.get_corner(UR)
+        ptC = sqA.get_vertices()[2]
+        ptC1 = ptC*RIGHT + sqC.get_bottom()*UP
+        txtA.next_to(ptA, DL, buff=0.3)
+        txtB.next_to(ptB, DR, buff=0.3)
+        txtC.next_to(ptC, UP, buff=0.5)
+        self.add(Dot(ptC), Dot(ptA), Dot(ptB))
+
+        triangle = Polygon(ptA, ptB, ptC, color=WHITE, fill_opacity=0.1)
+        self.play(ShowCreation(triangle))
+        self.wait(1)
+        self.play(Write(txtA), Write(txtB), Write(txtC))
+        self.wait(1)
+        self.play(*[FadeIn(obj) for obj in [*sqG]])
+        self.wait(1)
+
+        sqV = Square(side_length=0.4, color=WHITE, fill_opacity=0)
+        sqV.move_to(ptC1+UR*0.2)
+        dashLine = DashedLine(ptC, ptC1, color=WHITE)
+        verLine = VGroup(dashLine, sqV)
+        self.play(ShowCreation(verLine))
+        self.wait(1)
+
+        sqA1 = sqA.copy()
+        self.add(sqA1)
+        gA = VGroup(sqA1)
+
+        def update1(group, alpha):
+            ang = (PI-ang1)
+            pts = sqA1.get_vertices()
+            x1 = pts[1][0]
+            x2 = ptC[0]
+            X = alpha*(x2-x1)*RIGHT
+            Y = alpha*(x2-x1)*np.tan(ang)*UP
+            shift = X+Y
+
+            pts[0] += shift
+            pts[1] += shift
+            poly = Polygon(*pts, color=WHITE, fill_color=YELLOW,
+                           fill_opacity=0.2)
+            ng = VGroup(poly)
+            group.become(ng)
+            return group
+
+        self.play(UpdateFromAlphaFunc(gA, update1),
+                  run_time=2, rate_func=smooth)
+
+        def update2(group, alpha):
+            pts = sqA1.get_vertices()
+            y1 = pts[2][1]
+            y2 = ptA[1]
+            Y = alpha*(y2-y1)*UP
+            shift = Y
+
+            pts[1] += shift
+            pts[2] += shift
+            poly = Polygon(*pts, color=WHITE, fill_color=YELLOW,
+                           fill_opacity=0.2)
+            ng = VGroup(poly)
+            group.become(ng)
+            return group
+
+        self.play(UpdateFromAlphaFunc(gA, update2),
+                  run_time=2, rate_func=smooth)
+
+        gA.generate_target()
+        gA.target.shift(DOWN*(self.c))
+        move1 = MoveToTarget(gA)
+        self.play(move1, run_time=3)
+        self.wait(1)
+
+        # square B
+        sqB1 = sqB.copy()
+        self.add(sqB1)
+        gB = VGroup(sqB1)
+
+        pts = sqB1.get_vertices()
+        print(pts)
+
+        def update3(group, alpha):
+            ang = (PI-ang1)
+            ang = PI/2-ang1
+            pts = sqB1.get_vertices()
+            x1 = pts[0][0]
+            x2 = ptC[0]
+            X = alpha*(x2-x1)*RIGHT
+            Y = alpha*(x2-x1)*np.tan(ang)*UP
+            shift = X+Y
+
+            pts[0] += shift
+            pts[1] += shift
+            poly = Polygon(*pts, color=WHITE, fill_color=RED,
+                           fill_opacity=0.2)
+            ng = VGroup(poly)
+            group.become(ng)
+            return group
+
+        self.play(UpdateFromAlphaFunc(gB, update3),
+                  run_time=2, rate_func=smooth)
+
+        def update4(group, alpha):
+            pts = sqB1.get_vertices()
+            y1 = pts[3][1]
+            y2 = ptA[1]
+            Y = alpha*(y2-y1)*UP
+            shift = Y
+
+            pts[0] += shift
+            pts[3] += shift
+            poly = Polygon(*pts, color=WHITE, fill_color=RED,
+                           fill_opacity=0.2)
+            ng = VGroup(poly)
+            group.become(ng)
+            return group
+
+        self.play(UpdateFromAlphaFunc(gB, update4),
+                  run_time=2, rate_func=smooth)
+
+        gB.generate_target()
+        gB.target.shift(DOWN*(self.c))
+        move1 = MoveToTarget(gB)
+        self.play(move1, run_time=3)
+
+        self.play(FadeOut(gA), FadeOut(gB), FadeOut(verLine))
+
+        sg1 = VGroup(txtAs, txtBs)
+        self.play(ReplacementTransform(sg1, t1))
+        self.wait(1)
+
+        t2.next_to(t1, RIGHT)
+        self.play(ReplacementTransform(txtCs, t2))
+
+        sg1 = VGroup(t1, t2)
+        sg1.generate_target()
+        sg1.target.shift(LEFT*sg1.get_center())
+        move1 = MoveToTarget(sg1)
+        self.play(move1)
+
         self.wait(5)
 
 

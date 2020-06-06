@@ -17,7 +17,7 @@ class ExteriorAngle(Scene):
         eq1 = TexMobject("\\angle A+\\angle B=180^\\circ").scale(1.2)
         eq2 = TexMobject("\\angle B=\\angle B'").scale(1.2)
         eq1.move_to(UP*(self.txt))
-        eq2.move_to(UP*(self.txt))  
+        eq2.move_to(UP*(self.txt))
 
         sec_colors = [ORANGE, BLUE, RED, GREEN, YELLOW, PINK, PURPLE,
                       TEAL, GRAY, MAROON, GOLD, WHITE]
@@ -65,7 +65,7 @@ class ExteriorAngle(Scene):
                          [-0.2, -2.5, 0], [2.0, -2, 0]])
 
         triangle = Polygon(*pts1, color=WHITE, fill_color=WHITE,
-                       fill_opacity=0.2)
+                           fill_opacity=0.2)
         self.play(ShowCreation(triangle))
         self.wait(3)
 
@@ -86,7 +86,7 @@ class ExteriorAngle(Scene):
 
         # interior angle
         sec1 = Sector(outer_radius=0.8, color=sec_colors[0], fill_opacity=0.8,
-                        start_angle=a1+PI, angle=(PI-a2))
+                      start_angle=a1+PI, angle=(PI-a2))
         sec1.shift(pt)
         self.play(FadeIn(sec1), Write(txtA))
         self.wait(2)
@@ -101,7 +101,7 @@ class ExteriorAngle(Scene):
         self.play(ShowCreation(l2))
         self.wait(2)
         sec2 = Sector(outer_radius=0.8, color=sec_colors[1], fill_opacity=0.8,
-                        start_angle=a1, angle=-a2)
+                      start_angle=a1, angle=-a2)
         sec2.shift(pt)
         self.play(FadeIn(sec2), Write(txtB), Write(eq1))
         self.wait(3)
@@ -110,17 +110,20 @@ class ExteriorAngle(Scene):
         l3.shift(pt)
         l3.rotate(angle=angles[0], about_point=pt)
         sec3 = Sector(outer_radius=0.8, color=sec_colors[1], fill_opacity=0.8,
-                        start_angle=a1-PI, angle=-a2)
+                      start_angle=a1-PI, angle=-a2)
         sec3.shift(pt)
         trans1 = ReplacementTransform(eq1, eq2)
-        self.play(FadeIn(l3), FadeIn(sec3), FadeOut(sec2), FadeIn(txtB1), FadeOut(txtB),trans1)
+        self.play(FadeIn(l3), FadeIn(sec3), FadeOut(sec2),
+                  FadeIn(txtB1), FadeOut(txtB), trans1)
         self.wait(3)
-        self.play(FadeOut(l3), FadeIn(sec2), FadeOut(sec3), FadeIn(txtB), FadeOut(txtB1))
+        self.play(FadeOut(l3), FadeIn(sec2), FadeOut(
+            sec3), FadeIn(txtB), FadeOut(txtB1))
         self.wait(3)
 
         g1 = VGroup(triangle, l1, l2, sec1, sec2)
         poly1 = PolygonWithAngle(pts1)
-        self.play(FadeIn(poly1), FadeOut(g1), FadeOut(txtA), FadeOut(txtB), FadeOut(eq2))
+        self.play(FadeIn(poly1), FadeOut(g1), FadeOut(
+            txtA), FadeOut(txtB), FadeOut(eq2))
         self.wait(3)
 
         def update1(group, alpha):
