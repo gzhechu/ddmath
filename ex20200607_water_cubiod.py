@@ -3,7 +3,7 @@
 from manimlib.imports import *
 
 # manim ddmath/ex20200607_water_cubiod.py WaterCubiod -o WaterCubiod1.mp4 -r1280,720 -pm
-# manim ddmath/ex20200607_water_cubiod.py WaterCubiod -n 25 -o WaterCubiod2.mp4 -r1280,720 -pm
+# manim ddmath/ex20200607_water_cubiod.py WaterCubiod -n 27 -o WaterCubiod2.mp4 -r1280,720 -pm
 
 
 # 长方体
@@ -101,8 +101,9 @@ class WaterCubiod(ThreeDScene):
         cc = VGroup(cbox, cw, csod)
 
         self.set_camera_orientation(phi=70 * DEGREES, theta=30*DEGREES)
-        self.play(FadeIn(cbox))
-        # self.wait(1)
+        # self.play(FadeIn(cbox))
+        self.add(cbox)
+        self.wait(1)
         self.add_fixed_in_frame_mobjects(t1)
         self.play(Write(t1))
 
@@ -248,14 +249,102 @@ class WaterCubiod(ThreeDScene):
         self.begin_ambient_camera_rotation(rate=0.1)
         self.wait(5)
 
+        ###################################################################
         # 第二阶段动画
-
-        gall = VGroup(cc, csodx, cwx)
-        gall.generate_target()
-        gall.target.shift(IN*1)
-        move1 = MoveToTarget(gall)
-        self.play(move1, run_time=2)
+        # 隐藏水痕迹
+        self.remove(csodx, cwx)
         self.wait(3)
+
+        t11 = TexMobject("V=15^2\\times 24").scale(2)
+        t12 = TexMobject("S=60^2-15^2").scale(2)
+        t13 = TexMobject("h=").scale(2)
+        t14 = TexMobject("\\frac{V}{S}").scale(2)
+        t15 = TexMobject("\\frac{15^2\\times 24}{60^2-15^2}").scale(2)
+        t16 = TexMobject("1.6cm").scale(2)
+        t11.move_to(UP*7)
+        t12.move_to(UP*7)
+        t13.move_to(UP*7)
+        t14.next_to(t13, RIGHT)
+
+        # 显示水柱
+        csody = csodx.copy()
+        csody.set_fill(color=BLUE, opacity=0.2)
+        csody.next_to(csod, IN, buff=0)
+
+        self.play(FadeIn(csody), run_time=3)
+        self.wait(3)
+
+        # 水移动到表面的动画
+        cwx.set_fill(color=BLUE, opacity=0.3)
+        # 水流变换
+        trans5 = TransformFromCopy(csody, cwx)
+        self.remove(csody, cwx)
+        self.play(trans4, trans5, run_time=3, rate_func=smooth)
+        self.wait(2)
+
+        trans6 = TransformFromCopy(cwx, csody)
+        self.remove(csody, cwx)
+        self.play(trans2, trans6, run_time=3, rate_func=smooth)
+        self.wait(2)
+
+        self.move_camera(phi=75*DEGREES, run_time=1)
+        self.remove(csody, cwx)
+        self.play(trans4, trans5, run_time=2, rate_func=smooth)
+        self.wait(1)
+        self.remove(csody, cwx)
+        self.play(trans2, trans6, run_time=2, rate_func=smooth)
+        self.move_camera(phi=85*DEGREES, run_time=1)
+        self.wait(1)
+
+        ind2 = Indicate(csody, color=RED, scale_factor=1.0)
+        self.play(ind2)
+        self.play(ind2)
+        # 铁棒下移
+        self.remove(csody, cwx)
+        self.add_fixed_in_frame_mobjects(t11)  # 显示体积
+        self.play(Write(t11), trans4, trans5, run_time=2, rate_func=smooth)
+        self.wait(3)
+
+        self.move_camera(phi=75*DEGREES, run_time=1)
+
+        ind3 = Indicate(cwx, color=RED, scale_factor=1.0)
+        self.play(ind3)
+        self.play(ind3)
+        self.remove(t11)
+        self.add_fixed_in_frame_mobjects(t12)
+        self.play(Write(t12))  # 显示面积
+        self.wait(3)
+
+        self.add_fixed_in_frame_mobjects(t13)
+        self.add_fixed_in_frame_mobjects(t14)
+        self.remove(t12)
+        tg1 = VGroup(t13, t14)
+        tg1.shift(LEFT*tg1.get_center())
+        self.play(Write(t13), Write(t14))  # 高度公式
+        self.wait(3)
+
+        self.add_fixed_in_frame_mobjects(t15)
+        self.remove(t14)
+        t15.next_to(t13, RIGHT)
+        self.play(Write(t15))  # 公式具体数值
+        tg1 = VGroup(t13, t15)
+        tg1.generate_target()
+        tg1.target.shift(LEFT*tg1.get_center())
+        move1 = MoveToTarget(tg1)
+        self.play(move1)
+        self.wait(3)
+
+        self.add_fixed_in_frame_mobjects(t16)
+        self.remove(t15)
+        t16.next_to(t13, RIGHT)
+        self.play(Write(t16))  # 结果
+        tg1 = VGroup(t13, t16)
+        tg1.generate_target()
+        tg1.target.shift(LEFT*tg1.get_center())
+        move1 = MoveToTarget(tg1)
+        self.play(move1)
+        self.wait(6)
+
         self.stop_ambient_camera_rotation()
 
 
