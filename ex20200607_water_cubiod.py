@@ -247,7 +247,7 @@ class WaterCubiod(ThreeDScene):
         # self.wait(1)
         self.move_camera(phi=85*DEGREES, run_time=3)
         self.begin_ambient_camera_rotation(rate=0.1)
-        self.wait(5)
+        self.wait(8)
 
         ###################################################################
         # 第二阶段动画
@@ -313,7 +313,7 @@ class WaterCubiod(ThreeDScene):
         self.remove(t11)
         self.add_fixed_in_frame_mobjects(t12)
         self.play(Write(t12))  # 显示面积
-        self.wait(3)
+        self.wait(5)
 
         self.add_fixed_in_frame_mobjects(t13)
         self.add_fixed_in_frame_mobjects(t14)
@@ -321,7 +321,7 @@ class WaterCubiod(ThreeDScene):
         tg1 = VGroup(t13, t14)
         tg1.shift(LEFT*tg1.get_center())
         self.play(Write(t13), Write(t14))  # 高度公式
-        self.wait(3)
+        self.wait(1)
 
         self.add_fixed_in_frame_mobjects(t15)
         self.remove(t14)
@@ -332,7 +332,7 @@ class WaterCubiod(ThreeDScene):
         tg1.target.shift(LEFT*tg1.get_center())
         move1 = MoveToTarget(tg1)
         self.play(move1)
-        self.wait(3)
+        self.wait(1)
 
         self.add_fixed_in_frame_mobjects(t16)
         self.remove(t15)
@@ -343,7 +343,7 @@ class WaterCubiod(ThreeDScene):
         tg1.target.shift(LEFT*tg1.get_center())
         move1 = MoveToTarget(tg1)
         self.play(move1)
-        self.wait(6)
+        self.wait(8)
 
         self.stop_ambient_camera_rotation()
 
