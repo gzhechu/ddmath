@@ -2,10 +2,11 @@
 
 from manimlib.imports import *
 
-# manim ddmath/md20200614_equal_height.py Triangle -r1280,720 -pm
+# manim ddmath/md20200614_equal_height.py TriangleEqualHeight -r1280,720 -pm
+# manim ddmath/md20200614_equal_height.py EqualHeightEx01 -r1280,720 -pm
 
 
-class Triangle(Scene):
+class TriangleEqualHeight(Scene):
     CONFIG = {
         "color": WHITE,
         "A": np.array([2, 4, 0]),
@@ -27,7 +28,7 @@ class Triangle(Scene):
         t2.move_to(self.txt * UP)
         t3 = TexMobject(
             "\\frac{\\frac{1}{2}\\times a\\times h}{\\frac{1}{2}\\times b\\times h}").scale(2)
-        t3.next_to(t2, RIGHT, buff=0)
+        t3.next_to(t2, RIGHT, buff=0.5)
         t4 = TexMobject(
             "\\frac{a}{b}").scale(2)
 
@@ -48,6 +49,9 @@ class Triangle(Scene):
         txtH.next_to(hLine, RIGHT, buff=0.5)
         self.play(ShowCreation(hLine), Write(txtH), Write(txtA))
         self.wait(1)
+        g0 = VGroup(txtA, txtH)
+        trans1 = TransformFromCopy(g0, t1)
+        self.play(trans1)
 
         ind1 = Indicate(txtA, color=YELLOW, scale_factor=1.5)
         ind2 = Indicate(txtH, color=YELLOW, scale_factor=1.5)
@@ -57,11 +61,7 @@ class Triangle(Scene):
         self.play(ind2)
         self.play(ind2)
 
-        g0 = VGroup(txtA, txtH)
-        trans1 = TransformFromCopy(g0, t1)
-        self.play(trans1)
-
-        self.wait(3)
+        self.wait(1)
         ptE = self.A*UP - self.B*LEFT
         ptF = self.A*UP + self.C*RIGHT
         pLine = DashedLine(ptE, ptF)
@@ -176,3 +176,162 @@ class Triangle(Scene):
         self.play(UpdateFromAlphaFunc(g3, update3),
                   run_time=6, rate_func=there_and_back)
         self.wait(3)
+
+
+class EqualHeightEx01(Scene):
+    CONFIG = {
+        "color": WHITE,
+        "A": np.array([1, 4, 0]),
+        "B": np.array([-4, -2, 0]),
+        "C": np.array([5, -2, 0]),
+        "D": np.array([-1, -2, 0]),
+        "E": np.array([2, -2, 0]),
+        "F": np.array([-1.5, 1, 0]),
+        "txt": 7
+    }
+
+    def construct(self):
+        # origin = Dot()
+        # [txtO] = [TexMobject(X) for X in ["O"]]
+        # txtO.next_to(origin, DR, buff=0.1)
+        # self.play(FadeIn(origin), FadeIn(txtO))
+
+        def indicate(obj, duration=1):
+            ind = Indicate(obj, color=RED, scale_factor=1)
+            self.play(ind, run_time=duration)
+
+        t1 = TextMobject("AF=FB").scale(1.5)
+        t2 = TextMobject("BD=DE=EC").scale(1.5)
+        t3 = TexMobject("S\\bigtriangleup ABC=").scale(1.5)
+        t4 = TexMobject("?").scale(1.5)
+        t5 = TexMobject("36").scale(1.5)
+        t1.move_to(self.txt * UP)
+        t2.next_to(t1, DOWN, buff=0.5)
+        t3.move_to(self.txt * UP)
+        t4.next_to(t3, RIGHT)
+        t5.next_to(t3, RIGHT)
+
+        [ts6a, ts6b, ts12a, ts12b] = [
+            TextMobject(X) for X in ["6", "6", "12", "12"]]
+
+        [txtA, txtB, txtC, txtD, txtE, txtF] = [
+            TextMobject(X) for X in ["A", "B", "C", "D", "E", "F"]]
+        [dotD, dotE, dotF] = [
+            Dot(X) for X in [self.D, self.E, self.F]]
+
+        txtA.next_to(self.A, UP)
+        txtB.next_to(self.B, DL)
+        txtC.next_to(self.C, DR)
+        txtD.next_to(self.D, DOWN)
+        txtE.next_to(self.E, DOWN)
+        txtF.next_to(self.F, UL)
+
+        lAF = Line(self.A, self.F, color=RED, stroke_width=15)
+        lBF = Line(self.B, self.F, color=RED, stroke_width=15)
+        lAE = DashedLine(self.A, self.E, color=RED)
+
+        lBD = Line(self.B, self.D, color=RED, stroke_width=15)
+        lDE = Line(self.D, self.E, color=RED, stroke_width=15)
+        lEC = Line(self.E, self.C, color=RED, stroke_width=15)
+        lBE = Line(self.B, self.E, color=RED, stroke_width=15)
+
+        ts6a.next_to(self.D, UR, buff=0.8)
+        ts6b.next_to(self.D, UL, buff=0.8)
+        ts12a.next_to(self.F, RIGHT, buff=1.5)
+        ts12b.next_to(self.E, UR, buff=1)
+
+        triangle = Polygon(self.A, self.B, self.C,
+                           color=WHITE, fill_opacity=0.3)
+
+        tri1 = Polygon(self.D, self.E, self.F,
+                       color=BLUE, fill_opacity=0.3)
+        tri2 = Polygon(self.B, self.D, self.F,
+                       color=BLUE, fill_opacity=0.3)
+        tri3 = Polygon(self.B, self.E, self.F,
+                       color=GREEN, fill_opacity=0.3)
+        tri4 = Polygon(self.A, self.E, self.F,
+                       color=GREEN, fill_opacity=0.3)
+        tri5 = Polygon(self.A, self.B, self.E,
+                       color=RED, fill_opacity=0.3)
+        tri6 = Polygon(self.A, self.C, self.E,
+                       color=RED, fill_opacity=0.3)
+        self.add(triangle, txtA, txtB, txtC)
+        self.wait(6)
+
+        self.play(Write(txtF), FadeIn(dotF), Write(t1))
+        self.play(GrowFromCenter(lAF), GrowFromCenter(lBF))
+        self.wait(1)
+        self.remove(lAF, lBF)
+        self.wait(1)
+
+        self.play(Write(txtD), Write(txtE), FadeIn(
+            dotD), FadeIn(dotE), Write(t2))
+        self.play(GrowFromCenter(lBD), GrowFromCenter(
+            lDE), GrowFromCenter(lEC))
+        self.wait(1)
+        self.remove(lBD, lDE, lEC)
+
+        self.play(GrowFromCenter(tri1), Write(ts6a), FadeOut(t1), FadeOut(t2))
+        self.wait(1)
+
+        ind1 = Indicate(triangle, color=YELLOW, scale_factor=1)
+        self.play(ind1)
+        self.play(ind1)
+
+        tg = VGroup(t3, t4)
+        trans1 = TransformFromCopy(triangle, tg)
+        self.play(trans1)
+        self.wait(9)
+
+        self.play(ShowCreation(lAE))
+        self.wait(1)
+
+        self.play(GrowFromCenter(lBD), GrowFromCenter(lDE))
+        self.wait(1)
+        self.remove(lBD, lDE)
+
+        ind1 = Indicate(tri1, color=YELLOW, scale_factor=1)
+        ind2 = Indicate(tri2, color=YELLOW, scale_factor=1)
+        self.play(ind2, run_time=0.5)
+        self.play(ind2, run_time=0.5)
+        self.play(ind1, run_time=0.5)
+        self.play(ind1, run_time=0.5)
+        self.wait(1)
+        self.play(Write(ts6b))
+        self.remove(tri2)
+
+        self.play(GrowFromCenter(lAF), GrowFromCenter(lBF))
+        self.wait(1)
+        self.remove(lAF, lBF)
+
+        ind1 = Indicate(tri3, color=YELLOW, scale_factor=1)
+        ind2 = Indicate(tri4, color=YELLOW, scale_factor=1)
+        self.play(ind1, run_time=0.5)
+        self.play(ind1, run_time=0.5)
+        self.play(ind2, run_time=0.5)
+        self.play(ind2, run_time=0.5)
+        self.wait(1)
+        self.play(Write(ts12a))
+        self.remove(tri3, tri4)
+
+        self.play(GrowFromCenter(lBE), GrowFromCenter(lEC))
+        self.wait(1)
+        self.remove(lBE, lEC)
+        self.wait(1)
+
+        ind1 = Indicate(tri5, color=YELLOW, scale_factor=1)
+        ind2 = Indicate(tri6, color=YELLOW, scale_factor=1)
+        self.play(ind1, run_time=0.5)
+        self.play(ind1, run_time=0.5)
+        self.wait(1)
+        self.play(ind2, run_time=0.5)
+        self.play(ind2, run_time=0.5)
+        self.wait(1)
+        self.play(Write(ts12b))
+        self.wait(1)
+        self.play(FadeOut(tri5), FadeOut(tri6))
+
+        tg = VGroup(ts6a.copy(), ts6b, ts12a, ts12b)
+        trans2 = Transform(tg, t5)
+        self.play(FadeOut(t4), trans2)
+        self.wait(5)
