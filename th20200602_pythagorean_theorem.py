@@ -2,8 +2,9 @@
 
 from manimlib.imports import *
 
-# manim ddmath/ex20200602_pythagorean_theorem.py ProofOne -r1280,720 -pm
-# manim ddmath/ex20200602_pythagorean_theorem.py ProofTwo -r1280,720 -pm
+# manim ddmath/th20200602_pythagorean_theorem.py ProofOne -r1280,720 -pm
+# manim ddmath/th20200602_pythagorean_theorem.py ProofTwo -r1280,720 -pm
+# manim ddmath/th20200602_pythagorean_theorem.py ProofThree -r1280,720 -pm
 
 
 class Measurement(VGroup):
@@ -601,6 +602,112 @@ class ProofTwo(Scene):
         sg1.target.shift(LEFT*sg1.get_center())
         move1 = MoveToTarget(sg1)
         self.play(move1)
+
+        self.wait(5)
+
+
+class ProofThree(Scene):
+    CONFIG = {
+        "a": 5,
+        "b": 2,
+        "top": 8,
+    }
+
+    def construct(self):
+        t1 = TexMobject("c^2").scale(2.5)
+        t2 = TexMobject("=a^2+b^2").scale(2.5)
+        t1.move_to(UP*(self.top))
+
+        [txtA, txtB, txtC] = [TexMobject(X) for X in ["a", "b", "c"]]
+
+        lA = Line(LEFT * self.a / 2, RIGHT * self.a / 2, color=WHITE)
+        lB = Line(UP * self.b/2, DOWN * self.b/2, color=WHITE)
+        lB.move_to(RIGHT*(self.a)/2+UP*(self.b)/2)
+        ptA = lA.get_start()
+        ptB = lA.get_end()
+        ptC = lB.get_start()
+        lC = Line(ptA, ptC, color=WHITE)
+        print(ptA, ptB, ptC)
+        tri1 = Polygon(ptA, ptB, ptC, color=WHITE)
+
+        sA = Square(side_length=np.sqrt(np.square(self.a) +
+                                        np.square(self.b)), color=BLUE, fill_opacity=0.3)
+        sA.rotate(angle=np.pi - np.arctan(self.b/self.a)*np.pi)
+        sB = Square(side_length=(self.a-self.b),
+                    color=BLUE, fill_opacity=0.3)
+
+        [ptAc, ptAa, ptAb, ptAd] = sA.get_vertices()
+        print(ptAa, ptAb, ptAc, ptAd)
+        dots = [Dot(X)for X in [ptAa, ptAb, ptAc, ptAd]]
+        [ptBa, ptBb, ptBc, ptBd] = [sB.get_corner(X)for X in [UL, UR, DL, DR]]
+        # [ptCa, ptCb, ptCc, ptCd] = [sC.get_corner(X)for X in [UL, UR, DL, DR]]
+
+        txtA.next_to(lA, DOWN, buff=0.5)
+        txtB.next_to(lB, RIGHT, buff=0.5)
+        txtC.next_to(lA, UP, buff=1.6)
+        txtAs = VGroup(txtA, txtB, txtC)
+        triA = VGroup(tri1, txtAs)
+        self.play(ShowCreation(triA))
+        # self.add(*dots)
+        self.wait(1)
+
+        triA.generate_target()
+        triA.target.shift(DOWN*(self.a+self.b)/2+RIGHT*self.b/2)
+        self.play(MoveToTarget(triA))
+
+        triA = tri1.copy()
+        triB = tri1.copy()
+        triC = tri1.copy()
+        triD = tri1.copy()
+        triA.generate_target()
+        triA.target.rotate(angle=-PI/2, about_point=ptAd)
+        transA = MoveToTarget(triA)
+        triB.generate_target()
+        triB.target.rotate(angle=PI/2, about_point=ptAc)
+        transB = MoveToTarget(triB)
+        triC.generate_target()
+        triC.target.shift(LEFT*self.b+UP*(self.a))
+        transC = MoveToTarget(triC)
+        triD.generate_target()
+        triD.target.rotate(angle=PI, about_point=triD.get_center())
+        transD = MoveToTarget(triD)
+
+        triG = VGroup(triA, triB, triC, triD)
+
+        [txtAs, txtBs, txtCs] = [TexMobject(X).scale(1.5) for X in [
+            "a^2", "b^2", "c^2"]]
+
+        self.play(FadeIn(sA), FadeIn(txtCs))
+        self.wait(1)
+
+        self.play(Transform(txtCs, t1))
+        self.wait(1)
+
+        self.play(transA, transB, transC, transD)
+        self.wait(1)
+
+        self.add(sB)
+        self.remove(sA)
+
+        [X.set_style(stroke_color=BLUE, fill_color=BLUE, fill_opacity=0.3)
+         for X in [*triG]]
+
+        triA.generate_target()
+        triA.target.shift(LEFT*self.a+DOWN*self.b)
+        transA = MoveToTarget(triA)
+        triC.generate_target()
+        triC.target.shift(RIGHT*self.b+DOWN*self.a)
+        transC = MoveToTarget(triC)
+        self.play(transA, transC)
+        self.remove(tri1)
+        self.wait(1)
+
+        sqA = Square(side_length=self.a, color=YELLOW, fill_opacity=0.3)
+        sqB = Square(side_length=self.b, color=RED, fill_opacity=0.3)
+        sqA.shift(LEFT*self.b/2+DOWN*self.b/2)
+        sqB.shift(RIGHT*self.a/2+DOWN*self.a/2)
+        self.play(FadeIn(sqA), FadeIn(sqB), FadeOut(triG))
+        self.remove(sB)
 
         self.wait(5)
 
