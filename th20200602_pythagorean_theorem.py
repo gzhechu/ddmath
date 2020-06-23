@@ -610,15 +610,17 @@ class ProofThree(Scene):
     CONFIG = {
         "a": 5,
         "b": 2,
-        "top": 8,
+        "top": 7,
     }
 
     def construct(self):
         t1 = TexMobject("c^2").scale(2.5)
         t2 = TexMobject("=a^2+b^2").scale(2.5)
         t1.move_to(UP*(self.top))
+        t2.next_to(t1, RIGHT)
 
-        [txtA, txtB, txtC] = [TexMobject(X) for X in ["a", "b", "c"]]
+        [txtA, txtB, txtC] = [TexMobject(X).scale(1.5)
+                              for X in ["a", "b", "c"]]
 
         lA = Line(LEFT * self.a / 2, RIGHT * self.a / 2, color=WHITE)
         lB = Line(UP * self.b/2, DOWN * self.b/2, color=WHITE)
@@ -631,28 +633,38 @@ class ProofThree(Scene):
         tri1 = Polygon(ptA, ptB, ptC, color=WHITE)
 
         sA = Square(side_length=np.sqrt(np.square(self.a) +
-                                        np.square(self.b)), color=BLUE, fill_opacity=0.3)
+                                        np.square(self.b)), color=BLUE, fill_opacity=0.5)
         sA.rotate(angle=np.pi - np.arctan(self.b/self.a)*np.pi)
         sB = Square(side_length=(self.a-self.b),
-                    color=BLUE, fill_opacity=0.3)
+                    color=BLUE, fill_opacity=0.5)
+
+        sqA = Square(side_length=self.a, color=YELLOW, fill_opacity=0.5)
+        sqB = Square(side_length=self.b, color=PINK, fill_opacity=0.5)
+        sqA.shift(LEFT*self.b/2+DOWN*self.b/2)
+        sqB.shift(RIGHT*self.a/2+DOWN*self.a/2)
+
+        txtA.next_to(lA, DOWN, buff=0.5)
+        txtB.next_to(lB, RIGHT, buff=0.5)
+        txtC.next_to(lA, UP, buff=1.6)
+        txtTs = VGroup(txtA, txtB, txtC)
+        triA = VGroup(tri1, txtTs)
+
+        # 整体移动
+        vg = VGroup(sA, sB, sqA, sqB)
+        vg.shift(UP*self.b)
 
         [ptAc, ptAa, ptAb, ptAd] = sA.get_vertices()
         print(ptAa, ptAb, ptAc, ptAd)
         dots = [Dot(X)for X in [ptAa, ptAb, ptAc, ptAd]]
         [ptBa, ptBb, ptBc, ptBd] = [sB.get_corner(X)for X in [UL, UR, DL, DR]]
-        # [ptCa, ptCb, ptCc, ptCd] = [sC.get_corner(X)for X in [UL, UR, DL, DR]]
+        [ptCa, ptCb, ptCc, ptCd] = [sA.get_corner(X)for X in [UL, UR, DL, DR]]
 
-        txtA.next_to(lA, DOWN, buff=0.5)
-        txtB.next_to(lB, RIGHT, buff=0.5)
-        txtC.next_to(lA, UP, buff=1.6)
-        txtAs = VGroup(txtA, txtB, txtC)
-        triA = VGroup(tri1, txtAs)
+        # 三角形
         self.play(ShowCreation(triA))
-        # self.add(*dots)
         self.wait(1)
 
         triA.generate_target()
-        triA.target.shift(DOWN*(self.a+self.b)/2+RIGHT*self.b/2)
+        triA.target.shift(DOWN*(self.a-self.b)/2+RIGHT*self.b/2)
         self.play(MoveToTarget(triA))
 
         triA = tri1.copy()
@@ -674,22 +686,41 @@ class ProofThree(Scene):
 
         triG = VGroup(triA, triB, triC, triD)
 
-        [txtAs, txtBs, txtCs] = [TexMobject(X).scale(1.5) for X in [
+        [txtAs, txtBs, txtCs] = [TexMobject(X).scale(1.8) for X in [
             "a^2", "b^2", "c^2"]]
+        txtAs.move_to(sqA.get_center())
+        txtBs.move_to(sqB.get_center())
 
-        self.play(FadeIn(sA), FadeIn(txtCs))
+        txtCs.move_to(sA.get_center())
+        self.play(FadeIn(sA), Write(txtCs), FadeOut(txtTs))
         self.wait(1)
 
-        self.play(Transform(txtCs, t1))
+        self.play(ReplacementTransform(txtCs, t1))
         self.wait(1)
 
-        self.play(transA, transB, transC, transD)
+        # self.play(transA, transB, transC, transD)
+        self.play(transA)
+        self.play(transB)
+        self.play(transC)
+        self.play(transD)
+        self.play(FadeOut(tri1))
         self.wait(1)
 
-        self.add(sB)
-        self.remove(sA)
+        meA1 = Measurement(Line(ptAa, ptCc), invert=True, dashed=True,
+                           buff=0.5).add_tips().add_tex("a", buff=-3, color=WHITE)
+        meA2 = Measurement(Line(ptAc, ptCd), invert=True, dashed=True,
+                           buff=0.5).add_tips().add_tex("a", buff=-4, color=WHITE)
+        meB1 = Measurement(Line(ptCc, ptAc), invert=True, dashed=True,
+                           buff=0.5).add_tips().add_tex("b", buff=-3, color=WHITE)
+        meB2 = Measurement(Line(ptCd, ptAd), invert=True, dashed=True,
+                           buff=0.5).add_tips().add_tex("b", buff=-4, color=WHITE)
 
-        [X.set_style(stroke_color=BLUE, fill_color=BLUE, fill_opacity=0.3)
+        mgA = VGroup(meA1, meA2, meB1, meB2)
+        self.play(*[GrowFromCenter(obj)
+                    for obj in [*mgA]], run_time=1)
+        self.wait(1)
+
+        [X.set_style(stroke_color=BLUE, fill_color=BLUE, fill_opacity=0.5)
          for X in [*triG]]
 
         triA.generate_target()
@@ -698,17 +729,61 @@ class ProofThree(Scene):
         triC.generate_target()
         triC.target.shift(RIGHT*self.b+DOWN*self.a)
         transC = MoveToTarget(triC)
-        self.play(transA, transC)
-        self.remove(tri1)
+        self.remove(sA)
+        self.add(sB)
+        self.play(transA)
+        self.play(transC)
         self.wait(1)
 
-        sqA = Square(side_length=self.a, color=YELLOW, fill_opacity=0.3)
-        sqB = Square(side_length=self.b, color=RED, fill_opacity=0.3)
-        sqA.shift(LEFT*self.b/2+DOWN*self.b/2)
-        sqB.shift(RIGHT*self.a/2+DOWN*self.a/2)
-        self.play(FadeIn(sqA), FadeIn(sqB), FadeOut(triG))
-        self.remove(sB)
+        # self.play(*[GrowFromCenter(obj)
+        #             for obj in [*mgB]], run_time=1)
+        # self.wait(1)
 
+        meB1.generate_target()
+        meB1.target.shift(RIGHT*self.a)
+        trans1 = MoveToTarget(meB1)
+        meA2.generate_target()
+        meA2.target.shift(LEFT*self.b)
+        trans2 = MoveToTarget(meA2)
+
+        ind1 = Indicate(sqA, scale_factor=1)
+        ind2 = Indicate(sqB, scale_factor=1)
+
+        gABs = VGroup(txtAs, txtBs)
+        self.play(ind1, ind2,  Write(gABs),
+                  trans1, trans2, FadeOut(triG), FadeOut(sB))
+        self.wait(1)
+
+        self.play(ReplacementTransform(gABs, t2))
+        sg1 = VGroup(t1, t2)
+        sg1.generate_target()
+        sg1.target.shift(LEFT*sg1.get_center())
+        move1 = MoveToTarget(sg1)
+        self.play(move1)
+        self.wait(3)
+
+        self.play(FadeOut(sqA), FadeOut(sqB), FadeIn(triG), FadeIn(sB))
+
+        self.wait(1)
+        triA.generate_target()
+        triA.target.shift(RIGHT*self.a+UP*self.b)
+        transA = MoveToTarget(triA)
+        triC.generate_target()
+        triC.target.shift(LEFT*self.b+UP*self.a)
+        transC = MoveToTarget(triC)
+        self.play(transA)
+        self.play(transC)
+
+        ind3 = Indicate(sA, scale_factor=1)
+        self.play(ind3, FadeOut(triG), FadeOut(sB))
+
+        meB1.generate_target()
+        meB1.target.shift(LEFT*self.a)
+        trans1 = MoveToTarget(meB1)
+        meA2.generate_target()
+        meA2.target.shift(RIGHT*self.b)
+        trans2 = MoveToTarget(meA2)
+        self.play(FadeIn(tri1), trans1, trans2)
         self.wait(5)
 
 
