@@ -13,6 +13,7 @@ class ShortestDistance(Scene):
         "B": np.array([5, 8, 0]),
         "P": np.array([-4, 1, 0]),
         "A1": np.array([-5, -2, 0]),
+        "A2": np.array([-5, -5, 0]),
         "river_width": 2,
         "river_length": 20,
         "txt": 7
@@ -34,8 +35,8 @@ class ShortestDistance(Scene):
 
         [txtA, txtB, txtP, txtA1] = [
             TexMobject(X).scale(1.5) for X in ["A", "B", "P", "A'"]]
-        [ptA, ptB, ptP, ptA1] = [Dot(X)
-                                 for X in [self.A, self.B, self.P, self.A1]]
+        [ptA, ptB, ptP, ptA1, ptA2] = [Dot(X)
+                                       for X in [self.A, self.B,  self.P, self.A1, self.A2]]
 
         txtA.next_to(ptA, UP, buff=0.5)
         txtB.next_to(ptB, UP, buff=0.5)
@@ -89,8 +90,22 @@ class ShortestDistance(Scene):
 
         self.play(UpdateFromAlphaFunc(g1, update2),
                   run_time=6, rate_func=smooth)
-        # self.wait(3)
-        self.remove(lineAB, lineH)
+        self.remove(lineAB, lineH, txtA1, ptA1)
         self.wait(3)
 
-        
+        bridge = Rectangle(height=2, width=2)
+        bridge.set_fill(color=YELLOW, opacity=0.5)
+        bridge.shift(LEFT*1.2)
+
+        txtA1.next_to(ptA2, DOWN, buff=0.5)
+        lineAB2 = DashedLine(ptA2, ptB)
+        self.remove(ptA, ptA1, ptP, txtA, txtP,  line1, line2)
+        self.wait(3)
+        ga1 = VGroup(txtA, ptA)
+        ga2 = VGroup(txtA1, ptA2)
+        trans1 = ReplacementTransform(ga1, ga2)
+        self.play(trans1)
+
+        self.play(FadeIn(lineAB2))
+        self.play(FadeIn(bridge))
+        self.wait(3)
