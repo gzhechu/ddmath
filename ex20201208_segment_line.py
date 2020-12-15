@@ -2,12 +2,19 @@
 
 from manimlib.imports import *
 from random import shuffle, randrange
-import sys
-sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-from utils import Measurement
+
+try:
+    import sys
+    sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+    from utils import Measurement
+except:
+    pass
 
 # manim ddmath/ex20201208_segment_line.py SegLine1 -r1280,720 -pm
 # manim ddmath/ex20201208_segment_line.py SegLine1 -r640,360 -pl
+
+# manim ddmath/ex20201208_segment_line.py SegLine2 -r1280,720 -pm
+# manim ddmath/ex20201208_segment_line.py SegLine2 -r640,360 -pl
 
 """
 ffmpeg -i voice.m4a -acodec copy v.aac -y
@@ -175,5 +182,121 @@ F是BD的中点，稍微计算一下可知CF等于X
 
         trans1 = ReplacementTransform(sg4, tx4c)
         self.play(trans1)
+
+        self.wait(5)
+
+
+class SegLine2(Scene):
+    CONFIG = {
+        """
+00 各位好，
+01 今天讲一道我个人觉得很有意思也有代表性的线段计算题
+02 说已知B是AC上一点
+03 M是线段AB的中点
+04 N是线段AC的中点
+05 P是线段AN的中点
+06 Q是线段AM的中点
+07 问：BC比PQ的值
+
+"""
+        "color": WHITE,
+        # A, Q, P, M, N, B,  C
+        # 0, 3, 4, 6, 8, 12, 16
+        "a": [-8*0.8, 1, 0],
+        "b": [4*0.8, 1, 0],
+        "c": [8*0.8, 1, 0],
+        "m": [-2*0.8, 1, 0],
+        "n": [0*0.8, 1, 0],
+        "p": [-4*0.8, 1, 0],
+        "q": [-5*0.8, 1, 0],
+        "txt": 9,
+    }
+
+    def construct(self):
+        lALL = Line(self.a, self.c)
+        lAC = Line(self.a, self.c, stroke_width=15, color=BLUE)
+        lAB = Line(self.a, self.b, stroke_width=15, color=RED)
+        lAM = Line(self.a, self.m, stroke_width=15, color=BLUE)
+        lAN = Line(self.a, self.n, stroke_width=15, color=GREEN)
+        lAP = Line(self.a, self.p, stroke_width=15, color=BLUE)
+        lAQ = Line(self.a, self.q, stroke_width=15, color=GREEN)
+        lPQ = Line(self.p, self.q, stroke_width=15, color=YELLOW)
+        lBC = Line(self.b, self.c, stroke_width=15, color=BLUE)
+
+        tx1 = TexMobject("BC=\\frac{1}{3}AC")
+        tx1.move_to(self.txt * UP)
+        tx1b = TexMobject("=\\frac{1}{4}BD")
+        tx1b.next_to(tx1, RIGHT)
+        tx2 = TexMobject("AE=EC")
+        tx2.next_to(tx1, DOWN, buff=0.5)
+        tx2b = TexMobject(", BF=FD")
+        tx2b.next_to(tx2, RIGHT)
+        tx3 = TexMobject("EF=5")
+        tx3.next_to(tx2, DOWN, buff=0.5)
+
+        [ptA, ptB, ptC, ptM, ptN, ptP, ptQ] = [
+            Dot(X) for X in [self.a, self.b, self.c, self.m, self.n, self.p, self.q]]
+        [txtA, txtB, txtC, txtM, txtN, txtP, txtQ] = [
+            TextMobject(X) for X in ["A", "B", "C", "M", "N", "P", "Q"]]
+
+        txtA.next_to(ptA, DOWN, buff=0.6)
+        txtB.next_to(ptB, DOWN, buff=0.6)
+        txtC.next_to(ptC, DOWN, buff=0.6)
+        txtM.next_to(ptM, DOWN, buff=0.6)
+        txtN.next_to(ptN, DOWN, buff=0.6)
+        txtP.next_to(ptP, DOWN, buff=0.6)
+        txtQ.next_to(ptQ, DOWN, buff=0.6)
+
+        self.play(FadeIn(lALL), FadeIn(ptA), FadeIn(ptC),
+                  FadeIn(txtA), FadeIn(txtC))
+        self.wait(3)
+
+        self.play(FadeIn(ptB), FadeIn(txtB))
+        self.wait(1)
+
+        self.play(GrowFromCenter(lAC), Indicate(ptN), FadeIn(txtN))
+        self.wait(1)
+        self.remove(lAC)
+
+        self.play(GrowFromCenter(lAB), Indicate(ptM), FadeIn(txtM))
+        self.wait(1)
+        self.remove(lAB)
+
+        self.play(GrowFromCenter(lAN), Indicate(ptP), FadeIn(txtP))
+        self.wait(1)
+        self.remove(lAN)
+
+        self.play(GrowFromCenter(lAM), Indicate(ptQ), FadeIn(txtQ))
+        self.wait(1)
+        self.remove(lAM)
+
+        self.play(GrowFromCenter(lBC))
+        self.play(GrowFromCenter(lPQ))
+        self.wait(1)
+
+        # 显示标记
+        meAC = Measurement(lAC, dashed=True, buff=0.5).add_tips().add_tex(
+            "N'", color=WHITE)
+        meAB = Measurement(lAB, dashed=True, buff=1.0).add_tips().add_tex(
+            "M'", color=WHITE)
+        meAN = Measurement(lAN, dashed=True, buff=1.5).add_tips().add_tex(
+            "P'", color=WHITE)
+        meAM = Measurement(lAM, dashed=True, buff=2.0).add_tips().add_tex(
+            "Q'", color=WHITE)
+
+        meAP = Measurement(lAP, dashed=True, buff=-1.5).add_tips().add_tex(
+            "x", color=WHITE)
+        meAQ = Measurement(lAQ, dashed=True, buff=-2.0).add_tips().add_tex(
+            "y", color=WHITE)
+
+        self.play(GrowFromCenter(meAC), run_time=0.25)
+        self.play(GrowFromCenter(meAB), run_time=0.25)
+        self.play(GrowFromCenter(meAN), run_time=0.25)
+        self.play(GrowFromCenter(meAM), run_time=0.25)
+        self.wait(1)
+
+        self.play(GrowFromCenter(meAP), run_time=0.25)
+        self.play(GrowFromCenter(meAQ), run_time=0.25)
+        self.wait(1)
 
         self.wait(5)
