@@ -194,22 +194,25 @@ class SegLine2(Scene):
 04 N是线段AC的中点
 05 P是线段AN的中点
 06 Q是线段AM的中点
-07 问：线段BC比PQ的值
-08 这道题的条件有点多
+07 问：线段BC与PQ的比值
+08 由于这道题的条件有点多
 09 所以画个辅助线帮助记录下各线段的中点
 10 那么，一开始我使用的传统方法
 11 列出线段BC和PQ的长度计算关系
-12 然后找到各个线段中点
+12 然后依据各个线段的中点
 13 通过等长代换，就像这样
-14 算出最后的结果
-15 但这种用线段名置换的计算
-16 很容易在计算过程中笔误导致出错
-17 而且寻找对等关系的过程比较麻烦
-18 所以，还有另一种解题方法
-19 用数轴座标系结合二元一次方程
-20 能够直观、迅速的求解
-21 想知道是怎么做的么？
-23 关注我 下集我会来讲解
+14 一步一步代换来算出结果
+15 视频播放过程中
+16 可以按暂停仔细看下计算过程
+最后消元即可得到答案
+15 但这种计算方法
+16 很容易写错字母导致出错
+17 而且计算过程比较麻烦
+18 所以，我们还想出了另一种方法
+19 用数轴座标系结合二元一次方程来解题
+20 新方法能够比较直观、迅速的求解
+21 由于时间关系这次就不讲了
+23 如果你想知道 请关注我 下集我来讲
 """
         "color": WHITE,
         # A, Q, P, M, N, B,  C
@@ -250,10 +253,10 @@ class SegLine2(Scene):
         tx2e = TexMobject("=\\frac{1}{4}(AC-AB)").scale(1.5)
 
         tx3 = TexMobject("\\frac{BC}{PQ}").scale(1.5)
-        tx3q = TexMobject("=?").scale(1.5)
+        tx3q = TexMobject("=?").scale(2.5)
         tx3a = TexMobject("=\\frac{AC-AB}{\\frac{1}{4}(AC-AB)}").scale(1.5)
         tx3b = TexMobject("=\\frac{1}{\\frac{1}{4}}").scale(1.5)
-        tx3c = TexMobject("=4").scale(1.5)
+        tx3c = TexMobject("=4").scale(2.5)
 
         [ptA, ptB, ptC, ptM, ptN, ptP, ptQ] = [
             Dot(X) for X in [self.a, self.b, self.c, self.m, self.n, self.p, self.q]]
@@ -270,7 +273,7 @@ class SegLine2(Scene):
 
         self.play(FadeIn(lALL), FadeIn(ptA), FadeIn(ptC),
                   FadeIn(txtA), FadeIn(txtC))
-        self.wait(4)
+        self.wait(5)
 
         self.play(FadeIn(ptB), FadeIn(txtB))
         self.wait(1)
@@ -308,13 +311,13 @@ class SegLine2(Scene):
 
 
         # 显示标记
-        meAC = Measurement(lAC, dashed=True, buff=0.5).add_tips().add_tex(
+        meAC = Measurement(lAC, dashed=True, buff=0.8).add_tips().add_tex(
             "N'", color=WHITE)
-        meAB = Measurement(lAB, dashed=True, buff=1.0).add_tips().add_tex(
+        meAB = Measurement(lAB, dashed=True, buff=1.6).add_tips().add_tex(
             "M'", color=WHITE)
-        meAN = Measurement(lAN, dashed=True, buff=1.5).add_tips().add_tex(
+        meAN = Measurement(lAN, dashed=True, buff=2.4).add_tips().add_tex(
             "P'", color=WHITE)
-        meAM = Measurement(lAM, dashed=True, buff=2.0).add_tips().add_tex(
+        meAM = Measurement(lAM, dashed=True, buff=3.2).add_tips().add_tex(
             "Q'", color=WHITE)
 
         self.play(GrowFromCenter(meAC), run_time=0.25)
