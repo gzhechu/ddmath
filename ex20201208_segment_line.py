@@ -16,6 +16,9 @@ except:
 # manim ddmath/ex20201208_segment_line.py SegLine2 -r1280,720 -pm
 # manim ddmath/ex20201208_segment_line.py SegLine2 -r640,360 -pl
 
+# manim ddmath/ex20201208_segment_line.py SegLine2b -r1280,720 -pm
+# manim ddmath/ex20201208_segment_line.py SegLine2b -r640,360 -pl
+
 """
 ffmpeg -i SegLine1.mp4 -i v1.m4a output.mp4 -y
 ffmpeg -i SegLine2.mp4 -i v2.m4a output.mp4 -y
@@ -258,18 +261,12 @@ class SegLine2(Scene):
         tx3b = TexMobject("=\\frac{1}{\\frac{1}{4}}").scale(1.5)
         tx3c = TexMobject("=4").scale(2.5)
 
-        [ptA, ptB, ptC, ptM, ptN, ptP, ptQ] = [
+        pts = [ptA, ptB, ptC, ptM, ptN, ptP, ptQ] = [
             Dot(X) for X in [self.a, self.b, self.c, self.m, self.n, self.p, self.q]]
-        [txtA, txtB, txtC, txtM, txtN, txtP, txtQ] = [
+        txts = [txtA, txtB, txtC, txtM, txtN, txtP, txtQ] = [
             TextMobject(X) for X in ["A", "B", "C", "M", "N", "P", "Q"]]
-
-        txtA.next_to(ptA, DOWN, buff=0.6)
-        txtB.next_to(ptB, DOWN, buff=0.6)
-        txtC.next_to(ptC, DOWN, buff=0.6)
-        txtM.next_to(ptM, DOWN, buff=0.6)
-        txtN.next_to(ptN, DOWN, buff=0.6)
-        txtP.next_to(ptP, DOWN, buff=0.6)
-        txtQ.next_to(ptQ, DOWN, buff=0.6)
+        for x in range(len(pts)):
+            txts[x].next_to(pts[x], DOWN, buff=0.6)
 
         self.play(FadeIn(lALL), FadeIn(ptA), FadeIn(ptC),
                   FadeIn(txtA), FadeIn(txtC))
@@ -308,7 +305,6 @@ class SegLine2(Scene):
         self.play(move3, run_time=0.5)
         self.wait(2)
         self.play(FadeOut(vt3x))
-
 
         # 显示标记
         meAC = Measurement(lAC, dashed=True, buff=0.8).add_tips().add_tex(
@@ -418,7 +414,6 @@ class SegLine2(Scene):
         self.play(move3, run_time=0.5)
         self.wait()
 
-
         tx3b.next_to(tx3, RIGHT)
         self.play(ReplacementTransform(tx3a, tx3b))
         vt3x = VGroup(tx3, tx3b)
@@ -445,4 +440,180 @@ class SegLine2(Scene):
         # self.play(GrowFromCenter(meAQ), run_time=0.25)
         # self.wait(1)
 
+        self.wait(5)
+
+
+class SegLine2b(GraphScene):
+    CONFIG = {
+        """
+00 各位好，
+01 接上一集
+
+"""
+        "color": WHITE,
+        # A, Q, P, M, N, B,  C
+        # 0, 3, 4, 6, 8, 12, 16
+        "a": [-8*0.7, 1, 0],
+        "b": [4*0.7, 1, 0],
+        "c": [8*0.7, 1, 0],
+        "m": [-2*0.7, 1, 0],
+        "n": [0*0.7, 1, 0],
+        "p": [-4*0.7, 1, 0],
+        "q": [-5*0.7, 1, 0],
+        "txt": 9,
+
+        "x_min": 0,
+        "x_max": 16,
+        "x_axis_width": 11.2,
+        # "x_tick_frequency": 2,
+        "x_leftmost_tick": None,  # Change if different from x_min
+        # "x_labeled_nums": [0, 2, 3, 4, 6, 8, 11, 12, 16],
+        "x_axis_label": "",
+        "y_min": 0,
+        "y_max": 1,
+        "y_axis_height": 0,
+        "y_axis_label": "",
+        "axes_color": WHITE,
+        "graph_origin": 1 * UP + 5.6 * LEFT,
+        "exclude_zero_label": False,
+        # "area_opacity": 1,
+        "x_axis_config": {
+            "include_tip": True,
+        }
+    }
+
+    def construct(self):
+        lALL = Line(self.a, self.c)
+        lAC = Line(self.a, self.c, stroke_width=15, color=BLUE)
+        lAB = Line(self.a, self.b, stroke_width=15, color=RED)
+        lAM = Line(self.a, self.m, stroke_width=15, color=BLUE)
+        lAN = Line(self.a, self.n, stroke_width=15, color=GREEN)
+        lNP = Line(self.n, self.p, stroke_width=15, color=BLUE)
+        lMQ = Line(self.m, self.q, stroke_width=15, color=GREEN)
+        lPQ = Line(self.p, self.q, stroke_width=15, color=YELLOW)
+        lBC = Line(self.b, self.c, stroke_width=15, color=BLUE)
+        lMN = Line(self.m, self.n, stroke_width=15, color=RED)
+
+        tx1 = TexMobject("MN").scale(1.5)
+        tx1.move_to(self.txt * UP)
+        tx1a = TexMobject("=|m-n|").scale(1.5)
+        tx1b = TexMobject("=n-m").scale(1.5)
+
+        tx2 = TexMobject("PQ").scale(1.5)
+        tx2.move_to(self.txt * UP)
+        tx2a = TexMobject("=y-x").scale(1.5)
+
+        tx3 = TexMobject("BC").scale(1.5)
+        tx3.next_to(tx2, DOWN, buff=0.8)
+        tx3a = TexMobject("=4y-4x").scale(1.5)
+        tx3b = TexMobject("=4(y-x)").scale(1.5)
+
+        pts = [ptA, ptB, ptC, ptM, ptN, ptP, ptQ] = [
+            Dot(X) for X in [self.a, self.b, self.c, self.m, self.n, self.p, self.q]]
+        txts = [txtA, txtB, txtC, txtM, txtN, txtP, txtQ] = [
+            TextMobject(X) for X in ["A", "B", "C", "M", "N", "P", "Q"]]
+        lbls = [lblA, lblB, lblC, lblM, lblN, lblP, lblQ] = [
+            TextMobject(X) for X in ["0", "4x", "4y", "2x", "2y", "y", "x"]]
+        [lblM1, lblN1] = [TextMobject(X) for X in ["m", "n"]]
+
+        for x in range(len(pts)):
+            txts[x].next_to(pts[x], DOWN, buff=0.6)
+            lbls[x].next_to(pts[x], UP, buff=0.6)
+
+        lblM1.next_to(ptM, UP, buff=0.6)
+        lblN1.next_to(ptN, UP, buff=0.6)
+
+        inits = [lALL, txtA, txtC, ptA, ptC]
+        self.play(*[FadeIn(o)for o in inits])
+        self.wait(3)
+        pts = [ptB, ptM, ptN, ptP, ptQ]
+        self.play(*[FadeIn(o)for o in pts])
+        txts = [txtB, txtM, txtN, txtP, txtQ]
+        self.play(*[FadeIn(o)for o in txts])
+        self.wait(1)
+
+        self.play(FadeOut(lALL))
+        self.setup_axes(animate=True)
+        self.wait(2)
+
+        self.play(FadeIn(lblA))
+        self.play(Indicate(lMN))
+        self.play(FadeIn(lblM1))
+        self.play(FadeIn(lblN1))
+
+        # show line MN
+        self.play(TransformFromCopy(lMN, tx1))
+        tx1a.next_to(tx1, RIGHT)
+        self.play(TransformFromCopy(VGroup(lblM1, lblN1), tx1a))
+
+        vt1x = VGroup(tx1, tx1a)
+        vt1x.generate_target()
+        vt1x.target.shift(LEFT*vt1x.get_center())
+        move1 = MoveToTarget(vt1x)
+        self.play(move1, run_time=0.5)
+        self.wait()
+
+        tx1b.next_to(tx1, RIGHT)
+        self.play(ReplacementTransform(tx1a, tx1b))
+        vt1x = VGroup(tx1, tx1b)
+        vt1x.generate_target()
+        vt1x.target.shift(LEFT*vt1x.get_center())
+        move1 = MoveToTarget(vt1x)
+        self.play(move1, run_time=0.5)
+        self.wait()
+
+        mnos = [lblM1, lblN1, vt1x, lMN]
+        self.play(*[FadeOut(o)for o in mnos])
+
+        self.play(Indicate(lPQ))
+        self.play(FadeIn(lblQ))
+        self.play(FadeIn(lblP))
+
+        # show line PQ
+        self.play(TransformFromCopy(lPQ, tx2))
+        tx2a.next_to(tx2, RIGHT)
+        self.play(TransformFromCopy(VGroup(lblP, lblQ), tx2a))
+        vt2x = VGroup(tx2, tx2a)
+        vt2x.generate_target()
+        vt2x.target.shift(LEFT*vt2x.get_center())
+        move1 = MoveToTarget(vt2x)
+        self.play(move1, run_time=0.5)
+        self.wait()
+
+        self.play(GrowFromCenter(lAM), Indicate(ptQ))
+        self.wait(1)
+        self.play(FadeOut(lAM), Indicate(lblM))
+
+        self.play(GrowFromCenter(lAB), Indicate(ptB))
+        self.wait(1)
+        self.play(FadeOut(lAB), Indicate(lblB))
+        self.wait(2)
+
+        # indicate n, c
+        self.play(FadeIn(lblN))
+        self.wait(1)
+        self.play(FadeIn(lblC))
+        self.wait(1)
+
+        # show line BC
+        self.play(Indicate(lBC))
+        self.play(TransformFromCopy(lBC, tx3))
+        tx3a.next_to(tx3, RIGHT)
+        self.play(TransformFromCopy(VGroup(lblB, lblC), tx3a))
+
+        vt3x = VGroup(tx3, tx3a)
+        vt3x.generate_target()
+        vt3x.target.shift(LEFT*vt3x.get_center())
+        move1 = MoveToTarget(vt3x)
+        self.play(move1, run_time=0.5)
+        self.wait()
+
+        tx3b.next_to(tx3, RIGHT)
+        self.play(ReplacementTransform(tx3a, tx3b))
+        vt3x = VGroup(tx3, tx3b)
+        vt3x.generate_target()
+        vt3x.target.shift(LEFT*vt3x.get_center())
+        move1 = MoveToTarget(vt3x)
+        self.play(move1, run_time=0.5)
+        self.wait()
         self.wait(5)
