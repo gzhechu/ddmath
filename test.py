@@ -155,3 +155,48 @@ class SurfacesAnimation(ThreeDScene):
         self.wait()
         self.play(FadeOut(cylinder))
         self.wait(3)
+
+
+class AnimationGroupExample(Scene):
+    def construct(self):
+        dots = VGroup(*[Dot() for _ in range(10)])
+        dots.arrange(RIGHT, buff=0.8)
+        self.add(dots)
+
+        def dot_func(mob):
+            mob.scale(3)
+            mob.set_color(RED)
+            return mob
+
+        self.play(
+            # Replace AnimationGroup with LaggedStart
+            LaggedStart(
+                *[
+                    ApplyFunction(
+                        dot_func,
+                        dot,
+                        rate_func=there_and_back
+                    )
+                    for dot in dots
+                ]
+            )
+        )
+        self.wait(2)
+
+
+class AnimationGroupExampleFail(Scene):
+    def construct(self):
+        dots = VGroup(*[Dot() for _ in range(10)])
+        dots.arrange(RIGHT, buff=0.8)
+        self.add(dots)
+
+        ag = AnimationGroup(*[Indicate(o, scale_factor=2)
+                              for o in dots], lag_ratio=0.2)
+        # for dot in dots:
+        #     self.play(
+        #         dot.scale,3,
+        #         dot.set_color,RED,
+        #         rate_func=there_and_back
+        #     )
+        self.play(ag, run_time=5)
+        self.wait(2)

@@ -508,12 +508,12 @@ class SegLine2b(GraphScene):
         tx3a = TexMobject("=4y-4x").scale(1.5)
         tx3b = TexMobject("=4(y-x)").scale(1.5)
 
-        pts = [ptA, ptB, ptC, ptM, ptN, ptP, ptQ] = [
-            Dot(X) for X in [self.a, self.b, self.c, self.m, self.n, self.p, self.q]]
-        txts = [txtA, txtB, txtC, txtM, txtN, txtP, txtQ] = [
-            TextMobject(X) for X in ["A", "B", "C", "M", "N", "P", "Q"]]
-        lbls = [lblA, lblB, lblC, lblM, lblN, lblP, lblQ] = [
-            TextMobject(X) for X in ["0", "4x", "4y", "2x", "2y", "y", "x"]]
+        pts = [ptA, ptQ, ptP, ptM, ptN, ptB, ptC] = [
+            Dot(X) for X in [self.a, self.q, self.p, self.m, self.n, self.b, self.c]]
+        txts = [txtA, txtQ, txtP, txtM, txtN, txtB, txtC] = [
+            TextMobject(X) for X in ["A", "Q", "P", "M", "N", "B", "C"]]
+        lbls = [lblA, lblQ, lblP, lblM, lblN, lblB, lblC] = [
+            TextMobject(X) for X in ["0", "x", "y", "2x", "2y", "4x", "4y"]]
         [lblM1, lblN1] = [TextMobject(X) for X in ["m", "n"]]
 
         for x in range(len(pts)):
@@ -528,8 +528,10 @@ class SegLine2b(GraphScene):
         self.wait(3)
         pts = [ptB, ptM, ptN, ptP, ptQ]
         self.play(*[FadeIn(o)for o in pts])
-        txts = [txtB, txtM, txtN, txtP, txtQ]
-        self.play(*[FadeIn(o)for o in txts])
+        txts = [txtQ, txtP, txtM, txtN, txtB]
+        # self.play(*[FadeIn(o)for o in txts])
+        ag = AnimationGroup(*[FadeIn(o) for o in txts], lag_ratio=0.2)
+        self.play(ag, run_time=2)
         self.wait(1)
 
         self.play(FadeOut(lALL))
