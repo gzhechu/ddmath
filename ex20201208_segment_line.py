@@ -22,6 +22,7 @@ except:
 """
 ffmpeg -i SegLine1.mp4 -i v1.m4a output.mp4 -y
 ffmpeg -i SegLine2.mp4 -i v2.m4a output.mp4 -y
+ffmpeg -i SegLine2b.mp4 -i v2b.m4a SegLine2bRelease.mp4 -y
 """
 
 
@@ -447,8 +448,32 @@ class SegLine2b(GraphScene):
     CONFIG = {
         """
 00 各位好，
-01 接上一集
-
+01 接上一集的线段计算题
+02 先补充一个基础知识
+06 想象一下线段AC是一个数轴
+08 数轴上有MN两个点
+09 对应的值为小写m、n
+07 那么线段MN的长度就是mn相减的绝对值
+08 也就是n-m
+09 回到本题，为了方便计算
+11 我们假设A点的值为0
+12 为求线段PQ的长度我们还需要知道
+13 PQ两个点在数轴上的值
+14 假设他们分别为x和y
+14 则PQ的长度就是y-x
+15 再来，由于已知Q是AM的中点
+16 所以M在数轴上的值是Q的两倍为2x
+17 同理可知B的值是4x
+18 也同理N和C的值分别为2y和4y
+19 那么再来计算线段BC的长度
+20 就会得到 4y-4x 对么？
+21 此时BC与PQ的比值就很容易计算了
+22 解这道题的关键是用数轴的思路
+23 以及设置合理的未知数
+23 仔细思考下，
+23 掌握方法后，题目就很简单了
+24 再看一遍视频
+25 你学会了么？
 """
         "color": WHITE,
         # A, Q, P, M, N, B,  C
@@ -525,23 +550,21 @@ class SegLine2b(GraphScene):
 
         inits = [lALL, txtA, txtC, ptA, ptC]
         self.play(*[FadeIn(o)for o in inits])
-        self.wait(3)
         pts = [ptB, ptM, ptN, ptP, ptQ]
-        self.play(*[FadeIn(o)for o in pts])
         txts = [txtQ, txtP, txtM, txtN, txtB]
-        # self.play(*[FadeIn(o)for o in txts])
-        ag = AnimationGroup(*[FadeIn(o) for o in txts], lag_ratio=0.2)
-        self.play(ag, run_time=2)
-        self.wait(1)
+        self.play(*[FadeIn(o)for o in txts], *[FadeIn(o)for o in pts])
+        # self.wait(1)
 
-        self.play(FadeOut(lALL))
+        self.play(*[FadeOut(o) for o in txts], *[FadeOut(o)for o in pts])
+        self.remove((lALL))
         self.setup_axes(animate=True)
-        self.wait(2)
+        inits = [ptM, ptN, txtM, txtN]
+        self.play(*[FadeIn(o) for o in inits], run_time=1)
 
-        self.play(FadeIn(lblA))
-        self.play(Indicate(lMN))
         self.play(FadeIn(lblM1))
         self.play(FadeIn(lblN1))
+        self.play(Indicate(lMN))
+        self.wait(1)
 
         # show line MN
         self.play(TransformFromCopy(lMN, tx1))
@@ -553,7 +576,6 @@ class SegLine2b(GraphScene):
         vt1x.target.shift(LEFT*vt1x.get_center())
         move1 = MoveToTarget(vt1x)
         self.play(move1, run_time=0.5)
-        self.wait()
 
         tx1b.next_to(tx1, RIGHT)
         self.play(ReplacementTransform(tx1a, tx1b))
@@ -565,9 +587,16 @@ class SegLine2b(GraphScene):
         self.wait()
 
         mnos = [lblM1, lblN1, vt1x, lMN]
-        self.play(*[FadeOut(o)for o in mnos])
+        self.play(*[FadeOut(o)for o in mnos], *[FadeIn(o)
+                                                for o in txts], *[FadeIn(o)for o in pts])
+
+        self.play(FadeIn(lblA))
+        self.wait(1)
 
         self.play(Indicate(lPQ))
+        self.play(AnimationGroup(*[Indicate(o, scale_factor=1.5)
+                                   for o in [txtP, txtQ]], lag_ratio=0.5))
+        self.wait(1)
         self.play(FadeIn(lblQ))
         self.play(FadeIn(lblP))
 
@@ -582,19 +611,20 @@ class SegLine2b(GraphScene):
         self.play(move1, run_time=0.5)
         self.wait()
 
-        self.play(GrowFromCenter(lAM), Indicate(ptQ))
+        self.play(GrowFromCenter(lAM), Indicate(txtQ, scale_factor=1.5))
         self.wait(1)
         self.play(FadeOut(lAM), Indicate(lblM))
+        self.wait(3)
 
-        self.play(GrowFromCenter(lAB), Indicate(ptB))
+        self.play(GrowFromCenter(lAB), Indicate(txtM, scale_factor=1.5))
         self.wait(1)
         self.play(FadeOut(lAB), Indicate(lblB))
-        self.wait(2)
+        self.wait(1)
 
         # indicate n, c
+        self.play(GrowFromCenter(lAC), Indicate(txtN, scale_factor=1.5))
         self.play(FadeIn(lblN))
-        self.wait(1)
-        self.play(FadeIn(lblC))
+        self.play(FadeIn(lblC), FadeOut(lAC))
         self.wait(1)
 
         # show line BC
@@ -617,5 +647,12 @@ class SegLine2b(GraphScene):
         vt3x.target.shift(LEFT*vt3x.get_center())
         move1 = MoveToTarget(vt3x)
         self.play(move1, run_time=0.5)
-        self.wait()
-        self.wait(5)
+        self.wait(3)
+
+        self.play(AnimationGroup(*[Indicate(o, scale_factor=2.0)
+                                   for o in lbls], lag_ratio=0.2))
+
+        self.play(AnimationGroup(*[Indicate(o, scale_factor=2.0)
+                                   for o in txts], lag_ratio=0.2))
+
+        self.wait(3)
