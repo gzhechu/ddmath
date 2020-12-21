@@ -20,7 +20,7 @@ except:
 # manim ddmath/ex20201208_segment_line.py SegLine2b -r640,360 -pl
 
 """
-ffmpeg -i SegLine1.mp4 -i v1.m4a output.mp4 -y
+ffmpeg -i SegLine1.mp4 -i v1.m4a SegLine1Release.mp4 -y
 ffmpeg -i SegLine2.mp4 -i v2.m4a output.mp4 -y
 ffmpeg -i SegLine2b.mp4 -i v2b.m4a SegLine2bRelease.mp4 -y
 """
@@ -29,96 +29,94 @@ ffmpeg -i SegLine2b.mp4 -i v2b.m4a SegLine2bRelease.mp4 -y
 class SegLine1(Scene):
     """
 00 各位好，
-01 这是女儿的一道线段题数学作业
-04 如果掌握正确的解题思路
-00 解题的过程还是比较有意思的
-54 说线段AD上有BC两点
-56 BC长度等于AC的三分之一
-同时也等于BD的四分之一
-另外E是AC的中点，F是BD的中点
-已知BC长度是5，问AD的长度？
-那么这道题用一元一次方程解起来简直是切菜一样
-关键是要用已知条件整理出等式关系
-设BC长度是x，则可知：
-AC长度为3x，BD长度是4x
-那么整个AD长度就是6X，注意不是7X啊
-因为E是AC中点，所以EC长度是1.5x
-F是BD的中点，稍微计算一下可知CF等于X
-那么整个EF的长度=EC+CF=2.5X=5
-则X等于2，那么线段AD的长度6X也就知道了
-讲的有点快不知道明白没
-可以重复看一遍整理一下思路
-顺便帮我点个赞吧
-好了 下次再见
+01 今天又来解一道线段计算题
+04 说线段AD上有BC两点
+06 线段BC长度等于AC的三分之一
+07 同时也等于BD的四分之一
+09 点EF分别是线段AC,BD的中点
+13 已知EF长度是5，问AD的长度？
+16 那么依然使用数轴座标
+18 先将A点设为0
+20 关键是找到合理的未知数
+22 由于BC是AC和BD共有的部分，
+25 那很自然假设BC长度为未知数x
+29 则由于BC是AC的三分之一，同时是BD的四分之一
+32 结合A点为0的条件
+35 稍加计算可知点B,C,D的值分别是2x,3x和6x
+40 因为EF分别是是AC，BD的中点
+42 所以EF的值分别是1.5x和4x
+46 已知条件中EF长度为5
+48 则可计算出x等于2，
+50 那么线段AD的长度6x的值也就知道了
+18 讲的有点快不知道明白没
+19 重新看一遍整理一下思路
+20 顺便帮我点个赞吧
+21 好了 下次再见
     """
 
     CONFIG = {
         "color": WHITE,
-        "a": [-3*1.8, 0, 0],
-        "b": [-1*1.8, 0, 0],
-        "c": [-0*1.8, 0, 0],
-        "d": [3*1.8, 0, 0],
-        "e": [-1.5*1.8, 0, 0],
-        "f": [1*1.8, 0, 0],
+        "a": [-6*0.9, 0, 0],
+        "b": [-2*0.9, 0, 0],
+        "c": [-0*0.9, 0, 0],
+        "d": [6*0.9, 0, 0],
+        "e": [-3*0.9, 0, 0],
+        "f": [2*0.9, 0, 0],
         "txt": 9,
     }
 
     def construct(self):
         lAD = Line(self.a, self.d)
-        nlAD = NumberLine(x_min=-3, x_max=3, unit_size=1.8)
+        nlAD = NumberLine(x_min=-6, x_max=6, unit_size=0.9)
         lAC = Line(self.a, self.c, stroke_width=10, color=YELLOW)
-        lBD = Line(self.b, self.d, stroke_width=10, color=RED)
-        lEF = Line(self.e, self.f, stroke_width=10, color=YELLOW)
-        lBC = Line(self.b, self.c, stroke_width=10, color=BLUE)
+        lBD = Line(self.b, self.d, stroke_width=10, color=BLUE)
+        lEF = Line(self.e, self.f, stroke_width=10, color=GREEN)
+        lBC = Line(self.b, self.c, stroke_width=10, color=RED)
 
         # text message
-        tx1 = TexMobject("BC=\\frac{1}{3}AC")
+        tx1 = TexMobject("BC=\\frac{1}{3}AC").scale(1.5)
         tx1.move_to(self.txt * UP)
-        tx1b = TexMobject("=\\frac{1}{4}BD")
+        tx1b = TexMobject("=\\frac{1}{4}BD").scale(1.5)
         tx1b.next_to(tx1, RIGHT)
-        tx2 = TexMobject("AE=EC")
+        tx2 = TexMobject("AE=EC").scale(1.5)
         tx2.next_to(tx1, DOWN, buff=0.5)
-        tx2b = TexMobject(", BF=FD")
+        tx2b = TexMobject(", BF=FD").scale(1.5)
         tx2b.next_to(tx2, RIGHT)
-        tx3 = TexMobject("EF=5")
+        tx3 = TexMobject("EF=5").scale(1.5)
         tx3.next_to(tx2, DOWN, buff=0.5)
-        txX = TexMobject("=x")
+        txX = TexMobject("=x").scale(1.5)
 
         pts = [ptA, ptB, ptC, ptD, ptE, ptF] = [
             Dot(X) for X in [self.a, self.b, self.c, self.d, self.e, self.f]]
         txts = [txtA, txtB, txtC, txtD, txtE, txtF] = [
             TextMobject(X) for X in ["A", "B", "C", "D", "E", "F"]]
         lbls = [lblA, lblB, lblC, lblD, lblE, lblF] = [
-            TextMobject(X) for X in ["0", "2x", "3x", "6x", "1.5x", "4x"]]
+            TexMobject(X) for X in ["0", "2x", "3x", "6x", "1.5x", "4x"]]
         for x in range(len(pts)):
             txts[x].next_to(pts[x], DOWN, buff=0.6)
-            lbls[x].next_to(pts[x], UP, buff=0.6)
+            lbls[x].next_to(pts[x], UP, buff=1)
 
         self.play(FadeIn(lAD), FadeIn(ptA), FadeIn(
             ptD), FadeIn(txtA), FadeIn(txtD))
-        self.wait(5)
+        self.wait(2)
 
-        self.play(FadeIn(ptB), FadeIn(ptC), FadeIn(txtB), FadeIn(txtC))
-        self.play(GrowFromCenter(lBC))
-        self.wait(1)
-
+        gB = VGroup(ptB, txtB)
+        gC = VGroup(ptC, txtC)
+        gD = VGroup(ptD, txtD)
         gE = VGroup(ptE, txtE)
-        gE.set_color(YELLOW)
+        gF = VGroup(ptF, txtF)
+
+        self.play(AnimationGroup(*[Indicate(gB), Indicate(gC)], lag_ratio=0.5))
+        self.play(GrowFromCenter(lBC))
+
         self.play(GrowFromCenter(lAC), run_time=0.5)
         trans1 = TransformFromCopy(lAC, tx1)
         self.play(trans1, run_time=0.5)
         self.remove(lAC)
-        ptA.set_color(YELLOW)
-        ptC.set_color(YELLOW)
-
-        gF = VGroup(ptF, txtF)
-        gF.set_color(RED)
         self.play(GrowFromCenter(lBD), run_time=0.5)
         trans2 = TransformFromCopy(lBD, tx1b)
         self.play(trans2, run_time=0.5)
         self.remove(lBD)
-        ptB.set_color(RED)
-        ptD.set_color(RED)
 
         sg1 = VGroup(tx1, tx1b)
         sg1.generate_target()
@@ -138,10 +136,10 @@ F是BD的中点，稍微计算一下可知CF等于X
         trans1 = TransformFromCopy(gE, tx2)
         trans2 = TransformFromCopy(gF, tx2b)
         self.play(ind1, run_time=0.5)
-        self.play(trans1, run_time=0.5)
+        self.play(trans1, GrowFromCenter(lAC), run_time=0.5)
         self.play(ind2, run_time=0.5)
-        self.play(trans2, run_time=0.5)
-        self.play(move2)
+        self.play(trans2, GrowFromCenter(lBD), run_time=0.5)
+        self.play(move2, FadeOut(lAC), FadeOut(lBD))
 
         # 显示 EF 长度
         meEF = Measurement(lEF, invert=True, dashed=True,
@@ -150,48 +148,95 @@ F是BD的中点，稍微计算一下可知CF等于X
                            buff=-1.2).add_tips().add_tex("?", buff=0.6, color=WHITE)
         meBC = Measurement(lBC, invert=True, dashed=True,
                            buff=-0.5).add_tips().add_tex("x", buff=0.6, color=WHITE)
-        self.play(GrowFromCenter(meEF), FadeIn(tx3))
+
+        trans1 = TransformFromCopy(lEF, tx3)
+        self.play(GrowFromCenter(meEF), trans1)
         self.wait(1)
 
         self.play(GrowFromCenter(meAD))
-        self.wait(5)
 
-        self.play(FadeOut(lAD), FadeOut(meEF), FadeOut(meAD))
-        self.play(Write(nlAD))
-        self.wait()
+        # 绘制数轴
+        self.play(FadeOut(lAD), FadeOut(meEF))
+        self.play(Write(nlAD), FadeOut(meAD))
+        self.play(Indicate(lblA))
+        self.wait(2)
 
+        self.play(AnimationGroup(
+            *[ApplyWave(lBC), ApplyWave(lAC), ApplyWave(lBD)], lag_ratio=0.5))
+        self.remove(lAC, lBD)
+        self.wait(1.5)
+
+        self.play(FadeIn(meBC))
         txX.next_to(sg1, RIGHT)
-        trans1 = TransformFromCopy(lBC, txX)
-        self.play(trans1, FadeIn(meBC))
+        self.play(TransformFromCopy(meBC, txX), run_time=0.5)
         sg1 = VGroup(sg1, txX)
         sg1.generate_target()
         sg1.target.shift(LEFT*sg1.get_center())
         move1 = MoveToTarget(sg1)
         self.play(move1, run_time=0.5)
-        self.play(FadeIn(lblA), FadeIn(lblC))
+
+        self.play(ApplyWave(lBC))
+        self.play(WiggleOutThenIn(lAC, run_time=1))
+        self.remove(lAC)
+        self.play(WiggleOutThenIn(lBD, run_time=1))
+        self.remove(lBD)
+        self.wait()
+        self.play(Indicate(lblA), scale_factor=2)
         self.wait()
 
-        tx4 = TexMobject("AC=3x")
-        tx4.next_to(tx3, DOWN, buff=0.5)
-        tx4b = TexMobject(",BD=4x")
-        tx4b.next_to(tx4, RIGHT)
-        tx4c = TexMobject("AD=6x")
-        tx4c.next_to(tx3, DOWN, buff=0.5)
-        trans1 = TransformFromCopy(lAC, tx4)
-        self.play(trans1)
-        trans2 = TransformFromCopy(lBD, tx4b)
-        self.play(trans2)
+        self.play(Indicate(gB), scale_factor=1.5)
+        self.play(Indicate(gC), scale_factor=1.5)
+        self.play(Indicate(gD), scale_factor=1.5)
 
-        sg4 = VGroup(tx4, tx4b)
-        sg4.generate_target()
-        sg4.target.shift(LEFT*sg4.get_center())
-        move1 = MoveToTarget(sg4)
+        self.play(FadeIn(lblB))
+        self.play(FadeIn(lblC))
+        self.play(FadeIn(lblD))
+
+        self.play(Indicate(gE), GrowFromCenter(lAC))
+        self.remove(lAC)
+        self.play(Indicate(gF), GrowFromCenter(lBD))
+        self.remove(lBD)
+        self.wait()
+
+        self.play(FadeIn(lblE))
+        self.play(FadeIn(lblF))
+
+        self.wait()
+
+        self.play(TransformFromCopy(lEF, tx3))
+
+        tx3a = TexMobject("=4x-1.5x").scale(1.5)
+        tx3b = TexMobject("=2.5x").scale(1.5)
+        tx3c = TexMobject("x=2").scale(1.5)
+        tx3a.next_to(tx3, RIGHT)
+        self.play(TransformFromCopy(VGroup(lblE, lblF), tx3a), run_time=0.5)
+        sg3 = VGroup(tx3, tx3a)
+        sg3.generate_target()
+        sg3.target.shift(LEFT*sg3.get_center())
+        move1 = MoveToTarget(sg3)
         self.play(move1, run_time=0.5)
-        self.wait()
 
-        trans1 = ReplacementTransform(sg4, tx4c)
-        self.play(trans1)
+        tx3b.next_to(tx3, RIGHT)
+        self.play(ReplacementTransform(tx3a, tx3b), run_time=0.5)
+        sg3 = VGroup(tx3, tx3b)
+        sg3.generate_target()
+        sg3.target.shift(LEFT*sg3.get_center())
+        move1 = MoveToTarget(sg3)
+        self.play(move1, run_time=0.5)
 
+        tx3c.next_to(tx2, DOWN, buff=0.5)
+        trans1 = ReplacementTransform(sg3, tx3c)
+        self.play(trans1, run_time=0.5)
+        sg3 = VGroup(tx3c)
+        sg3.generate_target()
+        sg3.target.shift(LEFT*sg3.get_center())
+        move1 = MoveToTarget(sg3)
+        self.play(move1, run_time=0.5)
+
+        self.wait(1)
+        meAD = Measurement(lAD, invert=True, dashed=True,
+                           buff=-2.5).add_tips().add_tex("6x", buff=0.6, color=WHITE)
+        self.play(Write(meAD))
         self.wait(5)
 
 
