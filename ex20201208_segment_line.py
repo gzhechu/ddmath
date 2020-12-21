@@ -54,17 +54,18 @@ F是BD的中点，稍微计算一下可知CF等于X
 
     CONFIG = {
         "color": WHITE,
-        "a": [-3*1.5, 1, 0],
-        "b": [-1*1.5, 1, 0],
-        "c": [-0*1.5, 1, 0],
-        "d": [3*1.5, 1, 0],
-        "e": [-1.5*1.5, 1, 0],
-        "f": [1*1.5, 1, 0],
+        "a": [-3*1.8, 0, 0],
+        "b": [-1*1.8, 0, 0],
+        "c": [-0*1.8, 0, 0],
+        "d": [3*1.8, 0, 0],
+        "e": [-1.5*1.8, 0, 0],
+        "f": [1*1.8, 0, 0],
         "txt": 9,
     }
 
     def construct(self):
         lAD = Line(self.a, self.d)
+        nlAD = NumberLine(x_min=-3, x_max=3, unit_size=1.8)
         lAC = Line(self.a, self.c, stroke_width=10, color=YELLOW)
         lBD = Line(self.b, self.d, stroke_width=10, color=RED)
         lEF = Line(self.e, self.f, stroke_width=10, color=YELLOW)
@@ -83,17 +84,15 @@ F是BD的中点，稍微计算一下可知CF等于X
         tx3.next_to(tx2, DOWN, buff=0.5)
         txX = TexMobject("=x")
 
-        [ptA, ptB, ptC, ptD, ptE, ptF] = [
+        pts = [ptA, ptB, ptC, ptD, ptE, ptF] = [
             Dot(X) for X in [self.a, self.b, self.c, self.d, self.e, self.f]]
-        [txtA, txtB, txtC, txtD, txtE, txtF] = [
+        txts = [txtA, txtB, txtC, txtD, txtE, txtF] = [
             TextMobject(X) for X in ["A", "B", "C", "D", "E", "F"]]
-
-        txtA.next_to(ptA, DOWN, buff=0.6)
-        txtB.next_to(ptB, DOWN, buff=0.6)
-        txtC.next_to(ptC, DOWN, buff=0.6)
-        txtD.next_to(ptD, DOWN, buff=0.6)
-        txtE.next_to(ptE, DOWN, buff=0.6)
-        txtF.next_to(ptF, DOWN, buff=0.6)
+        lbls = [lblA, lblB, lblC, lblD, lblE, lblF] = [
+            TextMobject(X) for X in ["0", "2x", "3x", "6x", "1.5x", "4x"]]
+        for x in range(len(pts)):
+            txts[x].next_to(pts[x], DOWN, buff=0.6)
+            lbls[x].next_to(pts[x], UP, buff=0.6)
 
         self.play(FadeIn(lAD), FadeIn(ptA), FadeIn(
             ptD), FadeIn(txtA), FadeIn(txtD))
@@ -147,21 +146,29 @@ F是BD的中点，稍微计算一下可知CF等于X
         # 显示 EF 长度
         meEF = Measurement(lEF, invert=True, dashed=True,
                            buff=-0.5).add_tips().add_tex("5", buff=0.6, color=WHITE)
-        self.play(GrowFromCenter(meEF), FadeIn(tx3))
-        self.wait(1)
         meAD = Measurement(lAD, invert=True, dashed=True,
                            buff=-1.2).add_tips().add_tex("?", buff=0.6, color=WHITE)
+        meBC = Measurement(lBC, invert=True, dashed=True,
+                           buff=-0.5).add_tips().add_tex("x", buff=0.6, color=WHITE)
+        self.play(GrowFromCenter(meEF), FadeIn(tx3))
+        self.wait(1)
+
         self.play(GrowFromCenter(meAD))
         self.wait(5)
 
+        self.play(FadeOut(lAD), FadeOut(meEF), FadeOut(meAD))
+        self.play(Write(nlAD))
+        self.wait()
+
         txX.next_to(sg1, RIGHT)
         trans1 = TransformFromCopy(lBC, txX)
-        self.play(trans1)
+        self.play(trans1, FadeIn(meBC))
         sg1 = VGroup(sg1, txX)
         sg1.generate_target()
         sg1.target.shift(LEFT*sg1.get_center())
         move1 = MoveToTarget(sg1)
         self.play(move1, run_time=0.5)
+        self.play(FadeIn(lblA), FadeIn(lblC))
         self.wait()
 
         tx4 = TexMobject("AC=3x")
