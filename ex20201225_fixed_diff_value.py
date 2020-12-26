@@ -12,11 +12,14 @@ except:
 
 # manim ddmath/ex20201225_fixed_diff_value.py FixedDiffValue1 -r1280,720 -pm
 # manim ddmath/ex20201225_fixed_diff_value.py FixedDiffValue1 -r640,360 -pl
-# ffmpeg -i FixedDiffValue1.mp4 -i sound.m4a FixedDiffValue1R.mp4
+# ffmpeg -i FixedDiffValue1.mp4 -i v1.m4a FixedDiffValue1R.mp4
 
 
-# 长方体
+_DEBUG_ = False
+
+
 class FixedDiffRect(Rectangle):
+    # 长方体
     CONFIG = {
         "a": 3.0,
         "b": 1.0,
@@ -189,28 +192,32 @@ class FixedDiffRect(Rectangle):
 class FixedDiffValue1(Scene):
     """
 00 这是一个长方形
-01 它的长宽之比为a比b
-02 如图中小长方形不重叠地放在大长方形ABCD内
-03 未被覆盖的阴影部分为S1和S
-04 当CD边向右平移时
-06 S1与S2的面积差始终保持不变
+03 它的长宽之比为a比b
+05 如图小长方形不重叠地放在大长方形ABCD中
+06 未被覆盖的阴影部分为
+07 S1和S2
+09 当CD边向右平移时
+11 S1与S2的面积差始终保持不变
 07 问a与b的数量关系如何？
-09 呃…… 为什么七年级会有这种变量变化情况下表达式恒等的题
-11 对…… 变量变化…… 恒等……
-12 所以，列出等式关系
-13 说不定此题就能有解
-14 马上 设BC的长度为变量x
-15 则S1面积为(x-a)*3b
-16 S2面积为（x-4b）*a
-17 面积之差为计算化简为
-18 3bx-3ab-3ax+4ab即
-19 (3b-a)*x+ab
-20 注意看
+09 呃…… 七年级会有这种变量变化但表达式恒等的题
+11 想一想 变量变化…… 但是表达式值恒等……
+12 对，所以，列出等式关系
+13 说不定此题就有解
+27 马上
+28 设BC的长度为变量x
+30 则S1面积为(x-a)*3b
+33 S2面积为(x-4b)*a
+37 计算面积之差
+38 逐步化简……
+39 就像这样
+40 最终得到面积之差为
+42 (3b-a)*x+ab
+47 注意看
 20 题目说无论x如何变化，算式的结果都不变
 21 要符合这个情况的，只能是与x相乘的数为0
-22 也就是3b-a=0，a=3b
+53 也就是3b-a=0 再化简
 23 结果就出来了……
-24 看明白了么？
+24 明白了么？
 """
 
     CONFIG = {
@@ -227,6 +234,11 @@ class FixedDiffValue1(Scene):
     }
 
     def construct(self):
+        tx1 = TexMobject("S_{1}-S_{2}").scale(1.5)
+        tx1a = TexMobject("=S_{\\delta}").scale(1.5)
+        tx1.move_to(UP*self.txt)
+        tx1a.next_to(tx1, RIGHT)
+
         RectSample = Rectangle(height=self.b*self.unit, width=self.a*self.unit,
                                fill_color=BLUE, fill_opacity=0.5)
         [ptAa, ptAb, ptAc, ptAd] = [RectSample.get_corner(X) for X in [
@@ -238,7 +250,6 @@ class FixedDiffValue1(Scene):
                            buff=-0.5).add_tips().add_tex("b", buff=-3, color=WHITE)
         gRA = VGroup(RectSample, meAa, meAb)
         self.play(Write(RectSample))
-        self.wait(1)
         self.play(Write(meAa), Write(meAb))
         self.wait()
 
@@ -247,155 +258,207 @@ class FixedDiffValue1(Scene):
             mobject.move_to(UP*(self.sample)+LEFT*(self.rect_x))
             return mobject
 
-        self.play(ApplyFunction(to_corner, gRA))
-
         fdr = FixedDiffRect(height=self.sh*self.unit, width=self.sw*self.unit,
                             a=self.a*self.unit, b=self.b*self.unit,
                             stretch_width=self.stretch_width*self.unit)
-        self.play(Write(fdr), run_time=2)
-        self.wait(3)
-
-        fdr.add_measurement(True)
-        self.play(*[Write(o)for o in fdr.measurement])
-        self.wait()
+        self.play(Write(fdr), ApplyFunction(to_corner, gRA), run_time=2)
+        self.wait(1)
 
         # indicate S1 and S2
         self.play(Indicate(fdr.R1))
         self.play(Indicate(fdr.R4))
-        self.wait(3)
 
         fdr.generate_target()
         fdr.target.shift(RIGHT*(self.sw*self.unit/2 - self.rect_x))
         shift1 = MoveToTarget(fdr)
         self.play(shift1)
 
-        g1 = VGroup(fdr)
-
         def update1(group, alpha):
             stretch = 1.2 * self.unit * alpha
             fdr = FixedDiffRect(height=self.sh*self.unit, width=self.sw*self.unit + stretch,
                                 a=self.a*self.unit, b=self.b*self.unit,
-                                stretch_width=stretch, show_measurement=True)
+                                stretch_width=stretch, show_measurement=False)
             fdr.shift(RIGHT*((self.sw*self.unit + stretch)/2 - self.rect_x))
 
             ng = VGroup(fdr)
             group.become(ng)
             return group
 
+        g1 = VGroup(fdr)
         self.play(UpdateFromAlphaFunc(g1, update1),
-                  run_time=6, rate_func=there_and_back)
-        self.wait(1)
+                  run_time=1, rate_func=smooth)
 
-        fdr.add_measurement_x(True)
-        self.play(*[Write(o)for o in fdr.measurement_x])
-        self.wait()
-
-        def update2(group, alpha):
-            stretch = 1.2 * self.unit * alpha
-            fdr = FixedDiffRect(height=self.sh*self.unit, width=self.sw*self.unit + stretch,
-                                a=self.a*self.unit, b=self.b*self.unit,
-                                stretch_width=stretch, show_measurement=True)
-            fdr.shift(RIGHT*((self.sw*self.unit + stretch)/2 - self.rect_x))
-
-            ng = VGroup(fdr)
-            group.become(ng)
-            return group
-
-        self.play(UpdateFromAlphaFunc(g1, update1),
-                  run_time=5, rate_func=smooth)
-        self.wait(1)
-
-        def update3(group, alpha):
-            stretch = 1.2 * self.unit * (1-alpha)
-            fdr = FixedDiffRect(height=self.sh*self.unit, width=self.sw*self.unit + stretch,
-                                a=self.a*self.unit, b=self.b*self.unit,
-                                stretch_width=stretch, show_measurement=True, show_stretch_area=True)
-            fdr.shift(RIGHT*((self.sw*self.unit + stretch)/2 - self.rect_x))
-
-            ng = VGroup(fdr)
-            group.become(ng)
-            return group
-
-        self.play(UpdateFromAlphaFunc(g1, update3),
-                  run_time=6, rate_func=there_and_back)
-        self.wait(1)
-
-        # 替换一下
-        stretch = 1.2 * self.unit
-        fdr = FixedDiffRect(height=self.sh*self.unit, width=self.sw*self.unit + stretch,
-                            a=self.a*self.unit, b=self.b*self.unit,
-                            stretch_width=stretch, show_measurement=True, show_stretch_area=True)
-        fdr.shift(RIGHT*((self.sw*self.unit + stretch)/2 - self.rect_x))
-        self.remove(g1)
-        self.add(fdr)
-
-        self.play(Indicate(fdr.R1))
-        self.play(Indicate(fdr.R2))
-        self.play(Indicate(fdr.R3))
-        self.play(Indicate(fdr.R4))
-        self.play(Indicate(fdr.R5))
-        self.play(Indicate(fdr.R6))
-        self.play(Indicate(fdr.R7))
-        self.play(Indicate(fdr.R8))
-
-        fdr.add_measurement_stretch(True)
-        self.play(*[Write(o)for o in fdr.measurement_stretch])
-
-        tx1 = TexMobject("S_{\\delta}").scale(1.5)
-        tx1a = TexMobject("=S_{1}-S_{2}").scale(1.5)
-        tx1b = TexMobject("=(x-a)\\times 3b-(x-4b)\\times a").scale(1.5)
-        tx1c = TexMobject("=3bx-3ab-xa+4ab").scale(1.5)
-        tx1d = TexMobject("=(3b-a)\\times x+ab").scale(1.5)
-
-        tx2 = TexMobject("(3b-a)=0").scale(1.5)
-        tx2a = TexMobject("3b=a").scale(1.5)
-
-        tx1.move_to(UP*self.txt)
-        tx1a.next_to(tx1, RIGHT)
-        tx2.next_to(tx1, DOWN, buff=0.6)
-        tx2a.next_to(tx1, DOWN, buff=0.6)
-        self.play(FadeIn(tx1))
-        self.play(TransformFromCopy(VGroup(fdr.txtS1, fdr.txtS2), tx1a))
+        self.play(TransformFromCopy(VGroup(fdr.txtS1, fdr.txtS2), tx1))
+        self.play(FadeIn(tx1a))
 
         vt1x = VGroup(tx1, tx1a)
         vt1x.generate_target()
         vt1x.target.shift(LEFT*vt1x.get_center())
         move1 = MoveToTarget(vt1x)
         self.play(move1, run_time=0.5)
+        self.wait(1)
+  
+        # 更新一下对象
+        self.remove(fdr)
+        stretch = 1.2 * self.unit
+        fdr = FixedDiffRect(height=self.sh*self.unit, width=self.sw*self.unit + stretch,
+                            a=self.a*self.unit, b=self.b*self.unit,
+                            stretch_width=stretch, show_measurement=False)
+        fdr.shift(RIGHT*((self.sw*self.unit + stretch)/2 - self.rect_x))
+        self.add(fdr)
+
+        def update2(group, alpha):
+            stretch = 1.2 * self.unit * (1-alpha)
+            fdr = FixedDiffRect(height=self.sh*self.unit, width=self.sw*self.unit + stretch,
+                                a=self.a*self.unit, b=self.b*self.unit,
+                                stretch_width=stretch, show_measurement=False)
+            fdr.shift(RIGHT*((self.sw*self.unit + stretch)/2 - self.rect_x))
+
+            ng = VGroup(fdr)
+            group.become(ng)
+            return group
+
+        # 慢速拖动一遍
+        g1 = VGroup(fdr)
+        if _DEBUG_:
+            self.play(Write(g1), run_time=5)
+        else:
+            self.play(UpdateFromAlphaFunc(g1, update2),
+                      run_time=5, rate_func=there_and_back)
+
+        self.wait(1)
+
+        def update3(group, alpha):
+            stretch = 1.2 * self.unit * (1-alpha)
+            fdr = FixedDiffRect(height=self.sh*self.unit, width=self.sw*self.unit + stretch,
+                                a=self.a*self.unit, b=self.b*self.unit,
+                                stretch_width=stretch, show_measurement=True)
+            fdr.shift(RIGHT*((self.sw*self.unit + stretch)/2 - self.rect_x))
+
+            ng = VGroup(fdr)
+            group.become(ng)
+            return group
+
+        # 再慢速拖动一遍
+        g1 = VGroup(fdr)
+        if _DEBUG_:
+            self.play(Write(g1), run_time=5)
+        else:
+            self.play(UpdateFromAlphaFunc(g1, update2),
+                      run_time=5, rate_func=there_and_back)
+        self.wait(1)
+
+        # 加标签
+        fdr.add_measurement(True)
+        fdr.add_measurement_x(True)
+        self.play(*[Write(o) for o in fdr.measurement],
+                  *[Write(o) for o in fdr.measurement_x])
+        self.play(Indicate(fdr.measurement_x[0]))
+        self.wait(1)
+
+        # # 替换一下
+        # stretch = 1.2 * self.unit
+        # fdr = FixedDiffRect(height=self.sh*self.unit, width=self.sw*self.unit + stretch,
+        #                     a=self.a*self.unit, b=self.b*self.unit,
+        #                     stretch_width=stretch, show_measurement=True)
+        # fdr.shift(RIGHT*((self.sw*self.unit + stretch)/2 - self.rect_x))
+        # self.remove(g1)
+        # self.add(fdr)
+
+        tx2 = TexMobject("S_{1}").scale(1.5)
+        tx2a = TexMobject("=(x-a)\\times 3b").scale(1.5)
+        tx3 = TexMobject("S_{2}").scale(1.5)
+        tx3a = TexMobject("=(x-4b)\\times a").scale(1.5)
+
+        tx2.next_to(tx1, DOWN, buff=0.6)
+        tx3.next_to(tx2, DOWN, buff=0.6)
+
+        # 显示 S1
+        tx2a.next_to(tx2, RIGHT)
+        self.play(TransformFromCopy(fdr.txtS1, tx2))
+        self.play(TransformFromCopy(fdr.txtS1, tx2a))
+        vt2x = VGroup(tx2, tx2a)
+        vt2x.generate_target()
+        vt2x.target.shift(LEFT*vt2x.get_center())
+        move2 = MoveToTarget(vt2x)
+        self.play(move2, run_time=0.5)
+
+        # 显示 S2
+        tx3a.next_to(tx3, RIGHT)
+        self.play(TransformFromCopy(fdr.txtS2, tx3))
+        self.play(TransformFromCopy(fdr.txtS2, tx3a))
+        vt3x = VGroup(tx3, tx3a)
+        vt3x.generate_target()
+        vt3x.target.shift(LEFT*vt3x.get_center())
+        move3 = MoveToTarget(vt3x)
+        self.play(move3, run_time=0.5)
+        self.wait(1)
+
+        # 显示差
+        tx1a = TexMobject("S_{\\delta}=S_{1}-S_{2}").scale(1.5)
+        tx2 = TexMobject("S_{\\delta}").scale(1.5)
+        tx2a = TexMobject("=S_{1}-S_{2}").scale(1.5)
+        tx2b = TexMobject("=(x-a)\\times 3b-(x-4b)\\times a").scale(1.5)
+        tx2c = TexMobject("=3bx-3ab-xa+4ab").scale(1.5)
+        tx2d = TexMobject("=", "(3b-a)", "\\times x+ab").scale(1.5)
+        tx2e = TexMobject("=", "(3b-a)",
+                          "\\times", "x", "+ab").scale(1.5)
+        tx2e.set_color_by_tex("(3b-a)", BLUE)
+        tx2e.set_color_by_tex("x", RED)
+
+        tx3 = TexMobject("3b-a=0").scale(1.5)
+        tx3a = TexMobject("3b=a").scale(1.5)
+
+        # step 1
+        tx2.next_to(vt1x, DOWN, buff=0.6)
+        tx3.next_to(tx2, DOWN, buff=0.6)
+        tx3a.next_to(tx2, DOWN, buff=0.6)
+        tx1a.move_to(vt1x.get_center())
+        self.remove(vt1x)
+        self.play(ReplacementTransform(VGroup(vt2x, vt3x), tx1a))
+
+        self.play(FadeIn(tx2))
+        # step 1
+        tx2a.next_to(tx2, RIGHT)
+        vt2x = VGroup(tx2, tx2a)
+        vt2x.generate_target()
+        vt2x.target.shift(LEFT*vt2x.get_center())
+        move1 = MoveToTarget(vt2x)
+        self.play(move1, run_time=0.5)
 
         # step 2
-        tx1b.next_to(tx1, RIGHT)
-        self.play(ReplacementTransform(tx1a, tx1b))
-
-        vt1x = VGroup(tx1, tx1b)
-        vt1x.generate_target()
-        vt1x.target.shift(LEFT*vt1x.get_center())
-        move1 = MoveToTarget(vt1x)
+        tx2b.next_to(tx2, RIGHT)
+        self.play(ReplacementTransform(tx2a, tx2b))
+        vt2x = VGroup(tx2, tx2b)
+        vt2x.generate_target()
+        vt2x.target.shift(LEFT*vt2x.get_center())
+        move1 = MoveToTarget(vt2x)
         self.play(move1, run_time=0.5)
 
         # step 3
-        tx1c.next_to(tx1, RIGHT)
-        self.play(ReplacementTransform(tx1b, tx1c))
-
-        vt1x = VGroup(tx1, tx1c)
-        vt1x.generate_target()
-        vt1x.target.shift(LEFT*vt1x.get_center())
-        move1 = MoveToTarget(vt1x)
+        tx2c.next_to(tx2, RIGHT)
+        self.play(ReplacementTransform(tx2b, tx2c))
+        vt2x = VGroup(tx2, tx2c)
+        vt2x.generate_target()
+        vt2x.target.shift(LEFT*vt2x.get_center())
+        move1 = MoveToTarget(vt2x)
         self.play(move1, run_time=0.5)
 
         # step 4
-        tx1d.next_to(tx1, RIGHT)
-        self.play(ReplacementTransform(tx1c, tx1d))
-
-        vt1x = VGroup(tx1, tx1d)
-        vt1x.generate_target()
-        vt1x.target.shift(LEFT*vt1x.get_center())
-        move1 = MoveToTarget(vt1x)
+        tx2d.next_to(tx2, RIGHT)
+        self.play(ReplacementTransform(tx2c, tx2d))
+        vt2x = VGroup(tx2, tx2d)
+        vt2x.generate_target()
+        vt2x.target.shift(LEFT*vt2x.get_center())
+        move1 = MoveToTarget(vt2x)
         self.play(move1, run_time=0.5)
-        self.wait()
+        self.wait(8)
 
-        self.play(Write(tx2))
-        self.play(ReplacementTransform(tx2, tx2a))
-
-
-        self.wait(6)
+        # mark 3b-a
+        tx2e.move_to(tx2d.get_center())
+        vt2x = VGroup(tx2, tx2e)
+        self.play(Indicate(vt2x))
+        self.play(FadeInFrom(tx3, UP))
+        self.wait(3)
+        self.play(ReplacementTransform(tx3, tx3a))
+        self.wait(2)
