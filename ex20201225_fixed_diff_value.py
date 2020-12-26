@@ -63,6 +63,18 @@ class FixedDiffRect(Rectangle):
                     RIGHT*(self.width-self.a)/2)
             self.add(l)
 
+        # gray zone
+        self.R7 = Rectangle(height=self.b*3, width=self.width-self.a-self.stretch_width,
+                            fill_color=BLACK, fill_opacity=0.5, stroke_opacity=0)
+        self.R7.shift(LEFT*(self.a+self.stretch_width)/2,
+                      UP*(self.height-self.b*3)/2)
+        self.R8 = Rectangle(height=self.a, width=self.width - self.b*4 - self.stretch_width,
+                            fill_color=BLACK, fill_opacity=0.5, stroke_opacity=0)
+        self.R8.shift(RIGHT*((self.b*2 - self.stretch_width/2)),
+                      DOWN*(self.a)/2)
+        self.add(self.R7)
+        self.add(self.R8)
+
         # top left
         self.R1 = Rectangle(height=self.b*3, width=self.width-self.a,
                             fill_color=BLACK, fill_opacity=0.5, stroke_opacity=0)
@@ -76,7 +88,7 @@ class FixedDiffRect(Rectangle):
                             fill_color=BLACK, fill_opacity=0.5, stroke_opacity=0)
         self.txtS2 = TexMobject("S_{2}")
         self.g2 = VGroup(self.R4, self.txtS2)
-        self.g2.shift(RIGHT*(self.b*2), DOWN*(self.b*3)/2)
+        self.g2.shift(RIGHT*(self.b*2), DOWN*(self.a)/2)
         self.add(self.g2)
 
         self.R2 = Rectangle(height=3*self.b, width=self.a,
@@ -96,22 +108,21 @@ class FixedDiffRect(Rectangle):
         self.add_measurement()
 
         # gray zone
-        self.r5 = Rectangle(height=self.b*3, width=self.stretch_width,
+        self.R5 = Rectangle(height=self.b*3, width=self.stretch_width,
                             fill_color=WHITE, fill_opacity=0.6, stroke_opacity=0)
-        self.r5.shift(RIGHT*((self.width)/2-self.a - self.stretch_width/2),
+        self.R5.shift(RIGHT*((self.width)/2-self.a - self.stretch_width/2),
                       UP*(self.height-self.b*3)/2)
-        self.r6 = Rectangle(height=self.a, width=self.stretch_width,
+        self.R6 = Rectangle(height=self.a, width=self.stretch_width,
                             fill_color=WHITE, fill_opacity=0.6, stroke_opacity=0)
-        self.r6.shift(RIGHT*((self.width)/2 - self.stretch_width/2),
+        self.R6.shift(RIGHT*((self.width)/2 - self.stretch_width/2),
                       DOWN*(self.height-self.a)/2)
-
         if self.show_stretch_area:
-            self.add(self.r5)
-            self.add(self.r6)
+            self.add(self.R5)
+            self.add(self.R6)
 
     def add_label(self):
-        [ptA, ptB, ptC, ptD] = [self.get_corner(X)for X in [UL, DL, DR, UR]]
-        self.txts = [txtA, txtB, txtC, txtD] = [
+        [ptA, ptB, ptC, ptD]=[self.get_corner(X)for X in [UL, DL, DR, UR]]
+        self.txts=[txtA, txtB, txtC, txtD]=[
             TextMobject(X) for X in ["A", "B", "C", "D"]]
         txtA.next_to(ptA, UL)
         txtB.next_to(ptB, DL)
@@ -208,6 +219,7 @@ class FixedDiffValue1(Scene):
         self.play(*[Write(o)for o in fdr.measurement])
         self.wait()
 
+        # indicate S1 and S2
         self.play(Indicate(fdr.R1))
         self.play(Indicate(fdr.R4))
         self.wait(3)
@@ -231,11 +243,26 @@ class FixedDiffValue1(Scene):
             return group
 
         self.play(UpdateFromAlphaFunc(g1, update1),
-                  run_time=5, rate_func=there_and_back)
+                  run_time=6, rate_func=there_and_back)
         self.wait(1)
 
         def update2(group, alpha):
             stretch = 1.2 * self.unit * alpha
+            fdr = FixedDiffRect(height=self.sh*self.unit, width=self.sw*self.unit + stretch,
+                                a=self.a*self.unit, b=self.b*self.unit,
+                                stretch_width=stretch, show_measurement=True)
+            fdr.shift(RIGHT*((self.sw*self.unit + stretch)/2 - self.rect_x))
+
+            ng = VGroup(fdr)
+            group.become(ng)
+            return group
+
+        self.play(UpdateFromAlphaFunc(g1, update1),
+                  run_time=5, rate_func=smooth)
+        self.wait(1)
+
+        def update3(group, alpha):
+            stretch = 1.2 * self.unit * (1-alpha)
             fdr = FixedDiffRect(height=self.sh*self.unit, width=self.sw*self.unit + stretch,
                                 a=self.a*self.unit, b=self.b*self.unit,
                                 stretch_width=stretch, show_measurement=True, show_stretch_area=True)
@@ -245,8 +272,8 @@ class FixedDiffValue1(Scene):
             group.become(ng)
             return group
 
-        self.play(UpdateFromAlphaFunc(g1, update2),
-                  run_time=5, rate_func=smooth)
+        self.play(UpdateFromAlphaFunc(g1, update3),
+                  run_time=6, rate_func=there_and_back)
         self.wait(1)
 
         # 替换一下
@@ -262,8 +289,10 @@ class FixedDiffValue1(Scene):
         self.play(Indicate(fdr.R2))
         self.play(Indicate(fdr.R3))
         self.play(Indicate(fdr.R4))
-        self.play(Indicate(fdr.r5))
-        self.play(Indicate(fdr.r6))
+        self.play(Indicate(fdr.R5))
+        self.play(Indicate(fdr.R6))
+        self.play(Indicate(fdr.R7))
+        self.play(Indicate(fdr.R8))
 
         fdr.add_measurement_x(True)
         self.play(*[Write(o)for o in fdr.measurement_x])
@@ -280,7 +309,5 @@ class FixedDiffValue1(Scene):
         vt1x.target.shift(LEFT*vt1x.get_center())
         move1 = MoveToTarget(vt1x)
         self.play(move1, run_time=0.5)
-
-
 
         self.wait(6)
