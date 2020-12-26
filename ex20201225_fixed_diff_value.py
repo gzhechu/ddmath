@@ -26,6 +26,7 @@ class FixedDiffRect(Rectangle):
         "show_label": True,
         "show_measurement": False,
         "show_measurement_x": False,
+        "show_measurement_stretch": False,
     }
 
     def __init__(self, **kwargs):
@@ -106,6 +107,7 @@ class FixedDiffRect(Rectangle):
             self.add_label()
 
         self.add_measurement()
+        self.add_measurement_x()
 
         # gray zone
         self.R5 = Rectangle(height=self.b*3, width=self.stretch_width,
@@ -121,8 +123,8 @@ class FixedDiffRect(Rectangle):
             self.add(self.R6)
 
     def add_label(self):
-        [ptA, ptB, ptC, ptD]=[self.get_corner(X)for X in [UL, DL, DR, UR]]
-        self.txts=[txtA, txtB, txtC, txtD]=[
+        [ptA, ptB, ptC, ptD] = [self.get_corner(X)for X in [UL, DL, DR, UR]]
+        self.txts = [txtA, txtB, txtC, txtD] = [
             TextMobject(X) for X in ["A", "B", "C", "D"]]
         txtA.next_to(ptA, UL)
         txtB.next_to(ptB, DL)
@@ -154,6 +156,18 @@ class FixedDiffRect(Rectangle):
             self.add(*self.measurement)
 
     def add_measurement_x(self, show=None):
+        ptB = self.get_center() + LEFT * self.width/2 + DOWN * self.height/2
+        ptC = self.get_center() + RIGHT * self.width/2 + DOWN * self.height/2
+
+        meX = Measurement(Line(ptB, ptC), invert=True, dashed=True,
+                          buff=1.2).add_tips().add_tex("x", buff=-2.5, color=WHITE)
+        self.measurement_x = [meX]
+        if show is not None:
+            self.show_measurement_x = show
+        if self.show_measurement_x:
+            self.add(*self.measurement_x)
+
+    def add_measurement_stretch(self, show=None):
         ptD = self.get_center() + RIGHT * self.width/2 + UP * self.height/2
         ptX1a = ptD + LEFT * (self.a + self.stretch_width)
         ptX1b = ptD + LEFT * (self.a)
@@ -165,14 +179,40 @@ class FixedDiffRect(Rectangle):
                            buff=-0.5).add_tips().add_tex("x1", buff=2, color=WHITE)
         meX2 = Measurement(Line(ptX2a, ptC), invert=True, dashed=True,
                            buff=0.5).add_tips().add_tex("x2", buff=-3, color=WHITE)
-        self.measurement_x = [meX1, meX2]
+        self.measurement_stretch = [meX1, meX2]
         if show is not None:
-            self.show_measurement_x = show
-        if self.show_measurement_x:
-            self.add(*self.measurement_x)
+            self.show_measurement_stretch = show
+        if self.show_measurement_stretch:
+            self.add(*self.measurement_stretch)
 
 
 class FixedDiffValue1(Scene):
+    """
+00 这是一个长方形
+01 它的长宽之比为a比b
+02 如图中小长方形不重叠地放在大长方形ABCD内
+03 未被覆盖的阴影部分为S1和S
+04 当CD边向右平移时
+06 S1与S2的面积差始终保持不变
+07 问a与b的数量关系如何？
+09 呃…… 为什么七年级会有这种变量变化情况下表达式恒等的题
+11 对…… 变量变化…… 恒等……
+12 所以，列出等式关系
+13 说不定此题就能有解
+14 马上 设BC的长度为变量x
+15 则S1面积为(x-a)*3b
+16 S2面积为（x-4b）*a
+17 面积之差为计算化简为
+18 3bx-3ab-3ax+4ab即
+19 (3b-a)*x+ab
+20 注意看
+20 题目说无论x如何变化，算式的结果都不变
+21 要符合这个情况的，只能是与x相乘的数为0
+22 也就是3b-a=0，a=3b
+23 结果就出来了……
+24 看明白了么？
+"""
+
     CONFIG = {
         "color": WHITE,
         "unit": 0.9,
@@ -182,7 +222,7 @@ class FixedDiffValue1(Scene):
         "sh": 6,
         "stretch_width": 0,
         "sample": 10,
-        "txt": 9,
+        "txt": 8,
         "rect_x": 3.5,
     }
 
@@ -202,12 +242,12 @@ class FixedDiffValue1(Scene):
         self.play(Write(meAa), Write(meAb))
         self.wait()
 
-        def custom_method(mobject):
+        def to_corner(mobject):
             mobject.scale(0.5)
-            mobject.shift(UP*(self.sample)+LEFT*(self.rect_x))
+            mobject.move_to(UP*(self.sample)+LEFT*(self.rect_x))
             return mobject
 
-        self.play(ApplyFunction(custom_method, gRA))
+        self.play(ApplyFunction(to_corner, gRA))
 
         fdr = FixedDiffRect(height=self.sh*self.unit, width=self.sw*self.unit,
                             a=self.a*self.unit, b=self.b*self.unit,
@@ -245,6 +285,10 @@ class FixedDiffValue1(Scene):
         self.play(UpdateFromAlphaFunc(g1, update1),
                   run_time=6, rate_func=there_and_back)
         self.wait(1)
+
+        fdr.add_measurement_x(True)
+        self.play(*[Write(o)for o in fdr.measurement_x])
+        self.wait()
 
         def update2(group, alpha):
             stretch = 1.2 * self.unit * alpha
@@ -294,13 +338,22 @@ class FixedDiffValue1(Scene):
         self.play(Indicate(fdr.R7))
         self.play(Indicate(fdr.R8))
 
-        fdr.add_measurement_x(True)
-        self.play(*[Write(o)for o in fdr.measurement_x])
+        fdr.add_measurement_stretch(True)
+        self.play(*[Write(o)for o in fdr.measurement_stretch])
 
         tx1 = TexMobject("S_{\\delta}").scale(1.5)
-        tx1a = TexMobject("=S_{1}+S_{2}").scale(1.5)
+        tx1a = TexMobject("=S_{1}-S_{2}").scale(1.5)
+        tx1b = TexMobject("=(x-a)\\times 3b-(x-4b)\\times a").scale(1.5)
+        tx1c = TexMobject("=3bx-3ab-xa+4ab").scale(1.5)
+        tx1d = TexMobject("=(3b-a)\\times x+ab").scale(1.5)
+
+        tx2 = TexMobject("(3b-a)=0").scale(1.5)
+        tx2a = TexMobject("3b=a").scale(1.5)
+
         tx1.move_to(UP*self.txt)
         tx1a.next_to(tx1, RIGHT)
+        tx2.next_to(tx1, DOWN, buff=0.6)
+        tx2a.next_to(tx1, DOWN, buff=0.6)
         self.play(FadeIn(tx1))
         self.play(TransformFromCopy(VGroup(fdr.txtS1, fdr.txtS2), tx1a))
 
@@ -309,5 +362,40 @@ class FixedDiffValue1(Scene):
         vt1x.target.shift(LEFT*vt1x.get_center())
         move1 = MoveToTarget(vt1x)
         self.play(move1, run_time=0.5)
+
+        # step 2
+        tx1b.next_to(tx1, RIGHT)
+        self.play(ReplacementTransform(tx1a, tx1b))
+
+        vt1x = VGroup(tx1, tx1b)
+        vt1x.generate_target()
+        vt1x.target.shift(LEFT*vt1x.get_center())
+        move1 = MoveToTarget(vt1x)
+        self.play(move1, run_time=0.5)
+
+        # step 3
+        tx1c.next_to(tx1, RIGHT)
+        self.play(ReplacementTransform(tx1b, tx1c))
+
+        vt1x = VGroup(tx1, tx1c)
+        vt1x.generate_target()
+        vt1x.target.shift(LEFT*vt1x.get_center())
+        move1 = MoveToTarget(vt1x)
+        self.play(move1, run_time=0.5)
+
+        # step 4
+        tx1d.next_to(tx1, RIGHT)
+        self.play(ReplacementTransform(tx1c, tx1d))
+
+        vt1x = VGroup(tx1, tx1d)
+        vt1x.generate_target()
+        vt1x.target.shift(LEFT*vt1x.get_center())
+        move1 = MoveToTarget(vt1x)
+        self.play(move1, run_time=0.5)
+        self.wait()
+
+        self.play(Write(tx2))
+        self.play(ReplacementTransform(tx2, tx2a))
+
 
         self.wait(6)
