@@ -14,6 +14,9 @@ except:
 # manim ddmath/ex20201225_fixed_diff_value.py FixedDiffValue1 -r640,360 -pl
 # ffmpeg -i FixedDiffValue1.mp4 -i v1.m4a FixedDiffValue1R.mp4
 
+# manim ddmath/ex20201225_fixed_diff_value.py FixedDiffValue2 -r1280,720 -pm
+# manim ddmath/ex20201225_fixed_diff_value.py FixedDiffValue2 -r640,360 -pl
+# ffmpeg -i FixedDiffValue2.mp4 -i v1.m4a FixedDiffValue2R.mp4
 
 _DEBUG_ = False
 
@@ -30,10 +33,17 @@ class FixedDiffRect(Rectangle):
         "show_measurement": False,
         "show_measurement_x": False,
         "show_measurement_stretch": False,
+        "show_all": False
     }
 
     def __init__(self, **kwargs):
         digest_config(self, kwargs)
+        if self.show_all:
+            self.show_measurement = True
+            # self.show_measurement_x = True
+            self.show_measurement_stretch = True
+            self.show_stretch_area = True
+
         self.fixed_width = self.width - self.a
         if self.fixed_width < 0:
             raise Exception("Illegal width parameter")
@@ -114,16 +124,23 @@ class FixedDiffRect(Rectangle):
 
         # gray zone
         self.R5 = Rectangle(height=self.b*3, width=self.stretch_width,
-                            fill_color=WHITE, fill_opacity=0.6, stroke_opacity=0)
+                            fill_color=WHITE, fill_opacity=0.3, stroke_opacity=0)
         self.R5.shift(RIGHT*((self.width)/2-self.a - self.stretch_width/2),
                       UP*(self.height-self.b*3)/2)
         self.R6 = Rectangle(height=self.a, width=self.stretch_width,
-                            fill_color=WHITE, fill_opacity=0.6, stroke_opacity=0)
+                            fill_color=WHITE, fill_opacity=0.3, stroke_opacity=0)
         self.R6.shift(RIGHT*((self.width)/2 - self.stretch_width/2),
                       DOWN*(self.height-self.a)/2)
         if self.show_stretch_area:
             self.add(self.R5)
             self.add(self.R6)
+
+        self.stretch_label = [txtC1, txtC2] = [
+            TexMobject(X) for X in ["C_{1}", "C_{2}"]]
+        self.txtC1 = txtC1
+        self.txtC2 = txtC2
+        self.txtC1.move_to(self.R5.get_center())
+        self.txtC2.move_to(self.R6.get_center())
 
     def add_label(self):
         [ptA, ptB, ptC, ptD] = [self.get_corner(X)for X in [UL, DL, DR, UR]]
@@ -179,9 +196,9 @@ class FixedDiffRect(Rectangle):
         ptX2a = ptC + LEFT * (self.stretch_width)
 
         meX1 = Measurement(Line(ptX1a, ptX1b), invert=True, dashed=True,
-                           buff=-0.5).add_tips().add_tex("x1", buff=2, color=WHITE)
+                           buff=-0.5).add_tips().add_tex("x", buff=2, color=WHITE)
         meX2 = Measurement(Line(ptX2a, ptC), invert=True, dashed=True,
-                           buff=0.5).add_tips().add_tex("x2", buff=-3, color=WHITE)
+                           buff=0.5).add_tips().add_tex("x", buff=-3, color=WHITE)
         self.measurement_stretch = [meX1, meX2]
         if show is not None:
             self.show_measurement_stretch = show
@@ -297,7 +314,7 @@ class FixedDiffValue1(Scene):
         move1 = MoveToTarget(vt1x)
         self.play(move1, run_time=0.5)
         self.wait(1)
-  
+
         # 更新一下对象
         self.remove(fdr)
         stretch = 1.2 * self.unit
@@ -332,7 +349,7 @@ class FixedDiffValue1(Scene):
             stretch = 1.2 * self.unit * (1-alpha)
             fdr = FixedDiffRect(height=self.sh*self.unit, width=self.sw*self.unit + stretch,
                                 a=self.a*self.unit, b=self.b*self.unit,
-                                stretch_width=stretch, show_measurement=True)
+                                stretch_width=stretch, show_measurement=True, show_measurement_x=True)
             fdr.shift(RIGHT*((self.sw*self.unit + stretch)/2 - self.rect_x))
 
             ng = VGroup(fdr)
@@ -452,7 +469,16 @@ class FixedDiffValue1(Scene):
         vt2x.target.shift(LEFT*vt2x.get_center())
         move1 = MoveToTarget(vt2x)
         self.play(move1, run_time=0.5)
-        self.wait(8)
+        # self.wait(1)
+
+        g1 = VGroup(fdr)
+        if _DEBUG_:
+            self.play(Write(g1), run_time=5)
+        else:
+            self.play(UpdateFromAlphaFunc(g1, update3),
+                      run_time=5, rate_func=there_and_back)
+        # self.wait(1)
+        self.play(WiggleOutThenIn(fdr.measurement_x[0], run_time=3))
 
         # mark 3b-a
         tx2e.move_to(tx2d.get_center())
@@ -462,3 +488,166 @@ class FixedDiffValue1(Scene):
         self.wait(3)
         self.play(ReplacementTransform(tx3, tx3a))
         self.wait(2)
+
+
+class FixedDiffValue2(Scene):
+    """
+00 各位好 接上一个视频
+01 说大长方形ABCD中如图排列了7个小长方形
+05 当CD向右平移时
+07 S1与S2的面积差始终保持不变
+10 问小长方形长宽a与b的数值关系如何？
+14 还是先标出辅助数据
+08 不过这次试试用几何方法来解题
+09 来，平移CD边
+21 不过平移之前，先标记初始的S1和S2
+24 然后……
+25 我们看到随着平移新增了两个灰色长方形C1和C2
+29 题目说到S1与S2的面积差保持不变
+14 那么拉伸后的面积是不是可以表示为
+18 (S1+C1)和(S2+C2)
+38 带入等式仔细看一下
+19 两边都有S1-S2
+20 则消去化简为0=C1-C2
+21 也就是C1与C2的面积相等
+22 突然变得很有趣对吧？
+23 接着计算两个灰色长方形的面积
+24 假设CD边平移长度为x
+25 所以灰色长方形的宽为x
+26 那么公式可以列为
+27 3b*x=a*x
+28 看！
+23 结果就出来了……
+"""
+
+    CONFIG = {
+        "color": WHITE,
+        "unit": 0.9,
+        "a": 3,
+        "b": 1,
+        "sw": 6.6,
+        "sh": 6,
+        "stretch_width": 0,
+        "sample": 10,
+        "txt": 8,
+        "rect_x": 3.5,
+    }
+
+    def construct(self):
+        tx1 = TexMobject("S_{1}-S_{2}").scale(1.5)
+        tx1a = TexMobject("=S_{\\delta}").scale(1.5)
+        tx1.move_to(UP*self.txt)
+        tx1a.next_to(tx1, RIGHT)
+
+        def update1(group, alpha):
+            stretch = 1.2 * self.unit * alpha
+            fdr = FixedDiffRect(height=self.sh*self.unit, width=self.sw*self.unit + stretch,
+                                a=self.a*self.unit, b=self.b*self.unit,
+                                stretch_width=stretch, show_measurement=False, )
+            fdr.shift(RIGHT*((self.sw*self.unit + stretch)/2 - self.rect_x))
+            ng = VGroup(fdr)
+            group.become(ng)
+            return group
+
+        def update2(group, alpha):
+            stretch = 1.2 * self.unit * alpha
+            fdr = FixedDiffRect(height=self.sh*self.unit, width=self.sw*self.unit + stretch,
+                                a=self.a*self.unit, b=self.b*self.unit,
+                                stretch_width=stretch, show_all=True, )
+            fdr.shift(RIGHT*((self.sw*self.unit + stretch)/2 - self.rect_x))
+            ng = VGroup(fdr)
+            group.become(ng)
+            return group
+
+        def update3(group, alpha):
+            stretch = 1.2 * self.unit * (1-alpha)
+            fdr = FixedDiffRect(height=self.sh*self.unit, width=self.sw*self.unit + stretch,
+                                a=self.a*self.unit, b=self.b*self.unit,
+                                stretch_width=stretch, show_all=True, show_measurement_stretch=True)
+            fdr.shift(RIGHT*((self.sw*self.unit + stretch)/2 - self.rect_x))
+            ng = VGroup(fdr)
+            group.become(ng)
+            return group
+
+        RectSample = Rectangle(height=self.b*self.unit, width=self.a*self.unit,
+                               fill_color=BLUE, fill_opacity=0.5)
+        [ptAa, ptAb, ptAc, ptAd] = [RectSample.get_corner(X) for X in [
+            UL, DL, UR,  DR]]
+
+        meAa = Measurement(Line(ptAa, ptAc), invert=True, dashed=True,
+                           buff=-0.5).add_tips().add_tex("a", buff=3, color=WHITE)
+        meAb = Measurement(Line(ptAa, ptAb), invert=False, dashed=True,
+                           buff=-0.5).add_tips().add_tex("b", buff=-3, color=WHITE)
+        gRA = VGroup(RectSample, meAa, meAb)
+
+        gRA.scale(0.5)
+        gRA.move_to(ORIGIN+UP*(self.sample)+LEFT*(self.rect_x))
+
+        fdr = FixedDiffRect(height=self.sh*self.unit, width=self.sw*self.unit,
+                            a=self.a*self.unit, b=self.b*self.unit,
+                            stretch_width=self.stretch_width*self.unit)
+        fdr.shift(RIGHT*(self.sw*self.unit/2 - self.rect_x))
+        self.play(Write(fdr), FadeIn(gRA), run_time=2)
+        self.wait(1)
+        g1 = VGroup(fdr)
+
+        if _DEBUG_:
+            self.play(Write(g1), run_time=4)
+        else:
+            self.play(UpdateFromAlphaFunc(g1, update1),
+                      run_time=4, rate_func=there_and_back)
+
+        # indicate S1 and S2
+        self.play(Indicate(fdr.R1))
+        self.play(Indicate(fdr.R4))
+        self.wait()
+
+        def to_center(mobject):
+            mobject.scale(2)
+            mobject.move_to(ORIGIN + UP*(self.sample/1.6))
+            return mobject
+
+        def to_corner(mobject):
+            mobject.scale(0.5)
+            mobject.move_to(ORIGIN+UP*(self.sample)+LEFT*(self.rect_x))
+            return mobject
+
+        self.play(ApplyFunction(to_center, gRA))
+        self.wait(1)
+        self.play(ApplyFunction(to_corner, gRA))
+        self.wait(1)
+
+        fdr.add_measurement(True)
+        self.play(*[Write(o) for o in fdr.measurement])
+        self.wait(2)
+
+        self.play(ShowPassingFlashAround(fdr.R1), run_time=2)
+        self.play(ShowPassingFlashAround(fdr.R4), run_time=2)
+
+        g1 = VGroup(fdr)
+        if _DEBUG_:
+            self.play(Write(g1), run_time=3)
+        else:
+            self.play(UpdateFromAlphaFunc(g1, update2),
+                      run_time=3, rate_func=smooth)
+        self.wait(2)
+
+        # 更新一下对象，不知道为啥不更新会有问题
+        self.remove(fdr)
+        stretch = 1.2 * self.unit
+        fdr = FixedDiffRect(height=self.sh*self.unit, width=self.sw*self.unit + stretch,
+                            a=self.a*self.unit, b=self.b*self.unit,
+                            stretch_width=stretch, show_all=True, )
+        self.add(fdr)
+
+        self.play(Write(fdr.txtC1))
+        self.play(Write(fdr.txtC2))
+
+        self.wait(2)
+
+        # 加 x1, x2
+        fdr.add_measurement_stretch(True)
+        self.play(*[Write(o) for o in fdr.measurement_stretch])
+        self.wait(3)
+
+        self.wait(3)
