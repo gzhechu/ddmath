@@ -492,29 +492,29 @@ class FixedDiffValue1(Scene):
 
 class FixedDiffValue2(Scene):
     """
-00 各位好 接上一个视频
+00 接上一个视频
 01 说大长方形ABCD中如图排列了7个小长方形
-05 当CD向右平移时
+05 当侧边CD向右平移时
 07 S1与S2的面积差始终保持不变
 10 问小长方形长宽a与b的数值关系如何？
 14 还是先标出辅助数据
-08 不过这次试试用几何方法来解题
-09 来，平移CD边
-21 不过平移之前，先标记初始的S1和S2
+08 这次试试用几何方法来解题
+09 先平移CD边
+21 不过平移之前，标记出初始的S1和S2
 24 然后……
 25 我们看到随着平移新增了两个灰色长方形C1和C2
 29 题目说到S1与S2的面积差保持不变
-14 那么拉伸后的面积是不是可以表示为
+14 那么拉伸后的面积就可以表示为
 18 (S1+C1)和(S2+C2)
 38 带入等式仔细看一下
 19 两边都有S1-S2
 20 则消去化简为0=C1-C2
-21 也就是C1与C2的面积相等
+21 也就是说新增的灰色长方形面积相等
 22 突然变得很有趣对吧？
 23 接着计算两个灰色长方形的面积
-24 假设CD边平移长度为x
-25 所以灰色长方形的宽为x
-26 那么公式可以列为
+24 假设CD向右平移的距离为x
+25 那么两个灰色长方形的宽也为x
+26 他们的面积公式则可以列为
 27 3b*x=a*x
 28 看！
 23 结果就出来了……
@@ -534,10 +534,15 @@ class FixedDiffValue2(Scene):
     }
 
     def construct(self):
-        tx1 = TexMobject("S_{1}-S_{2}").scale(1.5)
-        tx1a = TexMobject("=S_{\\delta}").scale(1.5)
+        tx1 = TexMobject("S_1-S_2").scale(1.5)
+        tx1a = TexMobject("=S_\\delta").scale(1.5)
         tx1.move_to(UP*self.txt)
         tx1a.next_to(tx1, RIGHT)
+        tx2 = TexMobject("S_\\delta").scale(1.5)
+        tx2a1 = TexMobject("=(S_1+C_1)").scale(1.5)
+        tx2a2 = TexMobject("-(S_2+C2)").scale(1.5)
+        tx2b = TexMobject("=S_1+C_1-S_2-C2").scale(1.5)
+        tx2.next_to(tx1, DOWN, buff=0.6)
 
         def update1(group, alpha):
             stretch = 1.2 * self.unit * alpha
@@ -563,7 +568,7 @@ class FixedDiffValue2(Scene):
             stretch = 1.2 * self.unit * (1-alpha)
             fdr = FixedDiffRect(height=self.sh*self.unit, width=self.sw*self.unit + stretch,
                                 a=self.a*self.unit, b=self.b*self.unit,
-                                stretch_width=stretch, show_all=True, show_measurement_stretch=True)
+                                stretch_width=stretch, show_all=True)
             fdr.shift(RIGHT*((self.sw*self.unit + stretch)/2 - self.rect_x))
             ng = VGroup(fdr)
             group.become(ng)
@@ -588,7 +593,7 @@ class FixedDiffValue2(Scene):
                             stretch_width=self.stretch_width*self.unit)
         fdr.shift(RIGHT*(self.sw*self.unit/2 - self.rect_x))
         self.play(Write(fdr), FadeIn(gRA), run_time=2)
-        self.wait(1)
+        # self.wait(1)
         g1 = VGroup(fdr)
 
         if _DEBUG_:
@@ -600,7 +605,13 @@ class FixedDiffValue2(Scene):
         # indicate S1 and S2
         self.play(Indicate(fdr.R1))
         self.play(Indicate(fdr.R4))
-        self.wait()
+        trans1 = TransformFromCopy(VGroup(fdr.txtS1, fdr.txtS2), tx1a)
+        self.play(trans1, FadeIn(tx1))
+        vt1x = VGroup(tx1, tx1a)
+        vt1x.generate_target()
+        vt1x.target.shift(LEFT*vt1x.get_center())
+        move1 = MoveToTarget(vt1x)
+        self.play(move1, run_time=1)
 
         def to_center(mobject):
             mobject.scale(2)
@@ -615,7 +626,6 @@ class FixedDiffValue2(Scene):
         self.play(ApplyFunction(to_center, gRA))
         self.wait(1)
         self.play(ApplyFunction(to_corner, gRA))
-        self.wait(1)
 
         fdr.add_measurement(True)
         self.play(*[Write(o) for o in fdr.measurement])
@@ -630,7 +640,6 @@ class FixedDiffValue2(Scene):
         else:
             self.play(UpdateFromAlphaFunc(g1, update2),
                       run_time=3, rate_func=smooth)
-        self.wait(2)
 
         # 更新一下对象，不知道为啥不更新会有问题
         self.remove(fdr)
@@ -640,14 +649,129 @@ class FixedDiffValue2(Scene):
                             stretch_width=stretch, show_all=True, )
         self.add(fdr)
 
-        self.play(Write(fdr.txtC1))
-        self.play(Write(fdr.txtC2))
+        # 显示 C1，C2
+        self.play(AnimationGroup(Write(fdr.txtC1),
+                                 Write(fdr.txtC2), lag_ratio=0.5))
+        self.wait(3)
 
-        self.wait(2)
+        # 显示公式
+        tx2a1.next_to(tx2, RIGHT)
+        tx2a2.next_to(tx2a1, RIGHT)
+        self.play(Write(tx2))
+        self.play(TransformFromCopy(VGroup(fdr.txtS1, fdr.txtC1), tx2a1))
+        self.play(TransformFromCopy(VGroup(fdr.txtS2, fdr.txtC2), tx2a2))
+
+        vt2x = VGroup(tx2, tx2a1, tx2a2)
+        vt2x.generate_target()
+        vt2x.target.shift(LEFT*vt2x.get_center())
+        move2 = MoveToTarget(vt2x)
+        self.play(move2, run_time=0.5)
+
+        # 消元公式
+        tx1b = TexMobject("=", "S_1", "+C_1", "-S_2", "-C2").scale(1.5)
+        tx1c = TexMobject("0").scale(1.5)
+        tx1d = TexMobject("=C_1-C_2").scale(1.5)
+        tx1e = TexMobject("C_1").scale(1.5)
+        tx1f = TexMobject("=C_2").scale(1.5)
+
+        tx1b.next_to(tx1, RIGHT)
+        self.remove(tx1a)
+        # tx1 = tx1l
+        self.play(ReplacementTransform(vt2x, tx1b))
+        vt1x = VGroup(tx1, tx1b)
+        vt1x.generate_target()
+        vt1x.target.shift(LEFT*vt1x.get_center())
+        move1 = MoveToTarget(vt1x)
+        self.play(move1, run_time=1)
+        self.play(Indicate(vt1x))
+
+        tx1.set_color_by_tex("S_1-S_2", BLUE)
+        tx1b.set_color_by_tex("S_1", RED)
+        tx1b.set_color_by_tex("-S_2", RED)
+        # 显示颜色后停顿
+        self.wait()
+
+        tx1c.next_to(tx1b, LEFT)
+        tx1d.next_to(tx1c, RIGHT)
+        self.play(ReplacementTransform(tx1, tx1c),
+                  ReplacementTransform(tx1b, tx1d))
+        vt1x = VGroup(tx1c, tx1d)
+        vt1x.generate_target()
+        vt1x.target.shift(LEFT*vt1x.get_center())
+        move1 = MoveToTarget(vt1x)
+        self.play(move1, run_time=1)
+
+        tx1e.next_to(tx1d, LEFT)
+        tx1f.next_to(tx1e, RIGHT)
+        self.play(ReplacementTransform(tx1c, tx1e),
+                  ReplacementTransform(tx1d, tx1f))
+        vt1x = VGroup(tx1e, tx1f)
+        vt1x.generate_target()
+        vt1x.target.shift(LEFT*vt1x.get_center())
+        move1 = MoveToTarget(vt1x)
+        self.play(move1, run_time=1)
+
+        self.play(*[Indicate(o) for o in [fdr.R5, fdr.R6]])
+        self.play(TransformFromCopy(fdr.R5, tx1e.copy()),
+                  TransformFromCopy(fdr.R6, tx1f.copy()))
+
+        # 更新一下对象，不知道为啥不更新会有问题
+        self.remove(fdr.txtC1, fdr.txtC2)
+        self.remove(fdr)
+        stretch = 1.2 * self.unit
+        fdr = FixedDiffRect(height=self.sh*self.unit, width=self.sw*self.unit + stretch,
+                            a=self.a*self.unit, b=self.b*self.unit,
+                            stretch_width=stretch, show_all=True, )
+        self.add(fdr)
+        g1 = VGroup(fdr)
+        if _DEBUG_:
+            self.play(Write(g1), run_time=4)
+        else:
+            self.play(UpdateFromAlphaFunc(g1, update3),
+                      run_time=4, rate_func=there_and_back)
+        self.add(fdr.txtC1, fdr.txtC2)
 
         # 加 x1, x2
         fdr.add_measurement_stretch(True)
         self.play(*[Write(o) for o in fdr.measurement_stretch])
-        self.wait(3)
+        self.play(*[Indicate(o, rate_func=there_and_back, scale_factor=1.5, run_time=1)
+                    for o in fdr.measurement_stretch])
 
-        self.wait(3)
+        self.wait(1)
+
+        tx2l1 = TexMobject("C_1=3b\\times x").scale(1.5)
+        tx2r1 = TexMobject("=C_2=a\\times x").scale(1.5)
+        tx2l2 = TexMobject("3b", "\\times x").scale(1.5)
+        tx2r2 = TexMobject("=a", "\\times x").scale(1.5)
+        tx2l3 = TexMobject("3b").scale(1.5)
+        tx2r3 = TexMobject("=a").scale(1.5)
+
+        tx2l1.next_to(vt1x, DOWN, buff=0.6)
+        tx2r1.next_to(tx2l1, RIGHT)
+        self.play(TransformFromCopy(fdr.R5, tx2l1))
+        self.play(TransformFromCopy(fdr.R6, tx2r1))
+        vt2x = VGroup(tx2l1, tx2r1)
+        vt2x.generate_target()
+        vt2x.target.shift(LEFT*vt2x.get_center())
+        move2 = MoveToTarget(vt2x)
+        self.play(move2, run_time=0.5)
+
+        tx2l2.next_to(tx2r1, LEFT)
+        tx2r2.next_to(tx2l2, RIGHT)
+        self.play(ReplacementTransform(tx2l1, tx2l2))
+        self.play(ReplacementTransform(tx2r1, tx2r2))
+        vt2x = VGroup(tx2l2, tx2r2)
+        vt2x.generate_target()
+        vt2x.target.shift(LEFT*vt2x.get_center())
+        move2 = MoveToTarget(vt2x)
+        self.play(move2, run_time=0.5)
+        tx2l2.set_color_by_tex("\\times x", BLUE)
+        tx2r2.set_color_by_tex("\\times x", BLUE)
+        self.wait()
+
+        tx2l3.next_to(tx2r2, LEFT)
+        tx2r3.next_to(tx2l3, RIGHT)
+        self.play(ReplacementTransform(tx2l2, tx2l3),
+                  ReplacementTransform(tx2r2, tx2r3))
+
+        self.wait()
