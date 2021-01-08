@@ -218,34 +218,31 @@ class Dimensioning(VGroup):
         self.buff = buff
         self.stroke = stroke
         self.color = color
-        self.label_margin = 0.1
+        self.label_margin = 0.0
         self.arrow_angle = 18*DEGREES
-        self.arrow_length = 0.2
+        self.arrow_length = 0.25
 
         reference_line = Line(start, end)
         self.reference_line = reference_line
 
         if self.dashed:
-            self.left_dim = DashedLine(reference_line.get_length() * LEFT/2,
-                                       ORIGIN + LEFT * self.label_margin, **kwargs)
-            self.right_dim = DashedLine(ORIGIN + RIGHT * self.label_margin,
-                                        reference_line.get_length()*RIGHT/2, **kwargs)
+            self.start_dim = DashedLine(reference_line.get_length() * LEFT/2,
+                                        reference_line.get_length() * RIGHT/2, **kwargs)
         else:
-            self.left_dim = Line(reference_line.get_length() * LEFT / 2,
-                                 ORIGIN + LEFT * self.label_margin, **kwargs)
-            self.right_dim = Line(ORIGIN + RIGHT * self.label_margin,
-                                  reference_line.get_length() * RIGHT / 2, **kwargs)
-
+            self.start_dim = Line(reference_line.get_length() * LEFT/2,
+                                  reference_line.get_length() * RIGHT/2, **kwargs)
+        self.end_dim = None
         pre_medicion = Line(ORIGIN, self.side *
                             RIGHT).rotate(PI/2).set_stroke(None, self.stroke)
         pos_medicion = pre_medicion.copy()
-        pre_medicion.move_to(self.left_dim.get_start())
-        pos_medicion.move_to(self.right_dim.get_end())
+        pre_medicion.move_to(self.start_dim.get_start())
+        pos_medicion.move_to(self.start_dim.get_end())
 
-        self.left_dim.set_stroke(width=self.stroke)
-        self.right_dim.set_stroke(width=self.stroke)
-        self.add(self.left_dim, self.right_dim)
-        self.add(pre_medicion, pos_medicion)
+        self.start_dim.set_stroke(width=self.stroke).set_color(self.color)
+        pre_medicion.set_stroke(width=self.stroke).set_color(self.color)
+        pos_medicion.set_stroke(width=self.stroke).set_color(self.color)
+
+        self.add(pre_medicion, self.start_dim, pos_medicion)
         angle = reference_line.get_angle()
 
         matrix_rotation = rotation_matrix(PI/2, OUT)
@@ -256,35 +253,35 @@ class Dimensioning(VGroup):
         self.move_to(reference_line)
         self.shift(direction*self.buff)
 
-    def add_tex(self, text, invert=False, scale=1, buff=0.1, **kwargs):
+    def add_tex(self, text, invert=False, scale=1, margin=0.1, **kwargs):
         reference_line = self.reference_line
-
         texto = MathTex(text, **kwargs)
         if invert:
             texto.rotate(PI)
 
-        self.label_margin = buff
+        self.label_margin = margin
         tex_margen = texto.get_width() / 2 + self.label_margin
 
         if self.dashed:
-            left_dim = DashedLine(
-                reference_line.get_length() * LEFT / 2, ORIGIN + LEFT * tex_margen, **kwargs)
-            right_dim = DashedLine(
-                ORIGIN + RIGHT * tex_margen, reference_line.get_length() * RIGHT / 2, **kwargs)
+            start_dim = DashedLine(reference_line.get_length() * LEFT / 2,
+                                   ORIGIN + LEFT * tex_margen, **kwargs)
+            end_dim = DashedLine(ORIGIN + RIGHT * tex_margen,
+                                 reference_line.get_length() * RIGHT / 2, **kwargs)
         else:
-            left_dim = Line(reference_line.get_length() * LEFT/2,
-                            ORIGIN + LEFT * tex_margen, **kwargs)
-            right_dim = Line(ORIGIN + RIGHT * tex_margen,
-                             reference_line.get_length() * RIGHT/2, **kwargs)
-        self.remove(self.left_dim, self.right_dim)
+            start_dim = Line(reference_line.get_length() * LEFT/2,
+                             ORIGIN + LEFT * tex_margen, **kwargs)
+            end_dim = Line(ORIGIN + RIGHT * tex_margen,
+                           reference_line.get_length() * RIGHT/2, **kwargs)
+        self.remove(self.start_dim, self.end_dim)
 
-        left_dim.set_stroke(width=self.stroke)
-        right_dim.set_stroke(width=self.stroke)
-        self.left_dim = left_dim
-        self.right_dim = right_dim
+        start_dim.set_stroke(width=self.stroke).set_color(self.color)
+        end_dim.set_stroke(width=self.stroke).set_color(self.color)
+
+        self.start_dim = start_dim
+        self.end_dim = end_dim
 
         angle = reference_line.get_angle()
-        vg = VGroup(self.left_dim, self.right_dim, texto)
+        vg = VGroup(self.start_dim, texto, self.end_dim)
         vg.rotate(angle)
         vg.move_to(reference_line)
         vg.shift(self.direction*self.buff)
@@ -347,11 +344,10 @@ class SquareToCircle(Scene):
 
         self.add(Dot(ptA), Dot(ptC), Dot(ORIGIN))
         # self.add(Line(ptB, ORIGIN))
-        me = Dimensioning(ptA, ORIGIN, dashed=True, buff=-
-                          0.5).add_tips().add_tex("m", invert=True)
-        mf = Dimensioning(ptB, ORIGIN,  color=RED,
-                          dashed=False).add_tips().add_tex("abc", color=BLUE)
-        mg = Dimensioning(ORIGIN, ptC, dashed=False, buff=-0.5).add_tips().add_tex("xyz", color=RED)
+        me = Dimensioning(ptA, ORIGIN, dashed=False, margin=-0.5)
+        mf = Dimensioning(ORIGIN, ptB, color=RED).add_tips().add_tex(
+            "abc", color=BLUE)
+        mg = Dimensioning(ORIGIN, ptC).add_tips().add_tex("abcxyz", color=RED)
 
         # animate the creation of the square
         # self.play(ShowCreation(square))
