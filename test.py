@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-from manimlib.imports import *
+# from manimlib.imports import *
+from manim import *
 
 # manim ddmath/test.py Test -pm
 # manim ddmath/ex20200510_rolling_circle.py RollingCircle1 -pm -r1280,720
@@ -88,8 +89,7 @@ class SurfacesAnimation(ThreeDScene):
 
         paraboloid = ParametricSurface(
             lambda u, v: np.array([
-                np.cos(v) * u,
-                np.sin(v) * u,
+                np.cos(v) * u, np.sin(v) * u,
                 u ** 2
             ]), v_max=TAU,
             checkerboard_colors=[PURPLE_D, PURPLE_E],
@@ -200,3 +200,167 @@ class AnimationGroupExampleFail(Scene):
         #     )
         self.play(ag, run_time=5)
         self.wait(2)
+
+
+# try:
+#     import sys
+#     sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+#     from utils import Measurement
+# except:
+#     pass
+
+class Dimensioning(VGroup):
+    def __init__(self, start=LEFT, end=RIGHT, buff=-0.5,
+                 dashed=False, stroke=2.4, color=WHITE, **kwargs):
+        VGroup.__init__(self, **kwargs)
+        self.side = 0.3
+        self.dashed = dashed
+        self.buff = buff
+        self.stroke = stroke
+        self.color = color
+        self.label_margin = 0.1
+        self.arrow_angle = 18*DEGREES
+        self.arrow_length = 0.2
+
+        reference_line = Line(start, end)
+        self.reference_line = reference_line
+
+        if self.dashed:
+            self.left_dim = DashedLine(reference_line.get_length() * LEFT/2,
+                                       ORIGIN + LEFT * self.label_margin, **kwargs)
+            self.right_dim = DashedLine(ORIGIN + RIGHT * self.label_margin,
+                                        reference_line.get_length()*RIGHT/2, **kwargs)
+        else:
+            self.left_dim = Line(reference_line.get_length() * LEFT / 2,
+                                 ORIGIN + LEFT * self.label_margin, **kwargs)
+            self.right_dim = Line(ORIGIN + RIGHT * self.label_margin,
+                                  reference_line.get_length() * RIGHT / 2, **kwargs)
+
+        pre_medicion = Line(ORIGIN, self.side *
+                            RIGHT).rotate(PI/2).set_stroke(None, self.stroke)
+        pos_medicion = pre_medicion.copy()
+        pre_medicion.move_to(self.left_dim.get_start())
+        pos_medicion.move_to(self.right_dim.get_end())
+
+        self.left_dim.set_stroke(width=self.stroke)
+        self.right_dim.set_stroke(width=self.stroke)
+        self.add(self.left_dim, self.right_dim)
+        self.add(pre_medicion, pos_medicion)
+        angle = reference_line.get_angle()
+
+        matrix_rotation = rotation_matrix(PI/2, OUT)
+        vector_unitary = reference_line.get_unit_vector()
+        direction = np.matmul(matrix_rotation, vector_unitary)
+        self.direction = direction
+        self.rotate(angle)
+        self.move_to(reference_line)
+        self.shift(direction*self.buff)
+
+    def add_tex(self, text, invert=False, scale=1, buff=0.1, **kwargs):
+        reference_line = self.reference_line
+
+        texto = MathTex(text, **kwargs)
+        if invert:
+            texto.rotate(PI)
+
+        self.label_margin = buff
+        tex_margen = texto.get_width() / 2 + self.label_margin
+
+        if self.dashed:
+            left_dim = DashedLine(
+                reference_line.get_length() * LEFT / 2, ORIGIN + LEFT * tex_margen, **kwargs)
+            right_dim = DashedLine(
+                ORIGIN + RIGHT * tex_margen, reference_line.get_length() * RIGHT / 2, **kwargs)
+        else:
+            left_dim = Line(reference_line.get_length() * LEFT/2,
+                            ORIGIN + LEFT * tex_margen, **kwargs)
+            right_dim = Line(ORIGIN + RIGHT * tex_margen,
+                             reference_line.get_length() * RIGHT/2, **kwargs)
+        self.remove(self.left_dim, self.right_dim)
+
+        left_dim.set_stroke(width=self.stroke)
+        right_dim.set_stroke(width=self.stroke)
+        self.left_dim = left_dim
+        self.right_dim = right_dim
+
+        angle = reference_line.get_angle()
+        vg = VGroup(self.left_dim, self.right_dim, texto)
+        vg.rotate(angle)
+        vg.move_to(reference_line)
+        vg.shift(self.direction*self.buff)
+        self.add(vg)
+
+        return self
+
+    def add_tips(self):
+        single_vector = self.reference_line.get_unit_vector()
+
+        point_final1 = self.reference_line.get_end()
+        point_initial1 = point_final1-single_vector*self.arrow_length
+
+        point_initial2 = self.reference_line.get_start()
+        point_final2 = point_initial2+single_vector*self.arrow_length
+
+        lin1_1 = Line(point_initial1, point_final1).set_color(
+            self[0].get_color()).set_stroke(None, self.stroke)
+        lin1_2 = lin1_1.copy()
+        lin2_1 = Line(point_initial2, point_final2).set_color(
+            self[0].get_color()).set_stroke(None, self.stroke)
+        lin2_2 = lin2_1.copy()
+
+        lin1_1.rotate(self.arrow_angle, about_point=point_final1,
+                      about_edge=point_final1)
+        lin1_2.rotate(-self.arrow_angle, about_point=point_final1,
+                      about_edge=point_final1)
+
+        lin2_1.rotate(self.arrow_angle, about_point=point_initial2,
+                      about_edge=point_initial2)
+        lin2_2.rotate(-self.arrow_angle, about_point=point_initial2,
+                      about_edge=point_initial2)
+
+        vg = VGroup(lin1_1, lin1_2, lin2_1, lin2_2)
+        vg.shift(self.direction*self.buff)
+        return self.add(vg)
+
+    def add_letter(self, texto, scale=1, buff=0.1, **kwargs):
+        line_reference = self.line_reference
+        texto = TexMobject(texto, **kwargs).scale(scale).move_to(self)
+        width = texto.get_height()/2
+        # texto.shift(self.direction*(buff+1)*width)
+        return self.add(texto)
+
+
+class SquareToCircle(Scene):
+    def construct(self):
+        circle = Circle()                    # create a circle
+        circle.set_fill(PINK, opacity=0.5)   # set color and transparency
+
+        square = Square(4)                    # create a square
+        square.rotate(-3 * TAU / 8)          # rotate a certain amount
+
+        ptA = square.get_corner(UL)
+        ptB = square.get_corner(UR)
+        ptC = ORIGIN + RIGHT * 5
+
+        # me = Measurement(Line(ptA, ptB), invert=True, dashed=True,
+        #                  buff=-0.5).add_tips().add_tex("a", buff=3, color=WHITE)
+
+        self.add(Dot(ptA), Dot(ptC), Dot(ORIGIN))
+        # self.add(Line(ptB, ORIGIN))
+        me = Dimensioning(ptA, ORIGIN, dashed=True, buff=-
+                          0.5).add_tips().add_tex("m", invert=True)
+        mf = Dimensioning(ptB, ORIGIN,  color=RED,
+                          dashed=False).add_tips().add_tex("abc", color=BLUE)
+        mg = Dimensioning(ORIGIN, ptC, dashed=False, buff=-0.5).add_tips().add_tex("xyz", color=RED)
+
+        # animate the creation of the square
+        # self.play(ShowCreation(square))
+        self.play(ShowCreation(me), run_time=3)
+        self.play(Write(mf), run_time=3)
+        self.play(ShowCreation(mg), run_time=3)
+        self.wait(3)
+        # interpolate the square into the circle
+        # self.play(Transform(square, circle))
+        # self.play(FadeOut(square))           # fade out animation
+
+        self.wait(5)
