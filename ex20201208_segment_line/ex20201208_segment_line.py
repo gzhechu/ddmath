@@ -1,12 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from manimlib.imports import *
-from random import shuffle, randrange
+#
+# 2021-01-09
+# code fix for manim version 0.2.0
+#
+
+from manim import *
 
 try:
+    import os
     import sys
-    sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+    import inspect
+    currentdir = os.path.dirname(os.path.abspath(
+        inspect.getfile(inspect.currentframe())))
+    parentdir = os.path.dirname(currentdir)
+    sys.path.insert(0, parentdir)
     from utils import Measurement
 except:
     pass
@@ -21,9 +30,9 @@ except:
 # manim ddmath/ex20201208_segment_line.py SegLine2b -r640,360 -pl
 
 """
-ffmpeg -i SegLine1.mp4 -i v1.m4a SegLine1Release.mp4 -y
-ffmpeg -i SegLine2.mp4 -i v2.m4a output.mp4 -y
-ffmpeg -i SegLine2b.mp4 -i v2b.m4a SegLine2bRelease.mp4 -y
+ffmpeg -i SegLine1.mp4 -i SegLine1.m4a SegLine1Release.mp4 -y
+ffmpeg -i SegLine2.mp4 -i SegLine2.m4a SegLine2Release.mp4 -y
+ffmpeg -i SegLine2b.mp4 -i SegLine2b.m4a SegLine2bRelease.mp4 -y
 """
 
 
@@ -55,18 +64,16 @@ class SegLine1(Scene):
 21 好了 下次再见
     """
 
-    CONFIG = {
-        "color": WHITE,
-        "a": [-6*0.9, 0, 0],
-        "b": [-2*0.9, 0, 0],
-        "c": [-0*0.9, 0, 0],
-        "d": [6*0.9, 0, 0],
-        "e": [-3*0.9, 0, 0],
-        "f": [2*0.9, 0, 0],
-        "txt": 9,
-    }
-
     def construct(self):
+        self.color = WHITE
+        self.a = [-6*0.9, 0, 0]
+        self.b = [-2*0.9, 0, 0]
+        self.c = [-0*0.9, 0, 0]
+        self.d = [6*0.9, 0, 0]
+        self.e = [-3*0.9, 0, 0]
+        self.f = [2*0.9, 0, 0]
+        self.txt = 9
+
         lAD = Line(self.a, self.d)
         nlAD = NumberLine(x_min=-6, x_max=6, unit_size=0.9)
         lAC = Line(self.a, self.c, stroke_width=10, color=YELLOW)
@@ -242,8 +249,7 @@ class SegLine1(Scene):
 
 
 class SegLine2(Scene):
-    CONFIG = {
-        """
+    """
 00 各位好，
 01 今天讲一道我个人觉得很有意思也有代表性的线段计算题
 02 说已知点B是线段AC上一点
@@ -271,20 +277,18 @@ class SegLine2(Scene):
 21 由于时间关系这次就不讲了
 23 如果你想知道 请关注我 下集我来讲
 """
-        "color": WHITE,
-        # A, Q, P, M, N, B,  C
-        # 0, 3, 4, 6, 8, 12, 16
-        "a": [-8*0.7, 1, 0],
-        "b": [4*0.7, 1, 0],
-        "c": [8*0.7, 1, 0],
-        "m": [-2*0.7, 1, 0],
-        "n": [0*0.7, 1, 0],
-        "p": [-4*0.7, 1, 0],
-        "q": [-5*0.7, 1, 0],
-        "txt": 9,
-    }
 
     def construct(self):
+        self.color = WHITE
+        self.a = [-8*0.7, 1, 0]
+        self.b = [4*0.7, 1, 0]
+        self.c = [8*0.7, 1, 0]
+        self.m = [-2*0.7, 1, 0]
+        self.n = [0*0.7, 1, 0]
+        self.p = [-4*0.7, 1, 0]
+        self.q = [-5*0.7, 1, 0]
+        self.txt = 9
+
         lALL = Line(self.a, self.c)
         lAC = Line(self.a, self.c, stroke_width=15, color=BLUE)
         lAB = Line(self.a, self.b, stroke_width=15, color=RED)
@@ -497,9 +501,8 @@ class SegLine2(Scene):
         self.wait(5)
 
 
-class SegLine2b(GraphScene):
-    CONFIG = {
-        """
+class SegLine2b(Scene):
+    """
 00 各位好，
 01 接上一集的线段计算题
 02 先补充一个基础知识
@@ -528,37 +531,18 @@ class SegLine2b(GraphScene):
 24 再看一遍视频
 25 你学会了么？
 """
-        "color": WHITE,
-        # A, Q, P, M, N, B,  C
-        # 0, 3, 4, 6, 8, 12, 16
-        "a": [-8*0.7, 1, 0],
-        "b": [4*0.7, 1, 0],
-        "c": [8*0.7, 1, 0],
-        "m": [-2*0.7, 1, 0],
-        "n": [0*0.7, 1, 0],
-        "p": [-4*0.7, 1, 0],
-        "q": [-5*0.7, 1, 0],
-        "txt": 9,
 
-        "x_min": 0,
-        "x_max": 16,
-        "x_axis_width": 11.2,
-        # "x_tick_frequency": 2,
-        "x_leftmost_tick": None,  # Change if different from x_min
-        # "x_labeled_nums": [0, 2, 3, 4, 6, 8, 11, 12, 16],
-        "x_axis_label": "",
-        "y_min": 0,
-        "y_max": 1,
-        "y_axis_height": 0,
-        "y_axis_label": "",
-        "axes_color": WHITE,
-        "graph_origin": 1 * UP + 5.6 * LEFT,
-        "exclude_zero_label": False,
-        # "area_opacity": 1,
-        "x_axis_config": {
-            "include_tip": True,
-        }
-    }
+    def __init__(self, **kwargs):
+        self.color = WHITE
+        self.a = [-8*0.7, 1, 0]
+        self.b = [4*0.7, 1, 0]
+        self.c = [8*0.7, 1, 0]
+        self.m = [-2*0.7, 1, 0]
+        self.n = [0*0.7, 1, 0]
+        self.p = [-4*0.7, 1, 0]
+        self.q = [-5*0.7, 1, 0]
+        self.txt = 9
+        super().__init__(**kwargs)
 
     def construct(self):
         lALL = Line(self.a, self.c)
@@ -571,6 +555,8 @@ class SegLine2b(GraphScene):
         lPQ = Line(self.p, self.q, stroke_width=15, color=YELLOW)
         lBC = Line(self.b, self.c, stroke_width=15, color=BLUE)
         lMN = Line(self.m, self.n, stroke_width=15, color=RED)
+        nlAD = NumberLine(x_min=-8, x_max=8, unit_size=0.7)
+        nlAD.shift(UP)
 
         tx1 = TexMobject("MN").scale(1.5)
         tx1.move_to(self.txt * UP)
@@ -610,7 +596,8 @@ class SegLine2b(GraphScene):
 
         self.play(*[FadeOut(o) for o in txts], *[FadeOut(o)for o in pts])
         self.remove((lALL))
-        self.setup_axes(animate=True)
+        # self.setup_axes(animate=True) #
+        self.play(Write(nlAD))
         inits = [ptM, ptN, txtM, txtN]
         self.play(*[FadeIn(o) for o in inits], run_time=1)
 

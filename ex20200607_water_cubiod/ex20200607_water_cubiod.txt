@@ -1,4 +1,5 @@
-ffmpeg -i WaterCubiod.mp4 -i ex20200607_water_cubiod.mp3 -c:v copy -c:a aac output.mp4
+ffmpeg -i WaterCubiod1.mp4 -i voice1.mp3 -c:v copy -c:a aac output1.mp4
+ffmpeg -i WaterCubiod2.mp4 -i voice2.mp3 -c:v copy -c:a aac output2.mp4
 
 00 小升初的女儿又给我来新问题了，说：
 03 棱长为60厘米的正方体容器
