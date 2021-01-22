@@ -2,7 +2,7 @@
 
 from manimlib.imports import *
 
-# manim ddmath/ex20200505_rotate_rect.py RotateRect -r1280,720 -pm
+# manimlib ex20200505_rotate_rect.py RotateRect -r1280,720 -pm
 
 
 class RotateRect(Scene):

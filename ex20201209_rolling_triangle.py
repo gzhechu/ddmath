@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
-from manimlib.for_3b1b_videos.pi_creature_animations import Blink
 from manimlib.imports import *
 import sys
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
 
-# manim ddmath/ex20201209_rolling_triangle.py RollingTriangle1 -r1280,720 -pm
-# manim ddmath/ex20201209_rolling_triangle.py RollingTriangle1 -r640,360 -pl
+# manimlib ex20201209_rolling_triangle.py RollingTriangle1 -r1280,720 -pm
+# manimlib ex20201209_rolling_triangle.py RollingTriangle1 -r640,360 -pl
 
 """
 ffmpeg -i RollingTriangle1.mp4 -i voice.m4a output.mp4

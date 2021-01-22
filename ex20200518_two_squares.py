@@ -2,9 +2,9 @@
 
 from manimlib.imports import *
 
-# manim ddmath/ex20200518_two_squares.py Diff2Square -pm -r1280,720
-# manim ddmath/ex20200518_two_squares.py Sum2Square -pm -r1280,720
-# manim ddmath/ex20200518_two_squares.py PerfectSquare -r1280,720 -pm
+# manimlib ex20200518_two_squares.py Diff2Square -pm -r1280,720
+# manimlib ex20200518_two_squares.py Sum2Square -pm -r1280,720
+# manimlib ex20200518_two_squares.py PerfectSquare -r1280,720 -pm
 
 
 class Measurement(VGroup):

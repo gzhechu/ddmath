@@ -2,8 +2,8 @@
 
 from manimlib.imports import *
 
-# manim ddmath/md20200614_equal_height.py TriangleEqualHeight -r1280,720 -pm
-# manim ddmath/md20200614_equal_height.py EqualHeightEx01 -r1280,720 -pm
+# manimlib md20200614_equal_height.py TriangleEqualHeight -r1280,720 -pm
+# manimlib md20200614_equal_height.py EqualHeightEx01 -r1280,720 -pm
 
 
 class TriangleEqualHeight(Scene):

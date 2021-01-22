@@ -3,8 +3,8 @@
 from manimlib.imports import *
 from manimlib.for_3b1b_videos.pi_creature_animations import Blink
 
-# manim ddmath/ex20201116_chase_problem.py CircleChase1 -r1280,720 -pm
-# manim ddmath/ex20201116_chase_problem.py CircleChase1 -r640,360 -pl
+# manimlib ex20201116_chase_problem.py CircleChase1 -r1280,720 -pm
+# manimlib ex20201116_chase_problem.py CircleChase1 -r640,360 -pl
 # ffmpeg -i CircleChase1.mp4 -i sound.m4a output.mp4
 
 """
