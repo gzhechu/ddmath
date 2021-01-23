@@ -2,7 +2,7 @@
 
 from manimlib.imports import *
 
-# manimlib ex20200515_interior_angle.py Triangle -r1280,720 -pm
+# manimlib th20200515_interior_angle.py Triangle -r1280,720 -pm
 
 
 class Triangle(Scene):
