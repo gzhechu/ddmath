@@ -6,6 +6,8 @@ import math
 # manim ex20200510_rolling_circle.py RollingCircle1 -r1280,720 -pqm
 # manim ex20200510_rolling_circle.py RollingCircle2 -r1280,720 -pqm
 
+# ffmpeg -i RollingCircle1.mp4 -i v1.aac output1.mp4
+# ffmpeg -i RollingCircle2.mp4 -i v2.aac output2.mp4
 
 class RollingCircle1(Scene):
     def __init__(self, **kwargs):
