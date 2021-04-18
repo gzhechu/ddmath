@@ -5,12 +5,12 @@ from manimlib.imports import *
 
 # 长方体
 class Cuboid(VGroup):
-    CONFIG = {
-        "x": 3,
-        "y": 4,
-        "z": 5,
-        "has_top": True,
-    }
+    def __init__(self, x=3, y=4, z=5, has_top=True, **kwargs):
+        self.x = x
+        self.y = y
+        self.z = z
+        self.has_top = has_top
+        super().__init__(**kwargs)
 
     def __str__(self):
         return str("class:{}, x:{}, y:{}, z:{}".format(self.name, self.x*10, self.y*10, self.z*10))
@@ -49,20 +49,18 @@ class Cuboid(VGroup):
 
 # 测量工具
 class Measurement(VGroup):
-    CONFIG = {
-        "color": RED_B,
-        "buff": 0.3,
-        "laterales": 0.3,
-        "invert": False,
-        "dashed_segment_length": 0.09,
-        "dashed": False,
-        "con_flechas": True,
-        "ang_flechas": 30*DEGREES,
-        "tam_flechas": 0.2,
-        "stroke": 2.4
-    }
-
     def __init__(self, objeto, **kwargs):
+        self.color = RED_B
+        self.buff = 0.3
+        self.laterales = 0.3
+        self.invert = False
+        self.dashed_segment_length = 0.09
+        self.dashed = False
+        self.con_flechas = True
+        self.ang_flechas = 30*DEGREES
+        self.tam_flechas = 0.2
+        self.stroke = 2.4
+
         VGroup.__init__(self, **kwargs)
         if self.dashed == True:
             medicion = DashedLine(ORIGIN, objeto.get_length(
@@ -197,3 +195,21 @@ class Measurement(VGroup):
             inv = 1
         texto.shift(self.direction*(buff+1)*width)
         return texto
+
+
+class Test0(ThreeDScene):
+    def construct(self):
+        cbox = Cuboid()
+        self.set_camera_orientation(phi=70 * DEGREES, theta=30*DEGREES)
+        self.play(FadeIn(cbox))
+        self.wait(5)
+
+
+class Test1(Scene):
+    def construct(self):
+        text = TextMobject("Text or object")
+        self.add(text)
+        me = Measurement(Line(ORIGIN+5*LEFT, ORIGIN+5*RIGHT)
+                         ).add_tips().add_tex("5", buff=0.6, color=WHITE)
+        self.add(me)
+        self.wait(5)

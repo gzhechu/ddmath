@@ -3,7 +3,7 @@
 from manimlib.imports import *
 import numpy as np
 
-# manim ddmath/ex20200525_exterior_angle.py ExteriorAngle -r1280,720 -pm
+# manimlib th20200525_exterior_angle.py ExteriorAngle -r1280,720 -pm
 
 
 class ExteriorAngle(Scene):

@@ -1,19 +1,26 @@
 #!/usr/bin/env python3
 
-from manimlib.imports import *
+#
+# 2021-01-06
+# code fix for manim version 0.2.0
+#
 
-# manim ddmath/ex20200607_water_cubiod.py WaterCubiod -o WaterCubiod1.mp4 -r1280,720 -pm
-# manim ddmath/ex20200607_water_cubiod.py WaterCubiod -n 27 -o WaterCubiod2.mp4 -r1280,720 -pm
+from manim import *
 
+# manim ex20200607_water_cubiod.py WaterCubiod -n 0,26 -o WaterCubiod1.mp4 -r1280,720 -pqm
+# manim ex20200607_water_cubiod.py WaterCubiod -n 0,26 -o WaterCubiod1.mp4 -r640,360 -pql
+
+# manim ex20200607_water_cubiod.py WaterCubiod -n 27 -o WaterCubiod2.mp4 -r1280,720 -pqm
+# manim ex20200607_water_cubiod.py WaterCubiod -n 27 -o WaterCubiod2.mp4 -r640,360 -pql
 
 # 长方体
 class Cuboid(VGroup):
-    CONFIG = {
-        "x": 3,
-        "y": 4,
-        "z": 5,
-        "has_top": True,
-    }
+    def __init__(self, x=3, y=4, z=5, has_top=True, **kwargs):
+        self.x = x
+        self.y = y
+        self.z = z
+        self.has_top = has_top
+        super().__init__(**kwargs)
 
     def __str__(self):
         return str("class:{}, x:{}, y:{}, z:{}".format(self.name, self.x*10, self.y*10, self.z*10))
@@ -51,20 +58,15 @@ class Cuboid(VGroup):
 
 
 class WaterCubiod(ThreeDScene):
-    CONFIG = {
-        "box_height": 60 * 0.1,
-        "water_height": 50 * 0.1,
-        "box_side": 60 * 0.1,
-        "rod_height": 74 * 0.1,
-        "sod_side": 15 * 0.1,
-        "zshift": 24 * 0.1,
-        "zdelta": 1.6 * 0.1,
-        "txt": 11,
-    }
-
     def construct(self):
-        # self.set_camera_orientation(phi=90 * DEGREES)
-        # axes = ThreeDAxes(z_min=-8, z_max=8,)
+        self.box_height = 60 * 0.1
+        self.water_height = 50 * 0.1
+        self.box_side = 60 * 0.1
+        self.rod_height = 74 * 0.1
+        self.sod_side = 15 * 0.1
+        self.zshift = 24 * 0.1
+        self.zdelta = 1.6 * 0.1
+        self.txt = 11
 
         t1 = TexMobject("l_1=60cm").scale(1.5)
         t2 = TexMobject("l_2=15cm").scale(1.5)
@@ -77,7 +79,7 @@ class WaterCubiod(ThreeDScene):
         t4.next_to(t3, DOWN)
 
         cbox = Cuboid(x=self.box_side, y=self.box_side, z=self.box_height,
-                      fill_color=WHITE, fill_opacity=0,)
+                      fill_color=WHITE, fill_opacity=0, has_top=False)
         cw = Cuboid(x=self.box_side, y=self.box_side, z=self.water_height, stroke_width=0,
                     fill_color=BLUE, fill_opacity=0.3,)
         cw.move_to(IN*(self.box_height-self.water_height)/2)
@@ -208,7 +210,7 @@ class WaterCubiod(ThreeDScene):
         self.wait(6)
         self.stop_ambient_camera_rotation()
 
-        # 拉近镜头
+        # 拉近镜头，放大水线局部
         self.move_camera(phi=72*DEGREES, theta=100*DEGREES,
                          distance=9, run_time=3)
         self.wait(1)
@@ -247,7 +249,7 @@ class WaterCubiod(ThreeDScene):
         # self.wait(1)
         self.move_camera(phi=85*DEGREES, run_time=3)
         self.begin_ambient_camera_rotation(rate=0.1)
-        self.wait(8)
+        self.wait(7)
 
         ###################################################################
         # 第二阶段动画
@@ -348,9 +350,10 @@ class WaterCubiod(ThreeDScene):
         self.stop_ambient_camera_rotation()
 
 
-class Test(ThreeDScene):
+class Test1(ThreeDScene):
     def construct(self):
-        c1 = Cuboid(x=3, y=4, z=5, fill_color=BLUE, fill_opacity=0.2,)
+        c1 = Cuboid(x=3, y=4, z=5, has_top=False,
+                    fill_color=BLUE, fill_opacity=0.2,)
         c2 = Cuboid(x=6, y=1, z=3, color=RED,
                     fill_color=RED, fill_opacity=0.2,)
 
@@ -364,4 +367,4 @@ class Test(ThreeDScene):
         self.add_fixed_in_frame_mobjects(text3d)  # <----- Add this
         self.play(Write(text3d))
         self.play(ShowCreation(c2))
-        self.wait(5)
+        self.wait(10)

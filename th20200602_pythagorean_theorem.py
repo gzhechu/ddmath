@@ -2,9 +2,9 @@
 
 from manimlib.imports import *
 
-# manim ddmath/th20200602_pythagorean_theorem.py ProofOne -r1280,720 -pm
-# manim ddmath/th20200602_pythagorean_theorem.py ProofTwo -r1280,720 -pm
-# manim ddmath/th20200602_pythagorean_theorem.py ProofThree -r1280,720 -pm
+# manimlib th20200602_pythagorean_theorem.py ProofOne -r1280,720 -pm
+# manimlib th20200602_pythagorean_theorem.py ProofTwo -r1280,720 -pm
+# manimlib th20200602_pythagorean_theorem.py ProofThree -r1280,720 -pm
 
 
 class Measurement(VGroup):

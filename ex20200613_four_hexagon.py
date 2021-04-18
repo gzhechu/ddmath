@@ -2,7 +2,7 @@
 
 from manimlib.imports import *
 
-# manim ddmath/ex20200613_four_hexagon.py SizeOfTriangle -r1280,720 -pm
+# manimlib ex20200613_four_hexagon.py SizeOfTriangle -r1280,720 -pm
 
 
 class SizeOfTriangle(Scene):

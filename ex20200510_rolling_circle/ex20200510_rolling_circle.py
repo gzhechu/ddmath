@@ -1,24 +1,26 @@
 #!/usr/bin/env python3
 
-from manimlib.imports import *
-from manimlib.for_3b1b_videos.pi_creature_animations import Blink
+from manim import *
+import math
 
-# manim ddmath/ex20200510_rolling_circle.py RollingCircle1 -r1280,720 -pm
-# manim ddmath/ex20200510_rolling_circle.py RollingCircle2 -r1280,720 -pl
+# manim ex20200510_rolling_circle.py RollingCircle1 -r1280,720 -pqm
+# manim ex20200510_rolling_circle.py RollingCircle2 -r1280,720 -pqm
 
+# ffmpeg -i RollingCircle1.mp4 -i v1.aac output1.mp4
+# ffmpeg -i RollingCircle2.mp4 -i v2.aac output2.mp4
 
 class RollingCircle1(Scene):
-    CONFIG = {
-        "color": WHITE,
-        "r1": 4.5/2,
-        "r2": 4.5/3,
-        "rr": 4.5,
-    }
+    def __init__(self, **kwargs):
+        self.color = WHITE
+        self.r1 = 4.5/2
+        self.r2 = 4.5/3
+        self.rr = 4.5
+        super().__init__(**kwargs)
 
     def construct(self):
         origin = Dot()
         self.add(origin)
-        [txtO] = [TexMobject(X) for X in ["O"]]
+        [txtO] = [MathTex(X) for X in ["O"]]
         txtO.next_to(origin, DR, buff=0.1)
         self.play(Write(txtO))
         self.wait(1)
@@ -33,7 +35,7 @@ class RollingCircle1(Scene):
         g1.generate_target()
         g1.target.shift(UP*self.r1)
 
-        t1 = TexMobject("r_1:r_2=2:1}").scale(1.5)
+        t1 = MathTex("r_1:r_2=2:1}").scale(1.5)
         t1.shift(UP*self.rr*2+RIGHT*(self.rr-1))
 
         self.play(ShowCreation(circler))
@@ -98,7 +100,7 @@ class RollingCircle1(Scene):
                   run_time=10, rate_func=double_smooth)
         self.wait(2)
 
-        t2 = TexMobject("r_1:r_2=3:1}").scale(1.5)
+        t2 = MathTex("r_1:r_2=3:1}").scale(1.5)
         t2.shift(UP*self.rr*2+RIGHT*(self.rr-1))
 
         circle2 = Circle(radius=self.r2, color=self.color,
@@ -137,16 +139,16 @@ class RollingCircle1(Scene):
 
 
 class RollingCircle2(Scene):
-    CONFIG = {
-        "color": WHITE,
-        "r1": 4.5/3,
-        "r2": 4.5,
-        "txt": 3
-    }
+    def __init__(self, **kwargs):
+        self.color = WHITE
+        self.r1 = 4.5/3
+        self.r2 = 4.5
+        self.txt = 3
+        super().__init__(**kwargs)
 
     def construct(self):
         origin = Dot()
-        [txtO] = [TexMobject(X) for X in ["O"]]
+        [txtO] = [MathTex(X) for X in ["O"]]
         txtO.next_to(origin, DR, buff=0.1)
 
         circle_r = Circle(radius=self.r2, color=self.color)
@@ -159,13 +161,13 @@ class RollingCircle2(Scene):
         g1 = VGroup(dot1, circle1, arrow1, arc1)
         g1.shift(UP*(self.r2-self.r1))
 
-        t1 = TexMobject("r_1:r_2=3:1}").scale(1.5)
+        t1 = MathTex("r_1:r_2=3:1}").scale(1.5)
         t1.shift(UP*self.r2*2+RIGHT*(self.r2-1))
 
-        t2 = TexMobject("r_3=r_1-r_2").scale(1.5)
+        t2 = MathTex("r_3=r_1-r_2").scale(1.5)
         t2.next_to(t1, DOWN, buff=0.5)
 
-        tx3 = TexMobject("r_3:r_2=2:1").scale(1.5)
+        tx3 = MathTex("r_3:r_2=2:1").scale(1.5)
         tx3.next_to(t1, DOWN, buff=0.5)
 
         self.play(FadeIn(circle_r), FadeIn(g1), FadeIn(origin), FadeIn(txtO))
@@ -241,9 +243,9 @@ class RollingCircle2(Scene):
             # agr = 0
             # agc = "0"
             # print(agr)
-            ta = TexMobject("angle={:d}".format(
+            ta = MathTex("angle={:d}".format(
                 agr), alignment="\\raggedright").scale(1.5)
-            tb = TexMobject("round={:s}".format(
+            tb = MathTex("round={:s}".format(
                 agc), alignment="\\raggedright").scale(1.5)
             ta.shift(UP*self.r2*2+LEFT*self.r2)
             tb.next_to(ta, DOWN, buff=0.5)
@@ -255,8 +257,8 @@ class RollingCircle2(Scene):
             group.become(ng)
             return group
 
-        ta = TexMobject("angle=0", alignment="\\raggedright").scale(1.5)
-        tb = TexMobject("round=0", alignment="\\raggedright").scale(1.5)
+        ta = MathTex("angle=0", alignment="\\raggedright").scale(1.5)
+        tb = MathTex("round=0", alignment="\\raggedright").scale(1.5)
         g1 = VGroup(circle1, arrow1, dot1, ta, tb)
         self.play(UpdateFromAlphaFunc(g1, update2),
                   run_time=5, rate_func=double_smooth)
@@ -264,24 +266,24 @@ class RollingCircle2(Scene):
 
         g1 = VGroup(circle1, arrow1, dot1)
 
-        equl = TexMobject("=").scale(2)
+        equl = MathTex("=").scale(2)
         equl.move_to(UP*(self.txt))
-        rnd = TexMobject("round").scale(2)
+        rnd = MathTex("round").scale(2)
         rnd.next_to(equl, LEFT)
-        t2 = TexMobject("s=2\\times\\pi\\times r_3").scale(2)
+        t2 = MathTex("s=2\\times\\pi\\times r_3").scale(2)
         t2.move_to(UP*(self.txt+1))
-        t3 = TexMobject("c=2\\times\\pi\\times r_2").scale(2)
+        t3 = MathTex("c=2\\times\\pi\\times r_2").scale(2)
         t3.move_to(UP*(self.txt-1))
-        t4r = TexMobject("\\frac{s}{c}").scale(2)
+        t4r = MathTex("\\frac{s}{c}").scale(2)
         t4r.next_to(equl, RIGHT)
         t4 = VGroup(rnd, equl, t4r)
 
-        t5r = TexMobject(
+        t5r = MathTex(
             "\\frac{2\\times\\pi\\times r_3}{2\\times\\pi\\times r_2}").scale(2)
         t5r.next_to(equl, RIGHT)
-        t6r = TexMobject("\\frac{r_3}{r_2}").scale(2)
+        t6r = MathTex("\\frac{r_3}{r_2}").scale(2)
         t6r.next_to(equl, RIGHT)
-        t7r = TexMobject("2").scale(2)
+        t7r = MathTex("2").scale(2)
         t7r.next_to(equl, RIGHT)
 
         self.play(ReplacementTransform(track_line, t2))
@@ -331,13 +333,13 @@ class Test(Scene):
     }
     def construct(self):
 
-        t1 = TexMobject("r_1:r_2=3:1}").scale(1.5)
+        t1 = MathTex("r_1:r_2=3:1}").scale(1.5)
         t1.shift(UP*self.r2*2+RIGHT*(self.r2-1))
 
-        t2 = TexMobject("\\bigodot_1   r_1").scale(1.5)
+        t2 = MathTex("\\bigodot_1   r_1").scale(1.5)
         t2.move_to(UP*(self.txt))
 
-        t3 = TexMobject("\\bigcirc_2   r_2").scale(1.5)
+        t3 = MathTex("\\bigcirc_2   r_2").scale(1.5)
         t3.next_to(t2, DOWN, buff=0.2)
 
         self.play(Write(t2), Write(t3))

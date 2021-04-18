@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
 from manimlib.imports import *
-from manimlib.for_3b1b_videos.pi_creature_animations import Blink
 
-# manim ddmath/ex20200621_coin_paradox.py CoinParadox -r1280,720 -pm
+# manimlib ex20200621_coin_paradox.py CoinParadox -r1280,720 -pm
 
 
 class CoinParadox(Scene):
