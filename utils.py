@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from manimlib.imports import *
+from manim import *
 
 
 # 长方体
