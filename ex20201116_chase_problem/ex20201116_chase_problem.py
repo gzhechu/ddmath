@@ -1,19 +1,13 @@
 #!/usr/bin/env python3
 
-from manimlib.imports import *
-from manimlib.for_3b1b_videos.pi_creature_animations import Blink
+from manim import *
+import math
 
-# manimlib ex20201116_chase_problem.py CircleChase1 -r1280,720 -pm
-# manimlib ex20201116_chase_problem.py CircleChase1 -r640,360 -pl
-# ffmpeg -i CircleChase1.mp4 -i sound.m4a output.mp4
+# manim ex20201116_chase_problem.py CircleChase1 -r1280,720 -pqm
+# manim ex20201116_chase_problem.py CircleChase1 -r640,360 -pql
 
-"""
-ffmpeg -i voice.m4a -acodec copy v.aac -y
-ffmpeg -i bg.m4a -acodec copy b.aac -y
-cat b.aac v.aac >> sound.aac -y
-ffmpeg -i sound.aac -acodec copy -bsf:a aac_adtstoasc sound.m4a -y
-ffmpeg -i CircleChase1.mp4 -i sound.m4a output.mp4
-"""
+#ffmpeg -i CircleChase1.mp4 -i voice.m4a CircleChase1Release.mp4 -y
+
 
 class CircleChase1(Scene):
     """
@@ -39,21 +33,20 @@ class CircleChase1(Scene):
 54 通过解这个方程，就可以到答案……
 56 仔细思考下，你……学会了么？
     """
-    CONFIG = {
-        "color": WHITE,
-        "r1": 0.2,
-        "r2": 0.2,
-        "rr": 5,
-        "v1": 8,
-        "v2": 6,
-        "dist": 8,
-        "ctime": 196,
-        "perimeter": 400,
-        "txt": 9,
-        "eq": 6.5
-    }
 
     def construct(self):
+        self.color = WHITE
+        self.r1 = 0.2
+        self.r2 = 0.2
+        self.rr = 5
+        self.v1 = 8
+        self.v2 = 6
+        self.dist = 8
+        self.ctime = 196
+        self.perimeter = 400
+        self.txt = 9
+        self.eq = 6.5
+
         tp = TexMobject("S=400m").scale(1.5)
         tg = TexMobject("dist=8m").scale(1.5)
         tv1 = TexMobject("v1=8m/s").scale(1.5)
