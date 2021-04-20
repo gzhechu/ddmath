@@ -1,27 +1,66 @@
 #!/usr/bin/env python3
 
-from manimlib.imports import *
+from manim import *
+import math
 
-# manimlib ex20200505_rotate_rect.py RotateRect -r1280,720 -pm
+# manim ex20200505_rotate_rect.py RotateRect -r1280,720 -p -qm
+
+"""
+各位好
+这是一道让我六年级的女儿很晕菜的题
+所以我做了个动画来讲一讲
+说有一个长方形
+长度是8，高度是6
+当长方形围绕A点旋转90度后
+问线段BC划过区域的面积
+这种动态的题目都让我女儿很懵逼啊
+所以来，我们做个动画
+先用红色标出线段BC
+当长方形旋转的时候
+把线段BC走过的区域都拍照留影下来
+看到没这块红色的区域
+就是线段BC划过的区域
+也就是要计算出来的面积
+这是一个我们不熟悉的异形形状
+但是实际上也可以用我们熟悉的基本图形拼接后
+通过层叠消融计算出来
+那现在不卖关子了直接告诉你答案
+做辅助线AC、AC’
+看到没有马上有感觉了
+画出扇形面积ACC'
+加上三角形ABC
+两块基本图形合计的面积
+减去扇形ABB'
+再减去三角形AB'C'
+看到没有就是这么简单直接
+线段BC划过区域的面积就通过层叠消融计算出来了
+对不对，偶消奇不消，答案出来料。
+没有看清楚的同学可以拉回去反复看
+也可以点一下小爱心关注下我抖音号“光头大叔”
+有什么需要可视化作图的数学题，
+都可以留言给我，看看能不能给做视频
+那么聪明的朋友，还给你留了个课后题
+问CD旋转后划过区域的面积是多少
+你自己会做了么？
+好了，咱们下次再见。
+"""
 
 
 class RotateRect(Scene):
-    CONFIG = {
-        "color": WHITE,
-        "w": 4*1.6,
-        "h": 3*1.6,
-        "r": 5*1.6,
-        "txt": 7,
-    }
-
     def construct(self):
+        self.color = WHITE
+        self.w = 4*1.6
+        self.h = 3*1.6
+        self.r = 5*1.6
+        self.txt = 7
+
         t1 = TextMobject("AB=8,BC=6").set_color(WHITE).scale(1.5)
         t1.move_to(UP*(self.txt))
-        t2 = TextMobject("围绕A点旋转90度").set_color(WHITE).scale(1.5)
+        t2 = TextMobject("Rotate 90 degrees around point A").set_color(WHITE).scale(1.5)
         t2.move_to(UP*(self.txt))
-        t3 = TextMobject("BC走到B'C'划过区域的面积").set_color(WHITE) .scale(1.5)
+        t3 = TextMobject("Area marked from BC to B'C'").set_color(WHITE) .scale(1.5)
         t3.move_to(UP*(self.txt))
-        t4 = TextMobject("用动画来模拟一下").set_color(WHITE).scale(1.5)
+        t4 = TextMobject("Simulate by animation").set_color(WHITE).scale(1.5)
         t4.move_to(UP*(self.txt))
 
         rect1 = Rectangle(height=self.h, width=self.w)
