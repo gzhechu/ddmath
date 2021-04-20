@@ -20,14 +20,14 @@ try:
 except:
     pass
 
-# manim ex20201208_segment_line.py SegLine1 -r1280,720 -pm
-# manim ex20201208_segment_line.py SegLine1 -r640,360 -pl
+# manim ex20201208_segment_line.py SegLine1 -r1280,720 -pqm
+# manim ex20201208_segment_line.py SegLine1 -r640,360 -pql
 
-# manim ex20201208_segment_line.py SegLine2 -r1280,720 -pm
-# manim ex20201208_segment_line.py SegLine2 -r640,360 -pl
+# manim ex20201208_segment_line.py SegLine2 -r1280,720 -pqm
+# manim ex20201208_segment_line.py SegLine2 -r640,360 -pql
 
-# manim ex20201208_segment_line.py SegLine2b -r1280,720 -pm
-# manim ex20201208_segment_line.py SegLine2b -r640,360 -pl
+# manim ex20201208_segment_line.py SegLine2b -r1280,720 -pqm
+# manim ex20201208_segment_line.py SegLine2b -r640,360 -pql
 
 """
 ffmpeg -i SegLine1.mp4 -i SegLine1.m4a SegLine1Release.mp4 -y
