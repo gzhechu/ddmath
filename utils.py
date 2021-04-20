@@ -49,17 +49,18 @@ class Cuboid(VGroup):
 
 # 测量工具
 class Measurement(VGroup):
-    def __init__(self, objeto, **kwargs):
-        self.color = RED_B
-        self.buff = 0.3
+    def __init__(self, objeto, color=RED, dashed=True, invert=False,
+                 buff=0.3, stroke=2.4, **kwargs):
+        self.color = color
+        self.buff = buff
         self.laterales = 0.3
-        self.invert = False
+        self.invert = invert
         self.dashed_segment_length = 0.09
-        self.dashed = False
+        self.dashed = dashed
         self.con_flechas = True
         self.ang_flechas = 30*DEGREES
         self.tam_flechas = 0.2
-        self.stroke = 2.4
+        self.stroke = stroke
 
         VGroup.__init__(self, **kwargs)
         if self.dashed == True:
@@ -68,7 +69,7 @@ class Measurement(VGroup):
         else:
             medicion = Line(ORIGIN, objeto.get_length()*RIGHT)
 
-        medicion.set_stroke(None, self.stroke)
+        medicion.set_stroke(color=self.color, width=self.stroke)
 
         pre_medicion = Line(ORIGIN, self.laterales *
                             RIGHT).rotate(PI/2).set_stroke(None, self.stroke)
@@ -177,7 +178,7 @@ class Measurement(VGroup):
 
     def get_tex(self, tex, scale=1, buff=0.1, invert_dir=False, invert_texto=False, elim_rot=False, **moreargs):
         line_reference = Line(self[0][0].get_start(), self[0][-1].get_end())
-        texto = TexMobject(texto, **moreargs)
+        texto = TexMobject(tex, **moreargs)
         width = texto.get_height()/2
         if invert_texto:
             inv = PI
@@ -209,7 +210,16 @@ class Test1(Scene):
     def construct(self):
         text = TextMobject("Text or object")
         self.add(text)
-        me = Measurement(Line(ORIGIN+5*LEFT, ORIGIN+5*RIGHT)
-                         ).add_tips().add_tex("5", buff=0.6, color=WHITE)
+        me = Measurement(Line(ORIGIN+5*LEFT, ORIGIN+5*RIGHT))
+        #  .add_tips().add_text("measurement", buff=2, color=BLUE, scale=2)
         self.add(me)
+        self.wait(5)
+
+
+class Test2(Scene):
+    def construct(self):
+        text = TextMobject("Text or object")
+        self.add(text)
+        line = DashedLine(ORIGIN+5*LEFT, ORIGIN+5*RIGHT).set_color(RED)
+        self.add(line)
         self.wait(5)

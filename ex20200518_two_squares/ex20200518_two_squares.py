@@ -1,174 +1,75 @@
 #!/usr/bin/env python3
 
-from manimlib.imports import *
+from manim import *
+import math
 
-# manimlib ex20200518_two_squares.py Diff2Square -pm -r1280,720
-# manimlib ex20200518_two_squares.py Sum2Square -pm -r1280,720
-# manimlib ex20200518_two_squares.py PerfectSquare -r1280,720 -pm
+try:
+    import os
+    import sys
+    import inspect
+    currentdir = os.path.dirname(os.path.abspath(
+        inspect.getfile(inspect.currentframe())))
+    parentdir = os.path.dirname(currentdir)
+    sys.path.insert(0, parentdir)
+    from utils import Measurement
+except:
+    pass
 
+# manim ex20200518_two_squares.py Diff2Square -p -qm -r1280,720
+# manim ex20200518_two_squares.py Sum2Square -p -qm -r1280,720
+# manim ex20200518_two_squares.py PerfectSquare -r1280,720 -p -qm
 
-class Measurement(VGroup):
-    CONFIG = {
-        "color": RED_B,
-        "buff": 0.3,
-        "laterales": 0.3,
-        "invert": False,
-        "dashed_segment_length": 0.09,
-        "dashed": False,
-        "con_flechas": True,
-        "ang_flechas": 30*DEGREES,
-        "tam_flechas": 0.2,
-        "stroke": 2.4
-    }
+"""
+各位好
+前不久给女儿讲平方差公式
+作了这个动画
+说有数值a和b
+那么a和b的平方
+可以用以a,b为边长的正方形面积来表示
+大正方形中去掉小正方形的面积
+即为ab的平方差
+剩下的不多讲
+看视频就可以明白
 
-    def __init__(self, objeto, **kwargs):
-        VGroup.__init__(self, **kwargs)
-        if self.dashed == True:
-            medicion = DashedLine(ORIGIN, objeto.get_length(
-            )*RIGHT, dashed_segment_length=self.dashed_segment_length).set_color(self.color)
-        else:
-            medicion = Line(ORIGIN, objeto.get_length()*RIGHT)
+顺便的
+我也做了完全平方公式的动画
 
-        medicion.set_stroke(None, self.stroke)
+女儿很愉快的看完并说看懂了
+但是她随即问了一个问题
+“做这些题，学这些公式有什么用”
 
-        pre_medicion = Line(ORIGIN, self.laterales *
-                            RIGHT).rotate(PI/2).set_stroke(None, self.stroke)
-        pos_medicion = pre_medicion.copy()
+我想了很久后告诉她
+做这些题是为了锻炼思维能力
+那么经过训练后的大脑
+将来碰到未知问题的时候
 
-        pre_medicion.move_to(medicion.get_start())
-        pos_medicion.move_to(medicion.get_end())
+会因为长期训练和积累
+而迅速找到解决办法
+这就是做题和理解公式的意义
+而且公式本身
+就是经验的提炼总结
+学习公式就是站在巨人的肩膀上
 
-        angulo = objeto.get_angle()
-        matriz_rotacion = rotation_matrix(PI/2, OUT)
-        vector_unitario = objeto.get_unit_vector()
-        direction = np.matmul(matriz_rotacion, vector_unitario)
-        self.direction = direction
+退一万步讲
+如果你掌握了这些数学题
+在二十多年后
+你也会有自己的宝宝
+当他问你这些题时
+你能够快速的回答出来不会被嫌弃
+这也算是意义之一吧
 
-        self.add(medicion, pre_medicion, pos_medicion)
-        self.rotate(angulo)
-        self.move_to(objeto)
+你们觉得我这样说合适么
+请给我留言说你对这个问题的看法
+好嘛，下期再见！
 
-        if self.invert == True:
-            self.shift(-direction*self.buff)
-        else:
-            self.shift(direction*self.buff)
-        self.set_color(self.color)
-        self.tip_point_index = -np.argmin(self.get_all_points()[-1, :])
-
-    def add_tips(self):
-        line_reference = Line(self[0][0].get_start(), self[0][-1].get_end())
-        vector_unitario = line_reference.get_unit_vector()
-
-        punto_final1 = self[0][-1].get_end()
-        punto_inicial1 = punto_final1-vector_unitario*self.tam_flechas
-
-        punto_inicial2 = self[0][0].get_start()
-        punto_final2 = punto_inicial2+vector_unitario*self.tam_flechas
-
-        lin1_1 = Line(punto_inicial1, punto_final1).set_color(
-            self[0].get_color()).set_stroke(None, self.stroke)
-        lin1_2 = lin1_1.copy()
-        lin2_1 = Line(punto_inicial2, punto_final2).set_color(
-            self[0].get_color()).set_stroke(None, self.stroke)
-        lin2_2 = lin2_1.copy()
-
-        lin1_1.rotate(self.ang_flechas, about_point=punto_final1,
-                      about_edge=punto_final1)
-        lin1_2.rotate(-self.ang_flechas, about_point=punto_final1,
-                      about_edge=punto_final1)
-
-        lin2_1.rotate(self.ang_flechas, about_point=punto_inicial2,
-                      about_edge=punto_inicial2)
-        lin2_2.rotate(-self.ang_flechas, about_point=punto_inicial2,
-                      about_edge=punto_inicial2)
-
-        return self.add(lin1_1, lin1_2, lin2_1, lin2_2)
-
-    def add_tex(self, texto, scale=1, buff=0.1, **moreargs):
-        line_reference = Line(self[0][0].get_start(), self[0][-1].get_end())
-        texto = TexMobject(texto, **moreargs)
-        width = texto.get_height()/2
-        texto.rotate(line_reference.get_angle()).scale(scale).move_to(self)
-        texto.shift(self.direction*(buff+1)*width)
-        return self.add(texto)
-
-    def add_text(self, text, scale=1, buff=0.1, **moreargs):
-        line_reference = Line(self[0][0].get_start(), self[0][-1].get_end())
-        texto = TextMobject(text, **moreargs)
-        width = texto.get_height()/2
-        texto.rotate(line_reference.get_angle()).scale(scale).move_to(self)
-        texto.shift(self.direction*(buff+1)*width)
-        return self.add(texto)
-
-    def add_size(self, texto, scale=1, buff=0.1, **moreargs):
-        line_reference = Line(self[0][0].get_start(), self[0][-1].get_end())
-        texto = TextMobject(texto, **moreargs)
-        width = texto.get_height()/2
-        texto.rotate(line_reference.get_angle())
-        texto.shift(self.direction*(buff+1)*width)
-        return self.add(texto)
-
-    def add_letter(self, texto, scale=1, buff=0.1, **moreargs):
-        line_reference = Line(self[0][0].get_start(), self[0][-1].get_end())
-        texto = TexMobject(texto, **moreargs).scale(scale).move_to(self)
-        width = texto.get_height()/2
-        texto.shift(self.direction*(buff+1)*width)
-        return self.add(texto)
-
-    def get_text(self, text, scale=1, buff=0.1, invert_dir=False, invert_texto=False, elim_rot=False, **moreargs):
-        line_reference = Line(self[0][0].get_start(), self[0][-1].get_end())
-        texto = TextMobject(text, **moreargs)
-        width = texto.get_height()/2
-        if invert_texto:
-            inv = PI
-        else:
-            inv = 0
-        if elim_rot:
-            texto.scale(scale).move_to(self)
-        else:
-            texto.rotate(line_reference.get_angle()
-                         ).scale(scale).move_to(self)
-            texto.rotate(inv)
-        if invert_dir:
-            inv = -1
-        else:
-            inv = 1
-        texto.shift(self.direction*(buff+1)*width*inv)
-        return texto
-
-    def get_tex(self, tex, scale=1, buff=0.1, invert_dir=False, invert_texto=False, elim_rot=False, **moreargs):
-        line_reference = Line(self[0][0].get_start(), self[0][-1].get_end())
-        texto = TexMobject(texto, **moreargs)
-        width = texto.get_height()/2
-        if invert_texto:
-            inv = PI
-        else:
-            inv = 0
-        if elim_rot:
-            texto.scale(scale).move_to(self)
-        else:
-            texto.rotate(line_reference.get_angle()
-                         ).scale(scale).move_to(self)
-            texto.rotate(inv)
-        if invert_dir:
-            inv = -1
-        else:
-            inv = 1
-        texto.shift(self.direction*(buff+1)*width)
-        return texto
+"""
 
 
 class Diff2Square(Scene):
-    CONFIG = {
-        "a": 7,
-        "b": 2,
-        "top": 6,
-    }
-
     def construct(self):
-        # origin = Dot()
-        # self.play(FadeIn(origin), FadeIn(txtO))
-        # self.wait(1)
+        self.a = 7
+        self.b = 2
+        self.top = 6
 
         t1 = TexMobject("a^2-b^2").scale(2)
         t2 = TexMobject("=(a+b)\\times(a-b)").scale(2)
@@ -285,16 +186,10 @@ class Diff2Square(Scene):
 
 
 class Sum2Square(Scene):
-    CONFIG = {
-        "a": 5,
-        "b": 2,
-        "top": 6,
-    }
-
     def construct(self):
-        # origin = Dot()
-        # self.play(FadeIn(origin), FadeIn(txtO))
-        # self.wait(1)
+        self.a = 5
+        self.b = 2
+        self.top = 6
 
         t1 = TexMobject("a^2+b^2").scale(2)
         t2 = TexMobject("a^2+b^2=(a+b)^2-2ab").scale(2)
@@ -416,16 +311,10 @@ class Sum2Square(Scene):
 
 
 class PerfectSquare(Scene):
-    CONFIG = {
-        "a": 5,
-        "b": 2,
-        "top": 6,
-    }
-
     def construct(self):
-        # origin = Dot()
-        # self.play(FadeIn(origin), FadeIn(txtO))
-        # self.wait(1)
+        self.a = 5
+        self.b = 2
+        self.top = 6
 
         t1 = TexMobject("a^2+b^2").scale(2)
         t2 = TexMobject("+2\\times ab").scale(2)
