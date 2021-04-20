@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
 
-from manimlib.imports import *
+from manim import *
 
-# manimlib ex20200613_four_hexagon.py SizeOfTriangle -r1280,720 -pm
+# manim ex20200613_four_hexagon.py SizeOfTriangle -r1280,720 -pqm
 
 
 class SizeOfTriangle(Scene):
-    CONFIG = {
-        "a": 7,
-        "radius": 2.5
-    }
 
     def sub_triangles(self, center, hex):
         pts = hex.get_vertices()
@@ -27,10 +23,9 @@ class SizeOfTriangle(Scene):
         return tris
 
     def construct(self):
-        # origin = Dot()
-        # self.play(FadeIn(origin))
-        # self.wait(1)
-        h1 = RegularPolygon(n=6, color=WHITE, radius=self.radius)
+        self.radius = 2
+        h1 = RegularPolygon(n=6, color=WHITE)
+        h1.scale(self.radius)
         height = h1.get_vertices()[1][1]
         h2 = h1.copy()
         h1.shift(UP*height+LEFT*self.radius)
@@ -129,4 +124,13 @@ class SizeOfTriangle(Scene):
 
 class Test(Scene):
     def construct(self):
-        pass
+        numberPlane = NumberPlane(
+            axis_config={"include_tip": True, "include_ticks": True},)
+        self.add(numberPlane)
+        h1 = RegularPolygon(n=6, color=WHITE, radius=2.5)
+        h1.scale(2)
+        self.add(h1)
+        height = h1.get_vertices()[1][1]
+        print(height)
+        print(h1.get_vertices())
+        self.wait(5)
