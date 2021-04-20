@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 
-from manimlib.imports import *
-import sys
-sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+from manim import *
+import math
 
-
-# manimlib ex20201209_rolling_triangle.py RollingTriangle1 -r1280,720 -pm
-# manimlib ex20201209_rolling_triangle.py RollingTriangle1 -r640,360 -pl
+# manim ex20201209_rolling_triangle.py RollingTriangle1 -r1280,720 -pm
+# manim ex20201209_rolling_triangle.py RollingTriangle1 -r640,360 -pql
 
 """
 ffmpeg -i RollingTriangle1.mp4 -i voice.m4a output.mp4
@@ -35,18 +33,17 @@ class RollingTriangle1(Scene):
 55 你算出来了么？
 57 好了 下次再见！
     """
-    CONFIG = {
-        "color": WHITE,
-        "o": [0, 0, 0],
-        "a": [-5, 0, 0],
-        "b": [5, 0, 0],
-        "c": [5, 0, 0],  # need rotate
-        "n": [-3, 0, 0],
-        "m": [0, 4, 0],
-        "txt": 9,
-    }
 
     def construct(self):
+        self.color = WHITE
+        self.o = [0, 0, 0]
+        self.a = [-5, 0, 0]
+        self.b = [5, 0, 0]
+        self.c = [5, 0, 0]  # need rotate
+        self.n = [-3, 0, 0]
+        self.m = [0, 4, 0]
+        self.txt = 9
+
         tx1 = TexMobject("\\angle MON=90^\\circ").scale(1.5)
         tx1b = TexMobject(",\\angle AOC=80^\\circ").scale(1.5)
         tx2 = TexMobject("\\omega=5^\\circ/s").scale(1.5)
@@ -135,7 +132,6 @@ class RollingTriangle1(Scene):
             new_group = VGroup(triangle, lOM)
             group.become(new_group)
             return group
-
 
         def updateA(group, alpha):
             angle = math.radians(-40 * alpha)

@@ -1,25 +1,19 @@
 #!/usr/bin/env python3
 
-from manimlib.imports import *
+from manim import *
 
-# manimlib md20200614_equal_height.py TriangleEqualHeight -r1280,720 -pm
-# manimlib md20200614_equal_height.py EqualHeightEx01 -r1280,720 -pm
+# manim md20200614_equal_height.py TriangleEqualHeight -r1280,720 -pqm
+# manim md20200614_equal_height.py EqualHeightEx01 -r1280,720 -pqm
 
 
 class TriangleEqualHeight(Scene):
-    CONFIG = {
-        "color": WHITE,
-        "A": np.array([2, 4, 0]),
-        "B": np.array([-4.5, -2, 0]),
-        "C": np.array([5, -2, 0]),
-        "txt": 7
-    }
 
     def construct(self):
-        # origin = Dot()
-        # [txtO] = [TexMobject(X) for X in ["O"]]
-        # txtO.next_to(origin, DR, buff=0.1)
-        # self.play(FadeIn(origin), FadeIn(txtO))
+        self.color = WHITE
+        self.A = [2, 4, 0]
+        self.B = [-4.5, -2, 0]
+        self.C = [5, -2, 0]
+        self.txt = 7
 
         [txtS1, txtS2] = [TexMobject(X) for X in ["S_1", "S_2"]]
         t1 = TexMobject("S=\\frac{1}{2}\\times a\\times h").scale(2)
@@ -179,22 +173,15 @@ class TriangleEqualHeight(Scene):
 
 
 class EqualHeightEx01(Scene):
-    CONFIG = {
-        "color": WHITE,
-        "A": np.array([1, 4, 0]),
-        "B": np.array([-4, -2, 0]),
-        "C": np.array([5, -2, 0]),
-        "D": np.array([-1, -2, 0]),
-        "E": np.array([2, -2, 0]),
-        "F": np.array([-1.5, 1, 0]),
-        "txt": 7
-    }
-
     def construct(self):
-        # origin = Dot()
-        # [txtO] = [TexMobject(X) for X in ["O"]]
-        # txtO.next_to(origin, DR, buff=0.1)
-        # self.play(FadeIn(origin), FadeIn(txtO))
+        self.color = WHITE
+        self.A = [1, 4, 0]
+        self.B = [-4, -2, 0]
+        self.C = [5, -2, 0]
+        self.D = [-1, -2, 0]
+        self.E = [2, -2, 0]
+        self.F = [-1.5, 1, 0]
+        self.txt = 7
 
         def indicate(obj, duration=1):
             ind = Indicate(obj, color=RED, scale_factor=1)
