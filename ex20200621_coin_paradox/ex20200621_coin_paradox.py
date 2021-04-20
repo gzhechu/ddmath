@@ -1,26 +1,26 @@
 #!/usr/bin/env python3
 
-from manimlib.imports import *
+from manim import *
+import math
 
-# manimlib ex20200621_coin_paradox.py CoinParadox -r1280,720 -pm
+# manim ex20200621_coin_paradox.py CoinParadox -r1280,720 -pqm
 
 
 class CoinParadox(Scene):
-    CONFIG = {
-        "r": 1.2,
-        "txt": 8,
-        "equation": 4,
-        "left": 4.5,
-        "right": 3.5
-    }
-
     def construct(self):
-        [txYi, txYuan] = [TextMobject(X).scale(1.5) for X in ["壹", "元"]]
+        self.r = 1.2
+        self.txt = 8
+        self.equation = 4
+        self.left = 4.5
+        self.right = 3.5
+
+        [txYi, txYuan] = [TextMobject(X).scale(1.5) for X in ["One", "Yuan"]]
         txYuan.next_to(txYi, DOWN)
         txtYY = VGroup(txYi, txYuan)
         txtYY.shift(DOWN*txtYY.get_center())
 
-        circle0 = Circle(radius=self.r, color=WHITE, fill_color=YELLOW, fill_opacity=0.5)
+        circle0 = Circle(radius=self.r, color=WHITE,
+                         fill_color=YELLOW, fill_opacity=0.5)
         circle0 = VGroup(circle0, txtYY)
 
         circle1 = Circle(radius=self.r, color=WHITE,
@@ -33,10 +33,10 @@ class CoinParadox(Scene):
         g0 = VGroup(circle1, arrow1)
         g0.shift(UP*(self.r*2))
 
-        t1 = TextMobject("硬币半径: r").scale(1.5)
+        t1 = TextMobject("Coin: r").scale(1.5)
         t1.move_to(UP*self.txt+RIGHT*self.right)
 
-        t2 = TextMobject("轨迹半径: R").scale(1.5)
+        t2 = TextMobject("Path: R").scale(1.5)
         t2.next_to(t1, DOWN, buff=0.5)
 
         t3 = TextMobject("R = 2 × r").scale(1.5)
@@ -69,7 +69,7 @@ class CoinParadox(Scene):
                   run_time=8, rate_func=double_smooth)
         self.wait(1)
 
-        g1 = VGroup( circle1, arrow1, arc1)
+        g1 = VGroup(circle1, arrow1, arc1)
         g1.shift(UP*(self.r*2))
 
         def update1(group, alpha):
@@ -146,8 +146,8 @@ class CoinParadox(Scene):
             agr = 0
             agc = "0"
             # print(agr)
-            ta = TextMobject("角度={:d}".format(agr)).scale(1.5)
-            tb = TextMobject("圈数={:s}".format(agc)).scale(1.5)
+            ta = TextMobject("angle={:d}".format(agr)).scale(1.5)
+            tb = TextMobject("round={:s}".format(agc)).scale(1.5)
             ta.shift(UP*self.txt+LEFT*self.left)
             tb.next_to(ta, DOWN, buff=0.5)
 
@@ -160,8 +160,8 @@ class CoinParadox(Scene):
             group.become(ng)
             return group
 
-        ta = TexMobject("角度=0").scale(1.5)
-        tb = TexMobject("圈数=0").scale(1.5)
+        ta = TexMobject("angle=0").scale(1.5)
+        tb = TexMobject("round=0").scale(1.5)
         line = DashedLine(color=BLUE)
         g1 = VGroup(circle1, arrow1, ta, tb, line)
 
@@ -176,7 +176,7 @@ class CoinParadox(Scene):
 
         equl = TexMobject("=").scale(1.5)
         equl.next_to(rnd, RIGHT)
-        
+
         t2 = TexMobject("S=2\\pi R").scale(1.5)
         t2.move_to(UP*(self.txt-4))
         t3 = TexMobject("C=2\\pi r").scale(1.5)
@@ -195,7 +195,7 @@ class CoinParadox(Scene):
         self.play(ReplacementTransform(track_line, t2))
         self.wait(1)
         self.play(ReplacementTransform(g2, t3))
-        self.wait(2) 
+        self.wait(2)
         g2 = VGroup(t2, t3)
 
         circle1 = Circle(radius=self.r, color=WHITE,
