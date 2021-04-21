@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from manimlib.imports import *
+from manim import *
 
-# manim ddmath/md20200620_half_of_size.py HalfSize -r1280,720 -pm
+# manim md20200620_half_of_size.py HalfSize -r1280,720 -pqm
 
 
 class HalfSize(Scene):

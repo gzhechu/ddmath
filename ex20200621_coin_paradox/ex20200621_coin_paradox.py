@@ -14,7 +14,8 @@ class CoinParadox(Scene):
         self.left = 4.5
         self.right = 3.5
 
-        [txYi, txYuan] = [TextMobject(X).scale(1.5) for X in ["One", "Yuan"]]
+        [txYi, txYuan] = [TextMobject(
+            X, tex_template=TexTemplateLibrary.ctex).scale(1.5) for X in ["壹", "元"]]
         txYuan.next_to(txYi, DOWN)
         txtYY = VGroup(txYi, txYuan)
         txtYY.shift(DOWN*txtYY.get_center())
@@ -33,10 +34,12 @@ class CoinParadox(Scene):
         g0 = VGroup(circle1, arrow1)
         g0.shift(UP*(self.r*2))
 
-        t1 = TextMobject("Coin: r").scale(1.5)
+        t1 = TextMobject(
+            "硬币半径: r", tex_template=TexTemplateLibrary.ctex).scale(1.5)
         t1.move_to(UP*self.txt+RIGHT*self.right)
 
-        t2 = TextMobject("Path: R").scale(1.5)
+        t2 = TextMobject(
+            "轨迹半径: R", tex_template=TexTemplateLibrary.ctex).scale(1.5)
         t2.next_to(t1, DOWN, buff=0.5)
 
         t3 = TextMobject("R = 2 × r").scale(1.5)
@@ -146,8 +149,10 @@ class CoinParadox(Scene):
             agr = 0
             agc = "0"
             # print(agr)
-            ta = TextMobject("angle={:d}".format(agr)).scale(1.5)
-            tb = TextMobject("round={:s}".format(agc)).scale(1.5)
+            ta = TextMobject("角度={:d}".format(
+                agr), tex_template=TexTemplateLibrary.ctex).scale(1.5)
+            tb = TextMobject("圈数={:s}".format(
+                agc), tex_template=TexTemplateLibrary.ctex).scale(1.5)
             ta.shift(UP*self.txt+LEFT*self.left)
             tb.next_to(ta, DOWN, buff=0.5)
 
@@ -160,8 +165,10 @@ class CoinParadox(Scene):
             group.become(ng)
             return group
 
-        ta = TexMobject("angle=0").scale(1.5)
-        tb = TexMobject("round=0").scale(1.5)
+        ta = TexMobject(
+            "角度=0", tex_template=TexTemplateLibrary.ctex).scale(1.5)
+        tb = TexMobject(
+            "圈数=0", tex_template=TexTemplateLibrary.ctex).scale(1.5)
         line = DashedLine(color=BLUE)
         g1 = VGroup(circle1, arrow1, ta, tb, line)
 
