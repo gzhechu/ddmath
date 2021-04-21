@@ -1,187 +1,45 @@
 #!/usr/bin/env python3
 
-from manimlib.imports import *
+# manim th20200602_pythagorean_theorem.py ProofOne -r1280,720 -p -qm
+# manim th20200602_pythagorean_theorem.py ProofTwo -r1280,720 -p -qm
+# manim th20200602_pythagorean_theorem.py ProofThree -r1280,720 -p -qm
 
-# manimlib th20200602_pythagorean_theorem.py ProofOne -r1280,720 -pm
-# manimlib th20200602_pythagorean_theorem.py ProofTwo -r1280,720 -pm
-# manimlib th20200602_pythagorean_theorem.py ProofThree -r1280,720 -pm
+from manim import *
 
-
-class Measurement(VGroup):
-    CONFIG = {
-        "color": RED_B,
-        "buff": 0.3,
-        "laterales": 0.3,
-        "invert": False,
-        "dashed_segment_length": 0.09,
-        "dashed": False,
-        "con_flechas": True,
-        "ang_flechas": 30*DEGREES,
-        "tam_flechas": 0.2,
-        "stroke": 2.4
-    }
-
-    def __init__(self, objeto, **kwargs):
-        VGroup.__init__(self, **kwargs)
-        if self.dashed == True:
-            medicion = DashedLine(ORIGIN, objeto.get_length(
-            )*RIGHT, dashed_segment_length=self.dashed_segment_length).set_color(self.color)
-        else:
-            medicion = Line(ORIGIN, objeto.get_length()*RIGHT)
-
-        medicion.set_stroke(None, self.stroke)
-
-        pre_medicion = Line(ORIGIN, self.laterales *
-                            RIGHT).rotate(PI/2).set_stroke(None, self.stroke)
-        pos_medicion = pre_medicion.copy()
-
-        pre_medicion.move_to(medicion.get_start())
-        pos_medicion.move_to(medicion.get_end())
-
-        angulo = objeto.get_angle()
-        matriz_rotacion = rotation_matrix(PI/2, OUT)
-        vector_unitario = objeto.get_unit_vector()
-        direction = np.matmul(matriz_rotacion, vector_unitario)
-        self.direction = direction
-
-        self.add(medicion, pre_medicion, pos_medicion)
-        self.rotate(angulo)
-        self.move_to(objeto)
-
-        if self.invert == True:
-            self.shift(-direction*self.buff)
-        else:
-            self.shift(direction*self.buff)
-        self.set_color(self.color)
-        self.tip_point_index = -np.argmin(self.get_all_points()[-1, :])
-
-    def add_tips(self):
-        line_reference = Line(self[0][0].get_start(), self[0][-1].get_end())
-        vector_unitario = line_reference.get_unit_vector()
-
-        punto_final1 = self[0][-1].get_end()
-        punto_inicial1 = punto_final1-vector_unitario*self.tam_flechas
-
-        punto_inicial2 = self[0][0].get_start()
-        punto_final2 = punto_inicial2+vector_unitario*self.tam_flechas
-
-        lin1_1 = Line(punto_inicial1, punto_final1).set_color(
-            self[0].get_color()).set_stroke(None, self.stroke)
-        lin1_2 = lin1_1.copy()
-        lin2_1 = Line(punto_inicial2, punto_final2).set_color(
-            self[0].get_color()).set_stroke(None, self.stroke)
-        lin2_2 = lin2_1.copy()
-
-        lin1_1.rotate(self.ang_flechas, about_point=punto_final1,
-                      about_edge=punto_final1)
-        lin1_2.rotate(-self.ang_flechas, about_point=punto_final1,
-                      about_edge=punto_final1)
-
-        lin2_1.rotate(self.ang_flechas, about_point=punto_inicial2,
-                      about_edge=punto_inicial2)
-        lin2_2.rotate(-self.ang_flechas, about_point=punto_inicial2,
-                      about_edge=punto_inicial2)
-
-        return self.add(lin1_1, lin1_2, lin2_1, lin2_2)
-
-    def add_tex(self, texto, scale=1, buff=0.1, **moreargs):
-        line_reference = Line(self[0][0].get_start(), self[0][-1].get_end())
-        texto = TexMobject(texto, **moreargs)
-        width = texto.get_height()/2
-        texto.rotate(line_reference.get_angle()).scale(scale).move_to(self)
-        texto.shift(self.direction*(buff+1)*width)
-        return self.add(texto)
-
-    def add_text(self, text, scale=1, buff=0.1, **moreargs):
-        line_reference = Line(self[0][0].get_start(), self[0][-1].get_end())
-        texto = TextMobject(text, **moreargs)
-        width = texto.get_height()/2
-        texto.rotate(line_reference.get_angle()).scale(scale).move_to(self)
-        texto.shift(self.direction*(buff+1)*width)
-        return self.add(texto)
-
-    def add_size(self, texto, scale=1, buff=0.1, **moreargs):
-        line_reference = Line(self[0][0].get_start(), self[0][-1].get_end())
-        texto = TextMobject(texto, **moreargs)
-        width = texto.get_height()/2
-        texto.rotate(line_reference.get_angle())
-        texto.shift(self.direction*(buff+1)*width)
-        return self.add(texto)
-
-    def add_letter(self, texto, scale=1, buff=0.1, **moreargs):
-        line_reference = Line(self[0][0].get_start(), self[0][-1].get_end())
-        texto = TexMobject(texto, **moreargs).scale(scale).move_to(self)
-        width = texto.get_height()/2
-        texto.shift(self.direction*(buff+1)*width)
-        return self.add(texto)
-
-    def get_text(self, text, scale=1, buff=0.1, invert_dir=False, invert_texto=False, elim_rot=False, **moreargs):
-        line_reference = Line(self[0][0].get_start(), self[0][-1].get_end())
-        texto = TextMobject(text, **moreargs)
-        width = texto.get_height()/2
-        if invert_texto:
-            inv = PI
-        else:
-            inv = 0
-        if elim_rot:
-            texto.scale(scale).move_to(self)
-        else:
-            texto.rotate(line_reference.get_angle()
-                         ).scale(scale).move_to(self)
-            texto.rotate(inv)
-        if invert_dir:
-            inv = -1
-        else:
-            inv = 1
-        texto.shift(self.direction*(buff+1)*width*inv)
-        return texto
-
-    def get_tex(self, tex, scale=1, buff=0.1, invert_dir=False, invert_texto=False, elim_rot=False, **moreargs):
-        line_reference = Line(self[0][0].get_start(), self[0][-1].get_end())
-        texto = TexMobject(texto, **moreargs)
-        width = texto.get_height()/2
-        if invert_texto:
-            inv = PI
-        else:
-            inv = 0
-        if elim_rot:
-            texto.scale(scale).move_to(self)
-        else:
-            texto.rotate(line_reference.get_angle()
-                         ).scale(scale).move_to(self)
-            texto.rotate(inv)
-        if invert_dir:
-            inv = -1
-        else:
-            inv = 1
-        texto.shift(self.direction*(buff+1)*width)
-        return texto
+try:
+    import os
+    import sys
+    import inspect
+    currentdir = os.path.dirname(os.path.abspath(
+        inspect.getfile(inspect.currentframe())))
+    parentdir = os.path.dirname(currentdir)
+    sys.path.insert(0, parentdir)
+    from utils import Measurement
+except:
+    pass
 
 
 class ProofOne(Scene):
-    CONFIG = {
-        "a": 5,
-        "b": 2,
-        "top": 6,
-    }
-
     def construct(self):
+        self.a = 5
+        self.b = 2
+        self.top = 6
         # origin = Dot()
         # self.play(FadeIn(origin), FadeIn(txtO))
         # self.wait(1)
 
-        title = TextMobject("Pythagoras Theorem").scale(2)
+        title = Tex("Pythagoras Theorem").scale(2)
         title.move_to(UP*self.top)
-        t1 = TexMobject("a^2+b^2").scale(2)
-        t2 = TexMobject("c^2").scale(2)
-        t3 = TexMobject("=c^2").scale(2)
-        t5 = TexMobject("(a-b)^2").scale(1.2)
-        equl = TexMobject("=").scale(2)
-        t6 = TexMobject("(a-b)^2").scale(2)
-        t7 = TexMobject("+\\frac{1}{2}ab\\times 4").scale(2)
-        t8 = TexMobject("+2ab").scale(2)
-        t9 = TexMobject("a^2+b^2-2ab").scale(2)
-        t10 = TexMobject("a^2+b^2").scale(2)
+        t1 = MathTex("a^2+b^2").scale(2)
+        t2 = MathTex("c^2").scale(2)
+        t3 = MathTex("=c^2").scale(2)
+        t5 = MathTex("(a-b)^2").scale(1.2)
+        equl = MathTex("=").scale(2)
+        t6 = MathTex("(a-b)^2").scale(2)
+        t7 = MathTex("+\\frac{1}{2}ab\\times 4").scale(2)
+        t8 = MathTex("+2ab").scale(2)
+        t9 = MathTex("a^2+b^2-2ab").scale(2)
+        t10 = MathTex("a^2+b^2").scale(2)
         t1.move_to(UP*(self.top))
         t2.move_to(DOWN*self.b/2)
         t5.move_to(DOWN*self.b/2)
@@ -192,7 +50,7 @@ class ProofOne(Scene):
 
         # self.add(t1, t2)
 
-        [txtA, txtB] = [TexMobject(X) for X in ["a", "b"]]
+        [txtA, txtB] = [MathTex(X) for X in ["a", "b"]]
 
         lA = Line(LEFT * self.a / 2, RIGHT * self.a / 2, color=BLUE)
         lA.move_to(UP*self.top)
@@ -207,7 +65,7 @@ class ProofOne(Scene):
         lgA = VGroup(lA, txtA)
         lgB = VGroup(lB, txtB)
 
-        [txtAs, txtBs] = [TexMobject(X).scale(1.5) for X in ["a^2", "b^2"]]
+        [txtAs, txtBs] = [MathTex(X).scale(1.5) for X in ["a^2", "b^2"]]
         sA = Square(side_length=self.a, color=BLUE, fill_opacity=0.3)
         gA = VGroup(sA, txtAs)
 
@@ -321,7 +179,7 @@ class ProofOne(Scene):
         g2.generate_target()
         g2.target.shift(UP*(self.b))
         ani3 = MoveToTarget(g2)
-        [txtAs, txtBs] = [TexMobject(X).scale(1.5) for X in ["a^2", "b^2"]]
+        [txtAs, txtBs] = [MathTex(X).scale(1.5) for X in ["a^2", "b^2"]]
         txtAs.move_to(LEFT*(self.b)/2)
         txtBs.move_to(DOWN*(self.a+self.b)/2+RIGHT*(self.a)/2)
         trans3 = ReplacementTransform(sg1, title)
@@ -433,15 +291,19 @@ class ProofTwo(Scene):
     }
 
     def construct(self):
+        self.a = 1.2*3
+        self.b = 1.2*4
+        self.c = 1.2*5
+        self.top = 8
         # origin = Dot()
         # self.play(FadeIn(origin))
         # self.wait(1)
 
-        [txtA, txtB, txtC] = [TexMobject(X) for X in ["A", "B", "C"]]
-        [txtAs, txtBs, txtCs] = [TexMobject(
+        [txtA, txtB, txtC] = [MathTex(X) for X in ["A", "B", "C"]]
+        [txtAs, txtBs, txtCs] = [MathTex(
             X).scale(1.5) for X in ["a^2", "b^2", "c^2"]]
-        t1 = TexMobject("a^2+b^2").scale(2.5)
-        t2 = TexMobject("=c^2").scale(2.5)
+        t1 = MathTex("a^2+b^2").scale(2.5)
+        t2 = MathTex("=c^2").scale(2.5)
         t1.move_to(UP*(self.top))
 
         ptA = self.a * RIGHT
@@ -607,22 +469,20 @@ class ProofTwo(Scene):
 
 
 class ProofThree(Scene):
-    CONFIG = {
-        "a": 5,
-        "b": 2,
-        "top": 7,
-    }
-
     def construct(self):
-        t1 = TexMobject("c^2").scale(2)
-        t2 = TexMobject("=a^2+b^2").scale(2)
-        t3 = TexMobject("=(a-b)^2+2ab").scale(2)
-        t4 = TexMobject("=a^2+b^2-2ab+2ab").scale(2)
-        t5 = TexMobject("=a^2+b^2").scale(2)
+        self.a = 5
+        self.b = 2
+        self.top = 7
+
+        t1 = MathTex("c^2").scale(2)
+        t2 = MathTex("=a^2+b^2").scale(2)
+        t3 = MathTex("=(a-b)^2+2ab").scale(2)
+        t4 = MathTex("=a^2+b^2-2ab+2ab").scale(2)
+        t5 = MathTex("=a^2+b^2").scale(2)
         t1.move_to(UP*(self.top))
         t2.next_to(t1, RIGHT)
 
-        [txtA, txtB, txtC] = [TextMobject(X)
+        [txtA, txtB, txtC] = [Tex(X, tex_template=TexTemplateLibrary.ctex)
                               for X in ["勾(a)", "股(b)", "弦(c)"]]
 
         lA = Line(LEFT * self.a / 2, RIGHT * self.a / 2, color=WHITE)
@@ -690,7 +550,7 @@ class ProofThree(Scene):
 
         triG = VGroup(triA, triB, triC, triD)
 
-        [txtAs, txtBs, txtCs] = [TexMobject(X).scale(1.8) for X in [
+        [txtAs, txtBs, txtCs] = [MathTex(X).scale(1.8) for X in [
             "a^2", "b^2", "c^2"]]
         txtAs.move_to(sqA.get_center())
         txtBs.move_to(sqB.get_center())
@@ -813,4 +673,6 @@ class ProofThree(Scene):
 
 class Test(Scene):
     def construct(self):
-        pass
+        tex = Tex('Hello 你好 \\LaTeX', tex_template=TexTemplateLibrary.ctex).scale(3)
+        self.add(tex)
+        self.wait(5)
