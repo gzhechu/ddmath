@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #
-# 2021-01-09
-# develop and render undder manim version 0.4.0
+# develop and render undder manim version 0.5.0
 #
 
 """
@@ -35,9 +34,9 @@ class SquareInvolute(MovingCameraScene):
         ptD = Dot(d)
 
         [txtO, txtA, txtB, txtC, txtD] = [
-            Tex(X).scale(0.8) for X in ["O", "A", "B", "C", "D"]]
+            Tex(X) for X in ["O", "A", "B", "C", "D"]]
         [lblA, lblB, lblC, lblD] = [
-            Tex(X).scale(0.8) for X in ["(1,-1)", "(-1,1)", "(-1,1)", "(1,1)"]]
+            Tex(X) for X in ["(1,-1)", "(-1,1)", "(-1,1)", "(1,1)"]]
 
         txtA.next_to(ptA, DR)
         txtB.next_to(ptB, DL)
@@ -86,50 +85,57 @@ class SquareInvolute(MovingCameraScene):
             radius = n * 2
             center = vertex[idx]
             arc = Arc(radius=radius, arc_center=center,
-                      color=RED, start_angle=np.deg2rad((-n + 1)*90), angle=np.deg2rad(-90))
-            return arc
+                      color=WHITE, start_angle=np.deg2rad((-n + 1)*90), angle=np.deg2rad(-90))
+            direction = [RIGHT, DOWN, LEFT, UP]
+            pt = Dot(center + direction[idx] * radius)
+            txt = "A_{}".format(n)
+            lbl = MathTex(txt)
+            lbl.next_to(pt, DR)
+            return arc, pt, lbl
 
-        a1 = get_arc(1)
-        a2 = get_arc(2)
-        a3 = get_arc(3)
-        a4 = get_arc(4)
+        a1, p1, t1 = get_arc(1)
+        a2, p2, t2 = get_arc(2)
+        a3, p3, t3 = get_arc(3)
+        a4, p4, t4 = get_arc(4)
 
-        self.play(Create(a1))
+        self.play(Create(a1), FadeIn(p1), Indicate(t1, scale_factor=1.6))
         self.wait()
-        self.play(Create(a2),
+        self.play(Create(a2), FadeIn(p2), Indicate(t2, scale_factor=2.5),
                   self.camera.frame.animate.set(width=12))
         self.wait()
-        self.play(Create(a3, rate_func=linear))
-        self.wait()
 
-        self.play(Create(a4, rate_func=linear), reset_camera)
+        self.play(Create(a3, rate_func=linear),
+                  FadeIn(p3), Indicate(t3, scale_factor=3))
+        self.wait()
+        self.play(Create(a4, rate_func=linear),
+                  FadeIn(p4), Indicate(t4), reset_camera)
         self.wait()
 
         # 标明字母
-        arc_list = [a1, a2, a3, a4]
         self.play(AnimationGroup(*[Indicate(X, scale_factor=1.6)
                                    for X in [txtB, txtC, txtD, txtA]], lag_ratio=0.1))
-        self.play(AnimationGroup(*[Indicate(X, scale_factor=1.06)
-                                   for X in arc_list], lag_ratio=0.3))
 
-        # 先放大，同时画两个
-        arc_list = []
-        for i in range(5, 7):
-            a = get_arc(i)
-            arc_list.append(a)
-        draw_arc = AnimationGroup(
-            *[Create(X, rate_func=linear) for X in arc_list], lag_ratio=1.0)
-        zoom_out = self.camera.frame.animate.set(width=config.frame_width*1.8)
-        self.play(draw_arc, zoom_out, run_time=2)
+        self.remove(a1, a2, a3, a4)
+
+        # 先放大，同时画
+        draw_list = []
+        for i in range(1, 9):
+            a, p, t = get_arc(i)
+            draw_arc = AnimationGroup(Create(a, rate_func=linear),
+                                      FadeIn(p), Indicate(t, scale_factor=2+i*0.5), lag_ratio=0)
+            draw_list.append(draw_arc)
+        draw_arc = AnimationGroup(*draw_list, lag_ratio=1.0)
+        zoom_out = self.camera.frame.animate.set(width=config.frame_width*2)
+        self.play(draw_arc, zoom_out, run_time=4)
 
         # 再恢复，同时继续画
-        arc_list = []
-        for i in range(7, 9):
-            a = get_arc(i)
-            arc_list.append(a)
-        draw_arc = AnimationGroup(
-            *[Create(X, rate_func=linear) for X in arc_list], lag_ratio=1.0)
-
-        self.play(draw_arc, reset_camera)
+        draw_list = []
+        for i in range(9, 11):
+            a, p, t = get_arc(i)
+            draw_arc = AnimationGroup(Create(a, rate_func=linear),
+                                      FadeIn(p), Indicate(t, scale_factor=4), lag_ratio=0)
+            draw_list.append(draw_arc)
+        draw_arc = AnimationGroup(*draw_list, lag_ratio=1.0)
+        self.play(draw_arc, reset_camera, run_time=2)
 
         self.wait(5)
