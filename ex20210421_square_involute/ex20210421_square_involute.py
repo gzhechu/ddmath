@@ -20,12 +20,10 @@ class SquareInvolute(MovingCameraScene):
 在平面直角坐标系中有一个正方形
 四个顶点的坐标如图
 如果以B点为圆心，AB为半径画圆弧AA1
-然后以C点为圆心，CA1为半径画圆弧A1A2
-继续以D点为圆心，DA2为半径画圆弧A2A3
-以此类推，这样的曲线叫做“正方形的渐开线”
-问：如果一直绘制下去，则点A18的坐标是什么？
-
-
+然后以C点为圆心，A1C为半径画圆弧A1A2
+继续以D点为圆心，A2D为半径画圆弧A2A3
+以此类推绘制的曲线叫做“正方形的渐开线”
+问：当曲线持续绘制下去，到点A18时的坐标是什么？
     """
 
     def construct(self):
@@ -60,7 +58,7 @@ class SquareInvolute(MovingCameraScene):
         lblD.next_to(ptD, UR)
         ptLbls = [lblA, lblB, lblC, lblD]
         vgLbls = VGroup(*ptLbls)
-        vgPt = VGroup(ptOrigin, txtO, ptA, ptB, ptC, ptD)
+        vgPt = VGroup(ptOrigin, ptA, ptB, ptC, ptD)
 
         # 正方形 及坐标网格
         square = Square()
@@ -68,7 +66,8 @@ class SquareInvolute(MovingCameraScene):
             axis_config={"include_tip": True, "include_ticks": True},)
         axes = Axes(axis_config={"include_tip": True, "include_ticks": True})
 
-        self.play(Write(grid))
+        # self.add(axes)
+        self.play(Write(axes), Write(txtO))
         self.play(FadeIn(vgPt), Create(square))
         # self.play(AnimationGroup(*[FadeIn(X) for X in ptTxts], lag_ratio=0.1))
         # self.wait(1)
@@ -76,9 +75,8 @@ class SquareInvolute(MovingCameraScene):
         self.camera.frame.save_state()
         reset_camera = Restore(self.camera.frame)
         # 拉近镜头 # 隐藏网格
-        self.add(axes)
         self.play(self.camera.frame.animate.set(width=9),
-                  FadeOut(grid), *[FadeIn(X) for X in ptLbls],
+                  *[FadeIn(X) for X in ptLbls],
                   run_time=1)
         self.wait(0.5)
         # 显示顶点
@@ -192,4 +190,4 @@ class SquareInvolute(MovingCameraScene):
         trans1 = ReplacementTransform(txtQ3, txtQ4)
         # self.play(trans1)
 
-        self.wait(5)
+        self.wait(3)
