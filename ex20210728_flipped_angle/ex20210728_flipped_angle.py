@@ -12,7 +12,7 @@ manimce ex20210728_flipped_angle.py FlippedAngle -r640,360 -pql
 ffmpeg -i FlippedAngle.mp4 -i FlippedAngle.m4a FlippedAngleRelease.mp4 -y
 """
 
-from manimlib import *
+from manim import *
 import numpy as np
 
 
@@ -24,24 +24,52 @@ class FlippedAngle(Scene):
         self.wait()
         self.draw_angle()
         self.wait()
-
-        lineAA1 = DashedLine(self.a, self.a1)
-        self.play(FadeIn(lineAA1))
+        triADE = self.triADE.copy()
+        triADE.set_color(color=WHITE)
+        triADE.set_fill(opacity=0)
+        self.play(FadeOut(self.vgSecs),
+                  ReplacementTransform(self.triADE, triADE))
         self.wait()
+
+        # 绘制辅助线
+        self.calc_auxiliary()
+        self.play(FadeIn(self.lA1A))
+        self.wait()
+        self.play(FadeIn(self.vgSec34))
+        self.wait()
+        self.play(FadeIn(self.vgSec56))
+        self.wait()
+        ind1 = Indicate(self.vgSec1, scale_factor=1.1)
+        ind34 = Indicate(self.vgSec34, scale_factor=1.02)
+        ind2 = Indicate(self.vgSec2, scale_factor=1.1)
+        ind56 = Indicate(self.vgSec56, scale_factor=1.02)
+        self.play(ind1, run_time=0.5)
+        self.play(ind1, run_time=0.5)
+        self.wait()
+        self.play(ind34, run_time=0.5)
+        self.play(ind34, run_time=0.5)
+        self.wait()
+        self.play(ind2, run_time=0.5)
+        self.play(ind2, run_time=0.5)
+        self.wait()
+        self.play(ind56, run_time=0.5)
+        self.play(ind56, run_time=0.5)
+        self.wait()
+
         self.embed()
 
     def init(self):
         self.clear()
-        self.camera.background_color = GREY
-        # self.a = [1.5, 7 , 0]
-        # self.b = [-4, -1, 0]
-        # self.c = [3.6, -1, 0]
-        self.a = [1.5, 3, 0]
-        self.b = [-4, -3, 0]
-        self.c = [3.6, -3, 0]
+        self.camera.background_color = "#101010"
+        # self.a = [1.5, 3, 0]
+        # self.b = [-4, -3, 0]
+        # self.c = [3.6, -3, 0]
+        self.a = [1.5, 7, 0]
+        self.b = [-4, -1, 0]
+        self.c = [3.6, -1, 0]
         self.e = self.d = self.a
         self.d_dist_y = 3.2
-        self.e_dist_y = 3.6
+        self.e_dist_y = 3.3
 
         self.ptA = Dot(self.a)
         ptB = Dot(self.b)
@@ -78,9 +106,11 @@ class FlippedAngle(Scene):
                               color=BLUE, fill_opacity=0.3)
         # 显示顶点
         self.play(FadeIn(triABC), FadeIn(self.ptA),
-                  FadeIn(ptB), FadeIn(ptC), FadeIn(self.lDE))
-        self.play(FadeIn(lbsABC), FadeIn(self.lblD), FadeIn(
-            self.lblE), FadeIn(self.ptD), FadeIn(self.ptE))
+                  FadeIn(ptB), FadeIn(ptC))
+        self.play(FadeIn(lbsABC))
+        self.wait()
+        self.play(FadeIn(self.lDE), FadeIn(self.lblD), FadeIn(self.lblE),
+                  FadeIn(self.ptD), FadeIn(self.ptE))
         self.wait()
 
         self.play(FadeIn(self.triADE), FadeIn(self.ptA1))
@@ -98,17 +128,51 @@ class FlippedAngle(Scene):
         angA1D = lA1D.get_angle()
         angA1E = lA1E.get_angle()
 
-        self.secA = Sector(outer_radius=0.8, color=RED, fill_opacity=0.8,
+        [lblOne, lblTwo] = [Tex(X) for X in ["1", "2"]]
+
+        self.secA = Sector(outer_radius=0.8, color=YELLOW, fill_opacity=0.8,
                            start_angle=PI+self.angAB, angle=(self.angAC-self.angAB))
-        self.sec1 = Sector(outer_radius=0.8, color=BLUE, fill_opacity=0.8,
-                           start_angle=PI+self.angAB, angle=(angA1D-self.angAB))
-        self.sec2 = Sector(outer_radius=0.8, color=YELLOW, fill_opacity=0.8,
-                           start_angle=PI+angA1E, angle=(self.angAC-angA1E))
+        sec1 = Sector(outer_radius=0.8, color=BLUE, fill_opacity=0.8,
+                      start_angle=PI+self.angAB, angle=(angA1D-self.angAB))
+        sec2 = Sector(outer_radius=0.8, color=RED, fill_opacity=0.8,
+                      start_angle=PI+angA1E, angle=(self.angAC-angA1E))
         self.secA.shift(self.a)
-        self.sec1.shift(self.d)
-        self.sec2.shift(self.e)
-        self.vgSecs = VGroup(self.secA, self.sec1, self.sec2)
+        sec1.shift(self.d)
+        sec2.shift(self.e)
+        lblOne.next_to(sec1, DOWN)
+        lblTwo.next_to(sec2, DOWN)
+        self.vgSec1= VGroup(sec1, lblOne)
+        self.vgSec2= VGroup(sec2, lblTwo)
+        self.vgSecs = VGroup(self.secA, self.vgSec1, self.vgSec2)
         self.play(FadeIn(self.vgSecs))
+
+    def calc_auxiliary(self):
+        try:
+            if self.lA1A:
+                pass
+        except:
+            self.lA1A = DashedLine(self.a1, self.a)
+
+        lA1D = Line(self.a1, self.d)
+        lA1E = Line(self.a1, self.e)
+        angA1D = lA1D.get_angle()
+        angA1E = lA1E.get_angle()
+
+        angA1A = self.lA1A.get_angle()
+        sec3 = Sector(outer_radius=0.8, color=BLUE, fill_opacity=0.6,
+                      start_angle=PI+self.angAB, angle=(angA1A-self.angAB))
+        sec4 = Sector(outer_radius=0.8, color=BLUE, fill_opacity=0.6,
+                      start_angle=angA1A, angle=(angA1D-angA1A))
+        sec5 = Sector(outer_radius=0.8, color=RED, fill_opacity=0.8,
+                      start_angle=PI+angA1A, angle=(self.angAC-angA1A))
+        sec6 = Sector(outer_radius=0.8, color=RED, fill_opacity=0.8,
+                      start_angle=angA1E, angle=(angA1A-angA1E))
+        sec3.shift(self.a)
+        sec5.shift(self.a)
+        sec4.shift(self.a1)
+        sec6.shift(self.a1)
+        self.vgSec34 = VGroup(sec3, sec4)
+        self.vgSec56 = VGroup(sec5, sec6)
 
     def flip(self):
         lDE = Line(self.d, self.e)
@@ -120,8 +184,8 @@ class FlippedAngle(Scene):
 
     def wiggle(self):
         def update1(group, alpha):
-            mv1 = -0.8 * alpha
-            mv2 = 1 * alpha
+            mv1 = -0.5 * alpha
+            mv2 = 0.8 * alpha
             d = self.d + DOWN * mv1 + LEFT * (mv1 / np.tan(self.angAB))
             e = self.e + DOWN * mv2 + LEFT * (mv2 / np.tan(self.angAC))
 
@@ -145,8 +209,8 @@ class FlippedAngle(Scene):
             return group
 
         def update2(group, alpha):
-            mv1 = - 0.2 * alpha
-            mv2 = 0.3 * alpha
+            mv1 = - 0.1 * alpha
+            mv2 = 0.1 * alpha
             d = self.d + DOWN * mv1 + LEFT * (mv1 / np.tan(self.angAB))
             e = self.e + DOWN * mv2 + LEFT * (mv2 / np.tan(self.angAC))
 
