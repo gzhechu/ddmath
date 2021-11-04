@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from manimlib.imports import *
+from manimlib import *
 
 # manim ddmath/md20200725_shortest_distance.py ShortestDistance -r1280,720 -pm
 # manim ddmath/md20200725_shortest_distance.py ShortestDistance -r640,360 -pl

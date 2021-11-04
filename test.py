@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-# from manimlib.imports import *
-from manim import *
+from manimlib import *
+# from manim import *
 
 # manim ddmath/test.py Test -pm
 # manim ddmath/ex20200510_rolling_circle.py RollingCircle1 -pm -r1280,720
@@ -360,3 +360,30 @@ class SquareToCircle(Scene):
         # self.play(FadeOut(square))           # fade out animation
 
         self.wait(5)
+
+
+class IsolateText(Scene):
+    def construct(self):
+        isolate_tex = ["x", "y", "3", "="]
+        t1 = Tex("x+y=3", isolate=isolate_tex)
+        t2 = Tex("x=3-y", isolate=isolate_tex)
+        t3 = Tex("x=3-y", isolate=isolate_tex)
+        t4 = Tex("x+y=3", isolate=isolate_tex)
+        VGroup(t1, t2, t3, t4).scale(3)
+        t1.shift(UP * 1)
+        t2.shift(UP * 1)
+        t2.align_to(t1, LEFT)
+        t3.shift(DOWN * 1)
+        t4.shift(DOWN * 1)
+        t4.align_to(t3, LEFT)
+
+        self.add(t1, t3)
+        self.wait()
+        self.play(TransformMatchingTex(t1, t2,
+                                       key_map={"+": "-"}
+                                       ),
+                  TransformMatchingTex(t3, t4,
+                                       #  key_map={"+": "-"}
+                                       ),
+                  run_time=5)
+        self.wait(3)
