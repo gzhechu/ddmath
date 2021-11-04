@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 
 #
-# develop and render undder manim version 0.5.0
+# develop and render undder manimce version 0.12.0
 #
 
 """
-manim ex20210421_square_involute.py SquareInvolute -r1280,720 -pqm
-manim ex20210421_square_involute.py SquareInvolute -r640,360 -pql
+manimce ex20210421_square_involute.py SquareInvolute -r720,1280 -pqm
+manimce ex20210421_square_involute.py SquareInvolute -r360,640 -pql
 
 ffmpeg -i SquareInvolute.mp4 -i SquareInvolute.m4a SquareInvoluteRelease.mp4 -y
 """
