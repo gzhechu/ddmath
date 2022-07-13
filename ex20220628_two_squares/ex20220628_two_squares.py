@@ -6,6 +6,7 @@ import math
 
 """
 manimce ex20220628_two_squares.py Diff2Square -pqm -r720,1280
+manimce ex20220628_two_squares.py Diff2Square -p
 """
 
 
@@ -29,8 +30,8 @@ class Diff2Square(Scene):
         bBtext = bB.get_text("b")
         # self.add(lB, bB, bBtext)
 
-        [txtAs, txtBs] = [Text(X) for X in ["大", "小"]]
-        txtBs = MarkupText(f'小<span fgcolor="{YELLOW}">b</span>', color=RED )
+        [txtAs, txtBs] = [Text(X, color=WHITE) for X in ["大", "小"]]
+        # txtBs = MarkupText(f'小<span fgcolor="{YELLOW}">b</span>', color=RED )
         sA = Square(side_length=self.a, color=BLUE, fill_opacity=0.3)
         gA = VGroup(sA, txtAs)
 
